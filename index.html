@@ -232,10 +232,10 @@
       <!-- Note (shown only for prayer note) -->
       <div class="form-group" id="group-note">
         <label for="note" id="lbl-note">Prayer Note</label>
-        <textarea id="note" name="note" placeholder="Write your prayer here… اكتب صلاتك هنا…"></textarea>
+        <textarea id="note" name="note" placeholder="Write your prayer here… اكتب صلاتك هنا…" maxlength="2000"></textarea>
         <div class="field-helper">
-          <div class="note" id="note-hint">Max 300 words.</div>
-          <div class="note" id="note-count">0 / 300</div>
+          <div class="note" id="note-hint">Max 300 words • 2000 characters.</div>
+          <div class="note" id="note-count">0 / 300 • 0 / 2000</div>
         </div>
       </div>
 
@@ -268,8 +268,8 @@
         submit: 'Submit',
         ok: 'Your request has been received.',
         err: 'There was a problem. Please try again.',
-        noteHint: 'Max 300 words.',
-        overLimit: 'Prayer Note must be 300 words or fewer.'
+        noteHint: 'Max 300 words • 2000 characters.',
+        overLimit: 'Prayer Note must be 300 words or fewer and 2000 characters or fewer.'
       },
       ar: {
         church: 'اختر الكنيسة',
@@ -288,8 +288,8 @@
         submit: 'إرسال',
         ok: 'تم استلام طلبك.',
         err: 'حدث خطأ، يرجى المحاولة مرة أخرى.',
-        noteHint: 'الحد الأقصى ٣٠٠ كلمة.',
-        overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة.'
+        noteHint: 'الحد الأقصى ٣٠٠ كلمة • ٢٠٠٠ حرف.',
+        overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.'
       }
     };
 
@@ -376,7 +376,7 @@
     });
     updateTypeUI();
 
-    // === 300-word limit helpers ===
+    // === 300-word + 2000-character limit helpers ===
     function countWords(text) {
       const matches = text.trim().match(/\S+/g);
       return matches ? matches.length : 0;
@@ -390,16 +390,18 @@
       const noteEl = document.getElementById('note');
       const countEl = document.getElementById('note-count');
       const words = countWords(noteEl.value);
-      countEl.textContent = `${words} / 300`;
+      const chars = noteEl.value.length;
+      countEl.textContent = `${words} / 300 • ${chars} / 2000`;
     }
 
-    // Enforce live 300-word cap
+    // Enforce live caps: 300 words and 2000 characters
     const noteEl = document.getElementById('note');
     noteEl.addEventListener('input', () => {
-      const words = countWords(noteEl.value);
-      if (words > 300) {
-        const trimmed = trimToMaxWords(noteEl.value, 300);
-        noteEl.value = trimmed;
+      if (countWords(noteEl.value) > 300) {
+        noteEl.value = trimToMaxWords(noteEl.value, 300);
+      }
+      if (noteEl.value.length > 2000) {
+        noteEl.value = noteEl.value.slice(0, 2000);
       }
       updateNoteCounter();
     });
@@ -432,7 +434,7 @@
           statusErr.style.display = 'block';
           return;
         }
-        if (countWords(note) > 300) {
+        if (countWords(note) > 300 || note.length > 2000) {
           statusErr.textContent = translations[currentLang].overLimit;
           statusErr.style.display = 'block';
           return;
