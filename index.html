@@ -48,7 +48,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
     .header img {
       position: absolute;
@@ -116,6 +116,7 @@
     .radio-group {
       display: flex;
       gap: 16px;
+      flex-wrap: wrap;
     }
     .radio-group label {
       font-weight: normal;
@@ -139,31 +140,47 @@
     button:hover {
       background: var(--accent-light);
     }
+
+    /* === Language switch: centered and stable width === */
     .lang-switch {
       display: flex;
-      gap: 8px;
-      margin-top: -8px;
-      margin-bottom: 18px;
+      justify-content: center;   /* center inside the card */
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 18px;          /* remove negative margin to avoid jumping */
+      width: 100%;
     }
     .lang-switch button {
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text);
-      padding: 6px 10px;
+      padding: 8px 14px;
       border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
+      line-height: 1;
+      min-width: 110px;          /* fixed min width so labels don’t shift */
+      flex: 0 0 auto;            /* never stretch/shrink */
     }
     .lang-switch button.active {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
     }
+
     .status-message {
       margin-top: 12px;
       font-weight: 600;
     }
     .status-ok { color: #1d8e53; }
     .status-error { color: #b12b2b; }
+
+    /* Helper row for counters/messages under fields */
+    .field-helper {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
@@ -216,6 +233,10 @@
       <div class="form-group" id="group-note">
         <label for="note" id="lbl-note">Prayer Note</label>
         <textarea id="note" name="note" placeholder="Write your prayer here… اكتب صلاتك هنا…"></textarea>
+        <div class="field-helper">
+          <div class="note" id="note-hint">Max 300 words.</div>
+          <div class="note" id="note-count">0 / 300</div>
+        </div>
       </div>
 
       <button type="submit" id="submitBtn">Submit</button>
@@ -246,7 +267,9 @@
         placeholderNote: 'Write your prayer here… اكتب صلاتك هنا…',
         submit: 'Submit',
         ok: 'Your request has been received.',
-        err: 'There was a problem. Please try again.'
+        err: 'There was a problem. Please try again.',
+        noteHint: 'Max 300 words.',
+        overLimit: 'Prayer Note must be 300 words or fewer.'
       },
       ar: {
         church: 'اختر الكنيسة',
@@ -264,7 +287,9 @@
         placeholderNote: 'اكتب صلاتك هنا…',
         submit: 'إرسال',
         ok: 'تم استلام طلبك.',
-        err: 'حدث خطأ، يرجى المحاولة مرة أخرى.'
+        err: 'حدث خطأ، يرجى المحاولة مرة أخرى.',
+        noteHint: 'الحد الأقصى ٣٠٠ كلمة.',
+        overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة.'
       }
     };
 
@@ -288,6 +313,7 @@
       document.getElementById('deceasedNames').placeholder = t.placeholderNames;
       document.getElementById('note').placeholder = t.placeholderNote;
       document.getElementById('submitBtn').textContent = t.submit;
+      document.getElementById('note-hint').textContent = t.noteHint;
     }
 
     // Language switchers
@@ -340,6 +366,7 @@
       document.getElementById('deceasedNames').required = isDeceased;
       if (isDeceased) {
         document.getElementById('note').value = '';
+        updateNoteCounter(); // reset counter display
       } else {
         document.getElementById('deceasedNames').value = '';
       }
@@ -349,6 +376,35 @@
     });
     updateTypeUI();
 
+    // === 300-word limit helpers ===
+    function countWords(text) {
+      const matches = text.trim().match(/\S+/g);
+      return matches ? matches.length : 0;
+    }
+    function trimToMaxWords(text, max) {
+      const words = text.trim().match(/\S+/g) || [];
+      if (words.length <= max) return text.trim();
+      return words.slice(0, max).join(' ');
+    }
+    function updateNoteCounter() {
+      const noteEl = document.getElementById('note');
+      const countEl = document.getElementById('note-count');
+      const words = countWords(noteEl.value);
+      countEl.textContent = `${words} / 300`;
+    }
+
+    // Enforce live 300-word cap
+    const noteEl = document.getElementById('note');
+    noteEl.addEventListener('input', () => {
+      const words = countWords(noteEl.value);
+      if (words > 300) {
+        const trimmed = trimToMaxWords(noteEl.value, 300);
+        noteEl.value = trimmed;
+      }
+      updateNoteCounter();
+    });
+    updateNoteCounter();
+
     // Form submit
     document.getElementById('prayerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -356,22 +412,31 @@
       const statusErr = document.getElementById('status-error');
       statusOk.style.display = 'none';
       statusErr.style.display = 'none';
+
       const churchId = document.getElementById('church').value;
       const name = document.getElementById('name').value.trim();
       const prayerType = document.querySelector('input[name="prayerType"]:checked').value;
       const note = document.getElementById('note').value.trim();
       const occasion = document.querySelector('input[name="occasion"]:checked')?.value || '';
       const deceasedNames = document.getElementById('deceasedNames').value.trim();
-      // Validation (client-side only, server will validate again)
+
+      // Validation (client-side only, server should validate again)
       if (!churchId) {
         statusErr.textContent = translations[currentLang].err;
         statusErr.style.display = 'block';
         return;
       }
-      if (prayerType === 'note' && !note) {
-        statusErr.textContent = translations[currentLang].err;
-        statusErr.style.display = 'block';
-        return;
+      if (prayerType === 'note') {
+        if (!note) {
+          statusErr.textContent = translations[currentLang].err;
+          statusErr.style.display = 'block';
+          return;
+        }
+        if (countWords(note) > 300) {
+          statusErr.textContent = translations[currentLang].overLimit;
+          statusErr.style.display = 'block';
+          return;
+        }
       }
       if (prayerType === 'deceased') {
         if (!occasion || !deceasedNames) {
@@ -380,6 +445,7 @@
           return;
         }
       }
+
       // Build payload
       const payload = {
         churchId,
@@ -390,6 +456,7 @@
         deceasedNames,
         lang: currentLang
       };
+
       try {
         const res = await fetch(`${API_BASE}/submit-prayer`, {
           method: 'POST',
@@ -399,6 +466,7 @@
         if (res.ok) {
           document.getElementById('prayerForm').reset();
           updateTypeUI();
+          updateNoteCounter();
           statusOk.textContent = translations[currentLang].ok;
           statusOk.style.display = 'block';
         } else {
