@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24">
+  <!-- Coptic Note logo: a simple Coptic cross with a circle. Dark red stroke. -->
+  <rect width="24" height="24" fill="none" />
+  <path d="M12 2v20M2 12h20" stroke="#7d1a1a" stroke-width="2.5" stroke-linecap="round" />
+  <circle cx="12" cy="12" r="4" fill="none" stroke="#7d1a1a" stroke-width="2" />
+</svg>
