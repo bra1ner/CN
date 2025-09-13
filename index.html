@@ -240,9 +240,9 @@
         </div>
       </div>
 
-      <!-- Occasion and per-option names (shown only for deceased) -->
+      <!-- Remembrance and per-option names (shown only for deceased) -->
       <div class="form-group" id="group-occasion" style="display:none;">
-        <label id="lbl-occasion">Occasion</label>
+        <label id="lbl-occasion">Remembrance</label>
 
         <!-- Multi-select (checkboxes) -->
         <div class="radio-group">
@@ -304,7 +304,7 @@
         type: 'Prayer Type',
         typeNote: 'Prayer Note',
         typeDeceased: 'Commemoration',
-        occasion: 'Occasion',
+        occasion: 'Remembrance',
         occasionRecently: 'Recently',
         occasion40: '40th Day',
         occasionYearly: 'Annually',
@@ -320,7 +320,7 @@
         err: 'There was a problem. Please try again.',
         noteHint: 'Max 300 words • 2000 characters.',
         overLimit: 'Prayer Note must be 300 words or fewer and 2000 characters or fewer.',
-        needOccasion: 'Please choose at least one occasion and enter names for each.'
+        needOccasion: 'Please choose at least one remembrance and enter names for each.'
       },
       ar: {
         church: 'اختر الكنيسة',
@@ -565,7 +565,7 @@
       }
 
       if (prayerType === 'deceased') {
-        // Must have at least one occasion and each selected must include names
+        // Must have at least one remembrance and names for each
         if (deceased.length === 0 || deceased.some(d => !d.names)) {
           statusErr.textContent = translations[currentLang].needOccasion;
           statusErr.style.display = 'block';
