@@ -234,15 +234,35 @@
         </div>
       </div>
 
-      <!-- Occasion and names (shown only for deceased) -->
+      <!-- Occasion and per-option names (shown only for deceased) -->
       <div class="form-group" id="group-occasion" style="display:none;">
         <label id="lbl-occasion">Occasion</label>
+
+        <!-- Multi-select (checkboxes) -->
         <div class="radio-group">
-          <label><input type="radio" name="occasion" value="40th" /> <span id="lbl-occasion-40">40th Day</span></label>
-          <label><input type="radio" name="occasion" value="yearly" /> <span id="lbl-occasion-yearly">Yearly</span></label>
+          <label><input type="checkbox" name="occasionMulti" value="recently" id="occ-recently" /> <span id="lbl-occasion-recently">Recently</span></label>
+          <label><input type="checkbox" name="occasionMulti" value="40th" id="occ-40th" /> <span id="lbl-occasion-40">40th Day</span></label>
+          <label><input type="checkbox" name="occasionMulti" value="yearly" id="occ-yearly" /> <span id="lbl-occasion-yearly">Yearly</span></label>
+        </div>
+
+        <!-- Per-option Names textareas (hidden until checked) -->
+        <div class="form-group" id="box-recently" style="display:none; margin-top:10px;">
+          <label for="names-recently" class="lbl-names-dynamic">Names</label>
+          <textarea id="names-recently" name="names_recently" placeholder="Enter names"></textarea>
+        </div>
+
+        <div class="form-group" id="box-40th" style="display:none; margin-top:10px;">
+          <label for="names-40th" class="lbl-names-dynamic">Names</label>
+          <textarea id="names-40th" name="names_40th_day" placeholder="Enter names"></textarea>
+        </div>
+
+        <div class="form-group" id="box-yearly" style="display:none; margin-top:10px;">
+          <label for="names-yearly" class="lbl-names-dynamic">Names</label>
+          <textarea id="names-yearly" name="names_yearly" placeholder="Enter names"></textarea>
         </div>
       </div>
 
+      <!-- (Kept) single Names block from original, used for Prayer Note only -->
       <div class="form-group" id="group-names" style="display:none;">
         <label for="deceasedNames" id="lbl-names">Names</label>
         <textarea id="deceasedNames" name="deceasedNames" placeholder="Enter names"></textarea>
@@ -279,6 +299,7 @@
         typeNote: 'Prayer Note',
         typeDeceased: 'Prayer for the Deceased',
         occasion: 'Occasion',
+        occasionRecently: 'Recently',
         occasion40: '40th Day',
         occasionYearly: 'Yearly',
         names: 'Names',
@@ -289,7 +310,8 @@
         ok: 'Your request has been received.',
         err: 'There was a problem. Please try again.',
         noteHint: 'Max 300 words • 2000 characters.',
-        overLimit: 'Prayer Note must be 300 words or fewer and 2000 characters or fewer.'
+        overLimit: 'Prayer Note must be 300 words or fewer and 2000 characters or fewer.',
+        needOccasion: 'Please choose at least one occasion and enter names for each.'
       },
       ar: {
         church: 'اختر الكنيسة',
@@ -299,6 +321,7 @@
         typeNote: 'طلب صلاة',
         typeDeceased: 'صلاة للمتوفين',
         occasion: 'المناسبة',
+        occasionRecently: 'حديثًا',
         occasion40: 'الأربعين',
         occasionYearly: 'سنوية',
         names: 'الأسماء',
@@ -309,7 +332,8 @@
         ok: 'تم استلام طلبك.',
         err: 'حدث خطأ، يرجى المحاولة مرة أخرى.',
         noteHint: 'الحد الأقصى ٣٠٠ كلمة • ٢٠٠٠ حرف.',
-        overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.'
+        overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.',
+        needOccasion: 'يرجى اختيار مناسبة واحدة على الأقل وكتابة الأسماء لكل منها.'
       }
     };
 
@@ -327,11 +351,19 @@
       document.getElementById('lbl-type-note').textContent = t.typeNote;
       document.getElementById('lbl-type-deceased').textContent = t.typeDeceased;
       document.getElementById('lbl-occasion').textContent = t.occasion;
+      document.getElementById('lbl-occasion-recently').textContent = t.occasionRecently;
       document.getElementById('lbl-occasion-40').textContent = t.occasion40;
       document.getElementById('lbl-occasion-yearly').textContent = t.occasionYearly;
+
+      // All "Names" labels (static + dynamic)
       document.getElementById('lbl-names').textContent = t.names;
+      document.querySelectorAll('.lbl-names-dynamic').forEach(el => el.textContent = t.names);
+
       document.getElementById('lbl-note').textContent = t.note;
       document.getElementById('deceasedNames').placeholder = t.placeholderNames;
+      document.getElementById('names-recently').placeholder = t.placeholderNames;
+      document.getElementById('names-40th').placeholder = t.placeholderNames;
+      document.getElementById('names-yearly').placeholder = t.placeholderNames;
       document.getElementById('note').placeholder = t.placeholderNote;
       document.getElementById('submitBtn').textContent = t.submit;
       document.getElementById('note-hint').textContent = t.noteHint;
@@ -374,27 +406,38 @@
     loadChurches();
 
     // Show/hide fields based on prayer type
+    function clearOccasionsUI() {
+      const boxes = document.querySelectorAll('input[name="occasionMulti"]');
+      boxes.forEach(b => {
+        b.checked = false;
+      });
+      ['box-recently','box-40th','box-yearly'].forEach(id => {
+        const box = document.getElementById(id);
+        box.style.display = 'none';
+        const ta = box.querySelector('textarea');
+        if (ta) ta.value = '';
+      });
+    }
+
     function updateTypeUI() {
       const val = document.querySelector('input[name="prayerType"]:checked').value;
       const isDeceased = (val === 'deceased');
 
       document.getElementById('group-note').style.display = isDeceased ? 'none' : '';
       document.getElementById('group-occasion').style.display = isDeceased ? '' : 'none';
-      document.getElementById('group-names').style.display = isDeceased ? '' : 'none';
 
-      // Set required attributes
+      // Keep original single Names block hidden for deceased (we're using per-option boxes)
+      document.getElementById('group-names').style.display = isDeceased ? 'none' : 'none';
+
+      // Required attrs
       document.getElementById('note').required = !isDeceased;
-      document.querySelectorAll('input[name="occasion"]').forEach(el => {
-        el.required = isDeceased;
-        el.checked = false;
-      });
-      document.getElementById('deceasedNames').required = isDeceased;
 
+      // Reset when switching modes
       if (isDeceased) {
         document.getElementById('note').value = '';
-        updateNoteCounter(); // reset counter display
+        updateNoteCounter();
       } else {
-        document.getElementById('deceasedNames').value = '';
+        clearOccasionsUI();
       }
     }
 
@@ -402,6 +445,25 @@
       el.addEventListener('change', updateTypeUI);
     });
     updateTypeUI();
+
+    // Toggle per-option names areas
+    function bindOccasionToggle(checkboxId, boxId, textareaId) {
+      const cb = document.getElementById(checkboxId);
+      const box = document.getElementById(boxId);
+      const ta  = document.getElementById(textareaId);
+      cb.addEventListener('change', () => {
+        if (cb.checked) {
+          box.style.display = '';
+          ta.focus();
+        } else {
+          box.style.display = 'none';
+          ta.value = '';
+        }
+      });
+    }
+    bindOccasionToggle('occ-recently','box-recently','names-recently');
+    bindOccasionToggle('occ-40th','box-40th','names-40th');
+    bindOccasionToggle('occ-yearly','box-yearly','names-yearly');
 
     // === 300-word + 2000-character limit helpers ===
     function countWords(text) {
@@ -449,8 +511,19 @@
       const name = document.getElementById('name').value.trim();
       const prayerType = document.querySelector('input[name="prayerType"]:checked').value;
       const note = document.getElementById('note').value.trim();
-      const occasion = document.querySelector('input[name="occasion"]:checked')?.value || '';
-      const deceasedNames = document.getElementById('deceasedNames').value.trim();
+
+      // Gather multi-occasion data
+      const deceased = [];
+      const addIfChecked = (cbId, type, taId) => {
+        const cb = document.getElementById(cbId);
+        if (cb.checked) {
+          const names = document.getElementById(taId).value.trim();
+          deceased.push({ type, names });
+        }
+      };
+      addIfChecked('occ-recently', 'recently', 'names-recently');
+      addIfChecked('occ-40th', '40th', 'names-40th');
+      addIfChecked('occ-yearly', 'yearly', 'names-yearly');
 
       // Validation (client-side only, server should validate again)
       if (!churchId) {
@@ -473,8 +546,9 @@
       }
 
       if (prayerType === 'deceased') {
-        if (!occasion || !deceasedNames) {
-          statusErr.textContent = translations[currentLang].err;
+        // Must have at least one occasion and each selected must include names
+        if (deceased.length === 0 || deceased.some(d => !d.names)) {
+          statusErr.textContent = translations[currentLang].needOccasion;
           statusErr.style.display = 'block';
           return;
         }
@@ -484,10 +558,9 @@
       const payload = {
         churchId,
         name: name || 'Anonymous',
-        note,
+        note: prayerType === 'note' ? note : '',
         prayerType,
-        deceasedOccasion: occasion,
-        deceasedNames,
+        deceased,        // array of {type, names}
         lang: currentLang
       };
 
@@ -500,6 +573,7 @@
 
         if (res.ok) {
           document.getElementById('prayerForm').reset();
+          // Reset UI
           updateTypeUI();
           updateNoteCounter();
           statusOk.textContent = translations[currentLang].ok;
