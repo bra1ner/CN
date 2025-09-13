@@ -170,6 +170,12 @@
       width: 100%;
     }
 
+    /* keep language buttons from swapping in RTL */
+    .lang-switch { direction: ltr; }     /* container stays LTR even if page is RTL */
+    #lang-en { order: 0; }               /* English always first (left) */
+    #lang-ar { order: 1; }               /* العربية always second (right) */
+
+
     .lang-switch button {
       background: transparent;
       border: 1px solid var(--border);
