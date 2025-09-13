@@ -247,17 +247,17 @@
 
         <!-- Per-option Names textareas (hidden until checked) -->
         <div class="form-group" id="box-recently" style="display:none; margin-top:10px;">
-          <label for="names-recently" class="lbl-names-dynamic">Names (Recently)</label>
+          <label for="names-recently" id="lbl-names-recently">Names (Recently)</label>
           <textarea id="names-recently" name="names_recently" placeholder="Enter names"></textarea>
         </div>
 
         <div class="form-group" id="box-40th" style="display:none; margin-top:10px;">
-          <label for="names-40th" class="lbl-names-dynamic">Names (40th)</label>
+          <label for="names-40th" id="lbl-names-40th">Names (40th Day)</label>
           <textarea id="names-40th" name="names_40th_day" placeholder="Enter names"></textarea>
         </div>
 
         <div class="form-group" id="box-yearly" style="display:none; margin-top:10px;">
-          <label for="names-yearly" class="lbl-names-dynamic">Names (Yearly)</label>
+          <label for="names-yearly" id="lbl-names-yearly">Names (Yearly)</label>
           <textarea id="names-yearly" name="names_yearly" placeholder="Enter names"></textarea>
         </div>
       </div>
@@ -303,6 +303,9 @@
         occasion40: '40th Day',
         occasionYearly: 'Yearly',
         names: 'Names',
+        namesRecently: 'Names (Recently)',
+        names40: 'Names (40th Day)',
+        namesYearly: 'Names (Yearly)',
         note: 'Prayer Note',
         placeholderNames: 'Enter names',
         placeholderNote: 'Write your prayer here… اكتب صلاتك هنا…',
@@ -325,6 +328,9 @@
         occasion40: 'الأربعين',
         occasionYearly: 'سنوية',
         names: 'الأسماء',
+        namesRecently: 'الأسماء (حديثًا)',
+        names40: 'الأسماء (الأربعين)',
+        namesYearly: 'الأسماء (سنوية)',
         note: 'نص الصلاة',
         placeholderNames: 'اكتب الأسماء',
         placeholderNote: 'اكتب صلاتك هنا…',
@@ -351,20 +357,27 @@
       document.getElementById('lbl-type-note').textContent = t.typeNote;
       document.getElementById('lbl-type-deceased').textContent = t.typeDeceased;
       document.getElementById('lbl-occasion').textContent = t.occasion;
+
       document.getElementById('lbl-occasion-recently').textContent = t.occasionRecently;
       document.getElementById('lbl-occasion-40').textContent = t.occasion40;
       document.getElementById('lbl-occasion-yearly').textContent = t.occasionYearly;
 
-      // All "Names" labels (static + dynamic)
+      // Static “Prayer Note” names label:
       document.getElementById('lbl-names').textContent = t.names;
-      document.querySelectorAll('.lbl-names-dynamic').forEach(el => el.textContent = t.names);
 
-      document.getElementById('lbl-note').textContent = t.note;
+      // Per-occasion names labels:
+      document.getElementById('lbl-names-recently').textContent = t.namesRecently;
+      document.getElementById('lbl-names-40th').textContent = t.names40;
+      document.getElementById('lbl-names-yearly').textContent = t.namesYearly;
+
+      // Placeholders
       document.getElementById('deceasedNames').placeholder = t.placeholderNames;
       document.getElementById('names-recently').placeholder = t.placeholderNames;
       document.getElementById('names-40th').placeholder = t.placeholderNames;
       document.getElementById('names-yearly').placeholder = t.placeholderNames;
       document.getElementById('note').placeholder = t.placeholderNote;
+
+      document.getElementById('lbl-note').textContent = t.note;
       document.getElementById('submitBtn').textContent = t.submit;
       document.getElementById('note-hint').textContent = t.noteHint;
     }
