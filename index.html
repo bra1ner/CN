@@ -346,7 +346,7 @@
         noteHint: 'Max 300 words • 2000 characters.',
         overLimit: 'Prayer Note must be 300 words or fewer and 2000 characters or fewer.',
         needOccasion: 'Please choose at least one remembrance and enter names for each.',
-        // NEW (Translate)
+        // Translate
         translateBtn: 'Translate',
         translating: 'Translating…',
         translateErrEmpty: 'Write something to translate.',
@@ -378,7 +378,7 @@
         noteHint: 'الحد الأقصى ٣٠٠ كلمة • ٢٠٠٠ حرف.',
         overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.',
         needOccasion: 'يرجى اختيار مناسبة واحدة على الأقل وكتابة الأسماء لكل منها.',
-        // NEW (Translate)
+        // Translate
         translateBtn: 'ترجمة',
         translating: 'جارٍ الترجمة…',
         translateErrEmpty: 'اكتب ما تريد ترجمته أولًا.',
@@ -426,7 +426,7 @@
       document.getElementById('submitBtn').textContent = t.submit;
       document.getElementById('note-hint').textContent = t.noteHint;
 
-      // NEW: set translate button label each time language changes
+      // Translate button text
       document.getElementById('translateBtn').textContent = t.translateBtn;
     }
 
@@ -436,8 +436,6 @@
       document.getElementById('lang-en').classList.add('active');
       document.getElementById('lang-ar').classList.remove('active');
       applyTranslations();
-      // optional: keep note dir in sync with UI language
-      // document.getElementById('note').setAttribute('dir', 'ltr');
     });
 
     document.getElementById('lang-ar').addEventListener('click', () => {
@@ -445,8 +443,6 @@
       document.getElementById('lang-ar').classList.add('active');
       document.getElementById('lang-en').classList.remove('active');
       applyTranslations();
-      // optional: keep note dir in sync with UI language
-      // document.getElementById('note').setAttribute('dir', 'rtl');
     });
 
     applyTranslations();
@@ -563,25 +559,87 @@
     });
     updateNoteCounter();
 
-    // ===== TRANSLATE (frontend-only, optional for the user) =====
+    // ===== TRANSLATE (frontend-only, with robust fallbacks) =====
 
-    // Simple Arabic detection
-    function looksArabic(text) {
-      return /[\u0600-\u06FF]/.test(text);
+    // Timeout wrapper
+    function withTimeout(promise, ms = 9000) {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), ms);
+      return Promise.race([
+        (async () => {
+          try { return await promise(controller.signal); }
+          finally { clearTimeout(t); }
+        })()
+      ]);
     }
 
-    // Frontend call to public translation API (no backend)
-    async function translateLibre(text, source, target) {
-      // Public demo endpoint (rate-limited). Swap to your own hosted endpoint if desired.
-      const url = 'https://libretranslate.com/translate';
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ q: text, source, target, format: 'text' })
-      });
-      if (!res.ok) throw new Error('translate_request_failed');
-      const data = await res.json();
-      return data.translatedText || '';
+    // Providers (no keys, public endpoints; order matters)
+    const translators = [
+      // LibreTranslate main
+      async (text, source, target, signal) => {
+        const res = await fetch('https://libretranslate.com/translate', {
+          method: 'POST', signal,
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ q: text, source, target, format: 'text' })
+        });
+        if (!res.ok) throw new Error(`LT_main_${res.status}`);
+        const j = await res.json();
+        if (!j.translatedText) throw new Error('LT_main_no_text');
+        return j.translatedText;
+      },
+      // LibreTranslate mirror (Astian)
+      async (text, source, target, signal) => {
+        const res = await fetch('https://translate.astian.org/translate', {
+          method: 'POST', signal,
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ q: text, source, target, format: 'text' })
+        });
+        if (!res.ok) throw new Error(`LT_ast_${res.status}`);
+        const j = await res.json();
+        if (!j.translatedText) throw new Error('LT_ast_no_text');
+        return j.translatedText;
+      },
+      // LibreTranslate mirror (.de)
+      async (text, source, target, signal) => {
+        const res = await fetch('https://libretranslate.de/translate', {
+          method: 'POST', signal,
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ q: text, source, target, format: 'text' })
+        });
+        if (!res.ok) throw new Error(`LT_de_${res.status}`);
+        const j = await res.json();
+        if (!j.translatedText) throw new Error('LT_de_no_text');
+        return j.translatedText;
+      },
+      // MyMemory (GET)
+      async (text, source, target, signal) => {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
+        const res = await fetch(url, { signal, headers: { 'Accept': 'application/json' } });
+        if (!res.ok) throw new Error(`MM_${res.status}`);
+        const j = await res.json();
+        const out = j?.responseData?.translatedText;
+        if (!out) throw new Error('MM_no_text');
+        return out;
+      }
+    ];
+
+    async function translateText(text, source, target) {
+      const errors = [];
+      for (const fn of translators) {
+        try {
+          const result = await withTimeout((signal) => fn(text, source, target, signal), 9000);
+          return result;
+        } catch (e) {
+          errors.push(e?.message || String(e));
+          // continue to next provider
+        }
+      }
+      throw new Error('all_providers_failed: ' + errors.join(' | '));
+    }
+
+    // Arabic detection
+    function looksArabic(text) {
+      return /[\u0600-\u06FF]/.test(text);
     }
 
     const translateBtn = document.getElementById('translateBtn');
@@ -598,18 +656,17 @@
         return;
       }
 
-      // Auto-direction based on the content, not the UI language
       const fromIsArabic = looksArabic(val);
       const source = fromIsArabic ? 'ar' : 'en';
       const target = fromIsArabic ? 'en' : 'ar';
 
-      // Busy UI
+      // Busy UI state
       translateBtn.disabled = true;
       const oldBtnText = translateBtn.textContent;
       translateBtn.textContent = t.translating;
 
       try {
-        let out = await translateLibre(val, source, target);
+        let out = await translateText(val, source, target);
 
         // Respect caps
         if (countWords(out) > 300) out = trimToMaxWords(out, 300);
@@ -618,13 +675,13 @@
         ta.value = out;
         updateNoteCounter();
 
-        // Flip textarea direction to match result, without changing the whole UI
+        // Flip textarea direction to match result
         ta.setAttribute('dir', target === 'ar' ? 'rtl' : 'ltr');
 
         translateStatus.textContent = target === 'ar' ? t.translatedToAr : t.translatedToEn;
       } catch (e) {
         console.error(e);
-        translateStatus.textContent = t.translateErrGeneric;
+        translateStatus.textContent = `${t.translateErrGeneric} (${e.message || 'error'})`;
       } finally {
         translateBtn.disabled = false;
         translateBtn.textContent = oldBtnText;
@@ -711,7 +768,7 @@
           // Reset UI
           updateTypeUI();
           updateNoteCounter();
-          translateStatus.textContent = ''; // clear any prior translate status
+          translateStatus.textContent = '';
           statusOk.textContent = translations[currentLang].ok;
           statusOk.style.display = 'block';
         } else {
