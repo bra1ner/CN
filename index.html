@@ -7,7 +7,7 @@
   <meta name="description" content="Submit a private prayer note or a memorial prayer for the deceased. Choose your church and your request will automatically print at that location." />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 
-   <!-- Google tag (gtag.js) -->
+  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -175,7 +175,6 @@
     #lang-en { order: 0; }               /* English always first (left) */
     #lang-ar { order: 1; }               /* العربية always second (right) */
 
-
     .lang-switch button {
       background: transparent;
       border: 1px solid var(--border);
@@ -205,6 +204,26 @@
       gap: 8px;
       margin-top: 6px;
     }
+
+    /* === Translate button row === */
+    .translate-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .translate-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .translate-btn:hover { background: #f8f8f8; }
   </style>
 </head>
 <body>
@@ -282,6 +301,12 @@
           <div class="note" id="note-hint">Max 300 words • 2000 characters.</div>
           <div class="note" id="note-count">0 / 300 • 0 / 2000</div>
         </div>
+
+        <!-- NEW: Translate button row -->
+        <div class="translate-row">
+          <button type="button" id="translateBtn" class="translate-btn">Translate</button>
+          <div class="note" id="translate-status"></div>
+        </div>
       </div>
 
       <button type="submit" id="submitBtn">Submit</button>
@@ -320,7 +345,14 @@
         err: 'There was a problem. Please try again.',
         noteHint: 'Max 300 words • 2000 characters.',
         overLimit: 'Prayer Note must be 300 words or fewer and 2000 characters or fewer.',
-        needOccasion: 'Please choose at least one remembrance and enter names for each.'
+        needOccasion: 'Please choose at least one remembrance and enter names for each.',
+        // NEW (Translate)
+        translateBtn: 'Translate',
+        translating: 'Translating…',
+        translateErrEmpty: 'Write something to translate.',
+        translateErrGeneric: 'Translation failed. Please try again.',
+        translatedToAr: 'Translated to Arabic.',
+        translatedToEn: 'Translated to English.'
       },
       ar: {
         church: 'اختر الكنيسة',
@@ -345,7 +377,14 @@
         err: 'حدث خطأ، يرجى المحاولة مرة أخرى.',
         noteHint: 'الحد الأقصى ٣٠٠ كلمة • ٢٠٠٠ حرف.',
         overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.',
-        needOccasion: 'يرجى اختيار مناسبة واحدة على الأقل وكتابة الأسماء لكل منها.'
+        needOccasion: 'يرجى اختيار مناسبة واحدة على الأقل وكتابة الأسماء لكل منها.',
+        // NEW (Translate)
+        translateBtn: 'ترجمة',
+        translating: 'جارٍ الترجمة…',
+        translateErrEmpty: 'اكتب ما تريد ترجمته أولًا.',
+        translateErrGeneric: 'فشلت الترجمة. حاول مرة أخرى.',
+        translatedToAr: 'تمت الترجمة إلى العربية.',
+        translatedToEn: 'تمت الترجمة إلى الإنجليزية.'
       }
     };
 
@@ -386,6 +425,9 @@
       document.getElementById('lbl-note').textContent = t.note;
       document.getElementById('submitBtn').textContent = t.submit;
       document.getElementById('note-hint').textContent = t.noteHint;
+
+      // NEW: set translate button label each time language changes
+      document.getElementById('translateBtn').textContent = t.translateBtn;
     }
 
     // Language switchers
@@ -394,6 +436,8 @@
       document.getElementById('lang-en').classList.add('active');
       document.getElementById('lang-ar').classList.remove('active');
       applyTranslations();
+      // optional: keep note dir in sync with UI language
+      // document.getElementById('note').setAttribute('dir', 'ltr');
     });
 
     document.getElementById('lang-ar').addEventListener('click', () => {
@@ -401,6 +445,8 @@
       document.getElementById('lang-ar').classList.add('active');
       document.getElementById('lang-en').classList.remove('active');
       applyTranslations();
+      // optional: keep note dir in sync with UI language
+      // document.getElementById('note').setAttribute('dir', 'rtl');
     });
 
     applyTranslations();
@@ -517,7 +563,77 @@
     });
     updateNoteCounter();
 
-    // Form submit
+    // ===== TRANSLATE (frontend-only, optional for the user) =====
+
+    // Simple Arabic detection
+    function looksArabic(text) {
+      return /[\u0600-\u06FF]/.test(text);
+    }
+
+    // Frontend call to public translation API (no backend)
+    async function translateLibre(text, source, target) {
+      // Public demo endpoint (rate-limited). Swap to your own hosted endpoint if desired.
+      const url = 'https://libretranslate.com/translate';
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q: text, source, target, format: 'text' })
+      });
+      if (!res.ok) throw new Error('translate_request_failed');
+      const data = await res.json();
+      return data.translatedText || '';
+    }
+
+    const translateBtn = document.getElementById('translateBtn');
+    const translateStatus = document.getElementById('translate-status');
+
+    async function handleTranslateClick() {
+      const t = translations[currentLang];
+      const ta = document.getElementById('note');
+      const val = (ta.value || '').trim();
+
+      translateStatus.textContent = '';
+      if (!val) {
+        translateStatus.textContent = t.translateErrEmpty;
+        return;
+      }
+
+      // Auto-direction based on the content, not the UI language
+      const fromIsArabic = looksArabic(val);
+      const source = fromIsArabic ? 'ar' : 'en';
+      const target = fromIsArabic ? 'en' : 'ar';
+
+      // Busy UI
+      translateBtn.disabled = true;
+      const oldBtnText = translateBtn.textContent;
+      translateBtn.textContent = t.translating;
+
+      try {
+        let out = await translateLibre(val, source, target);
+
+        // Respect caps
+        if (countWords(out) > 300) out = trimToMaxWords(out, 300);
+        if (out.length > 2000) out = out.slice(0, 2000);
+
+        ta.value = out;
+        updateNoteCounter();
+
+        // Flip textarea direction to match result, without changing the whole UI
+        ta.setAttribute('dir', target === 'ar' ? 'rtl' : 'ltr');
+
+        translateStatus.textContent = target === 'ar' ? t.translatedToAr : t.translatedToEn;
+      } catch (e) {
+        console.error(e);
+        translateStatus.textContent = t.translateErrGeneric;
+      } finally {
+        translateBtn.disabled = false;
+        translateBtn.textContent = oldBtnText;
+      }
+    }
+
+    translateBtn.addEventListener('click', handleTranslateClick);
+
+    // ===== FORM SUBMIT =====
     document.getElementById('prayerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -595,6 +711,7 @@
           // Reset UI
           updateTypeUI();
           updateNoteCounter();
+          translateStatus.textContent = ''; // clear any prior translate status
           statusOk.textContent = translations[currentLang].ok;
           statusOk.style.display = 'block';
         } else {
