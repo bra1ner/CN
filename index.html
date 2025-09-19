@@ -55,25 +55,24 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
 
+    /* ===== Header: center logo ABOVE title ===== */
     .header {
-      position: relative;
       display: flex;
-      align-items: center;
+      flex-direction: column;         /* stack vertically */
+      align-items: center;            /* center horizontally */
       justify-content: center;
+      gap: 8px;                       /* space between logo and title */
       margin-bottom: 16px;
+      text-align: center;
     }
-
     .header img {
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 32px;
-      width: 32px;
+      height: 48px;                   /* tweak as you like */
+      width: auto;
+      display: block;
     }
 
     h1 {
-      margin: 0 auto;
+      margin: 0;
       font-size: 1.4rem;
       font-weight: 700;
       color: var(--accent);
