@@ -43,6 +43,8 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
+      flex-direction: column;       /* so the social row sits under the card */
+      gap: 12px;                    /* space between card and social buttons */
     }
 
     .card {
@@ -53,23 +55,20 @@
       max-width: 600px;
       padding: 24px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-inline: auto;          /* keep centered */
     }
 
-    /* ===== Header: center logo ABOVE title ===== */
+    /* ===== Header ===== */
     .header {
       display: flex;
-      flex-direction: column;         /* stack vertically */
-      align-items: center;            /* center horizontally */
+      flex-direction: column;
+      align-items: center;
       justify-content: center;
-      gap: 8px;                       /* space between logo and title */
+      gap: 8px;
       margin-bottom: 16px;
       text-align: center;
     }
-    .header img {
-      height: 48px;                   /* tweak as you like */
-      width: auto;
-      display: block;
-    }
+    .header img { height: 48px; width: auto; display: block; }
 
     h1 {
       margin: 0;
@@ -111,7 +110,7 @@
       box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
-    /* Custom arrow for select to ensure equal padding on both sides */
+    /* Custom arrow for select */
     select {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -123,7 +122,6 @@
       padding-right: calc(var(--field-pad) + 24px);
     }
 
-    /* RTL support: move arrow to left */
     html[dir="rtl"] select {
       background-position: left 12px center;
       padding-left: calc(var(--field-pad) + 24px);
@@ -138,10 +136,7 @@
       flex-wrap: wrap;
     }
 
-    .radio-group label {
-      font-weight: normal;
-      color: var(--text);
-    }
+    .radio-group label { font-weight: normal; color: var(--text); }
 
     .note { font-size: 0.85rem; color: var(--muted); }
 
@@ -156,23 +151,20 @@
       cursor: pointer;
       transition: background-color 0.15s ease;
     }
-
     button:hover { background: var(--accent-light); }
 
-    /* === Language switch: centered and stable width === */
+    /* === Language switch === */
     .lang-switch {
       display: flex;
-      justify-content: center; /* center inside the card */
+      justify-content: center;
       align-items: center;
       gap: 12px;
-      margin: 0 0 18px; /* remove negative margin to avoid jumping */
+      margin: 0 0 18px;
       width: 100%;
     }
-
-    /* keep language buttons from swapping in RTL */
-    .lang-switch { direction: ltr; }     /* container stays LTR even if page is RTL */
-    #lang-en { order: 0; }               /* English always first (left) */
-    #lang-ar { order: 1; }               /* العربية always second (right) */
+    .lang-switch { direction: ltr; }
+    #lang-en { order: 0; }
+    #lang-ar { order: 1; }
 
     .lang-switch button {
       background: transparent;
@@ -182,10 +174,9 @@
       border-radius: 8px;
       font-size: 0.95rem;
       line-height: 1;
-      min-width: 110px;        /* fixed min width so labels don’t shift */
-      flex: 0 0 auto;          /* never stretch/shrink */
+      min-width: 110px;
+      flex: 0 0 auto;
     }
-
     .lang-switch button.active {
       background: var(--accent);
       color: #fff;
@@ -196,7 +187,6 @@
     .status-ok { color: #1d8e53; }
     .status-error { color: #b12b2b; }
 
-    /* Helper row for counters/messages under fields */
     .field-helper {
       display: flex;
       justify-content: space-between;
@@ -204,7 +194,6 @@
       margin-top: 6px;
     }
 
-    /* === Translate button row === */
     .translate-row {
       display: flex;
       align-items: center;
@@ -223,6 +212,47 @@
       cursor: pointer;
     }
     .translate-btn:hover { background: #f8f8f8; }
+
+    /* === Social buttons strip UNDER the card === */
+    .social-row{
+      width: 100%;
+      max-width: 600px;          /* match .card */
+      margin: 0 auto;            /* center under card */
+      display: flex;
+      justify-content: center;   /* keep them centered */
+      gap: 12px;
+      flex-wrap: wrap;           /* wrap on narrow screens */
+    }
+    .social-btn{
+      width: 56px;
+      height: 56px;
+      background: #ffffff;       /* little white squares */
+      border: 1px solid var(--border);
+      border-radius: 14px;       /* rounded */
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      user-select: none;
+      transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
+    }
+    .social-btn:hover{
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--focus-ring);
+      transform: translateY(-1px);
+    }
+    .social-btn img{
+      width: 24px;
+      height: 24px;
+      display: block;
+    }
+    /* temporary placeholder “+” */
+    .social-btn span{
+      font-size: 22px;
+      line-height: 1;
+      color: var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -258,18 +288,15 @@
         </div>
       </div>
 
-      <!-- Remembrance and per-option names (shown only for deceased) -->
+      <!-- Remembrance and per-option names -->
       <div class="form-group" id="group-occasion" style="display:none;">
         <label id="lbl-occasion">Remembrance</label>
-
-        <!-- Multi-select (checkboxes) -->
         <div class="radio-group">
           <label><input type="checkbox" name="occasionMulti" value="recently" id="occ-recently" /> <span id="lbl-occasion-recently">Recently</span></label>
           <label><input type="checkbox" name="occasionMulti" value="40th" id="occ-40th" /> <span id="lbl-occasion-40">40th Day</span></label>
           <label><input type="checkbox" name="occasionMulti" value="yearly" id="occ-yearly" /> <span id="lbl-occasion-yearly">Yearly</span></label>
         </div>
 
-        <!-- Per-option Names textareas (hidden until checked) -->
         <div class="form-group" id="box-recently" style="display:none; margin-top:10px;">
           <label for="names-recently" id="lbl-names-recently">Names (Recently)</label>
           <textarea id="names-recently" name="names_recently" placeholder="Enter names"></textarea>
@@ -286,13 +313,11 @@
         </div>
       </div>
 
-      <!-- (Kept) single Names block from original, used for Prayer Note only -->
       <div class="form-group" id="group-names" style="display:none;">
         <label for="deceasedNames" id="lbl-names">Names</label>
         <textarea id="deceasedNames" name="deceasedNames" placeholder="Enter names"></textarea>
       </div>
 
-      <!-- Note (shown only for prayer note) -->
       <div class="form-group" id="group-note">
         <label for="note" id="lbl-note">Prayer Note</label>
         <textarea id="note" name="note" placeholder="Write your prayer here… اكتب صلاتك هنا…" maxlength="2000"></textarea>
@@ -301,7 +326,6 @@
           <div class="note" id="note-count">0 / 300 • 0 / 2000</div>
         </div>
 
-        <!-- NEW: Translate button row -->
         <div class="translate-row">
           <button type="button" id="translateBtn" class="translate-btn">Translate</button>
           <div class="note" id="translate-status"></div>
@@ -315,11 +339,20 @@
     </form>
   </div>
 
+  <!-- NEW: Social buttons row under the card (stays within card margins) -->
+  <div class="social-row" aria-label="Social links">
+    <!-- Replace # with your links and the span with <img src="assets/your-icon.svg" alt="Facebook"> etc. -->
+    <a class="social-btn" href="#" aria-label="Facebook"><span>+</span></a>
+    <a class="social-btn" href="#" aria-label="Instagram"><span>+</span></a>
+    <a class="social-btn" href="#" aria-label="X / Twitter"><span>+</span></a>
+    <a class="social-btn" href="#" aria-label="YouTube"><span>+</span></a>
+    <a class="social-btn" href="#" aria-label="TikTok"><span>+</span></a>
+    <a class="social-btn" href="#" aria-label="LinkedIn"><span>+</span></a>
+  </div>
+
   <script>
-    // Base URL for API requests. Update this if your API lives on a different domain.
     const API_BASE = 'https://api.copticnote.com';
 
-    // Translations for English and Arabic
     const translations = {
       en: {
         church: 'Choose Church',
@@ -345,7 +378,6 @@
         noteHint: 'Max 300 words • 2000 characters.',
         overLimit: 'Prayer Note must be 300 words or fewer and 2000 characters or fewer.',
         needOccasion: 'Please choose at least one remembrance and enter names for each.',
-        // Translate
         translateBtn: 'Translate',
         translating: 'Translating…',
         translateErrEmpty: 'Write something to translate.',
@@ -377,7 +409,6 @@
         noteHint: 'الحد الأقصى ٣٠٠ كلمة • ٢٠٠٠ حرف.',
         overLimit: 'يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.',
         needOccasion: 'يرجى اختيار مناسبة واحدة على الأقل وكتابة الأسماء لكل منها.',
-        // Translate
         translateBtn: 'ترجمة',
         translating: 'جارٍ الترجمة…',
         translateErrEmpty: 'اكتب ما تريد ترجمته أولًا.',
@@ -406,15 +437,11 @@
       document.getElementById('lbl-occasion-40').textContent = t.occasion40;
       document.getElementById('lbl-occasion-yearly').textContent = t.occasionYearly;
 
-      // Static “Prayer Note” names label:
       document.getElementById('lbl-names').textContent = t.names;
-
-      // Per-occasion names labels:
       document.getElementById('lbl-names-recently').textContent = t.namesRecently;
       document.getElementById('lbl-names-40th').textContent = t.names40;
       document.getElementById('lbl-names-yearly').textContent = t.namesYearly;
 
-      // Placeholders
       document.getElementById('deceasedNames').placeholder = t.placeholderNames;
       document.getElementById('names-recently').placeholder = t.placeholderNames;
       document.getElementById('names-40th').placeholder = t.placeholderNames;
@@ -425,11 +452,9 @@
       document.getElementById('submitBtn').textContent = t.submit;
       document.getElementById('note-hint').textContent = t.noteHint;
 
-      // Translate button text
       document.getElementById('translateBtn').textContent = t.translateBtn;
     }
 
-    // Language switchers
     document.getElementById('lang-en').addEventListener('click', () => {
       currentLang = 'en';
       document.getElementById('lang-en').classList.add('active');
@@ -446,7 +471,6 @@
 
     applyTranslations();
 
-    // Populate church dropdown
     async function loadChurches() {
       try {
         const res = await fetch(`${API_BASE}/api/churches`);
@@ -465,12 +489,9 @@
     }
     loadChurches();
 
-    // Show/hide fields based on prayer type
     function clearOccasionsUI() {
       const boxes = document.querySelectorAll('input[name="occasionMulti"]');
-      boxes.forEach(b => {
-        b.checked = false;
-      });
+      boxes.forEach(b => { b.checked = false; });
       ['box-recently','box-40th','box-yearly'].forEach(id => {
         const box = document.getElementById(id);
         box.style.display = 'none';
@@ -485,14 +506,10 @@
 
       document.getElementById('group-note').style.display = isDeceased ? 'none' : '';
       document.getElementById('group-occasion').style.display = isDeceased ? '' : 'none';
+      document.getElementById('group-names').style.display = 'none';
 
-      // Keep original single Names block hidden for deceased (we're using per-option boxes)
-      document.getElementById('group-names').style.display = isDeceased ? 'none' : 'none';
-
-      // Required attrs
       document.getElementById('note').required = !isDeceased;
 
-      // Reset when switching modes
       if (isDeceased) {
         document.getElementById('note').value = '';
         updateNoteCounter();
@@ -506,37 +523,28 @@
     });
     updateTypeUI();
 
-    // Toggle per-option names areas
     function bindOccasionToggle(checkboxId, boxId, textareaId) {
       const cb = document.getElementById(checkboxId);
       const box = document.getElementById(boxId);
       const ta  = document.getElementById(textareaId);
       cb.addEventListener('change', () => {
-        if (cb.checked) {
-          box.style.display = '';
-          ta.focus();
-        } else {
-          box.style.display = 'none';
-          ta.value = '';
-        }
+        if (cb.checked) { box.style.display = ''; ta.focus(); }
+        else { box.style.display = 'none'; ta.value = ''; }
       });
     }
     bindOccasionToggle('occ-recently','box-recently','names-recently');
     bindOccasionToggle('occ-40th','box-40th','names-40th');
     bindOccasionToggle('occ-yearly','box-yearly','names-yearly');
 
-    // === 300-word + 2000-character limit helpers ===
     function countWords(text) {
       const matches = text.trim().match(/\S+/g);
       return matches ? matches.length : 0;
     }
-
     function trimToMaxWords(text, max) {
       const words = text.trim().match(/\S+/g) || [];
       if (words.length <= max) return text.trim();
       return words.slice(0, max).join(' ');
     }
-
     function updateNoteCounter() {
       const noteEl = document.getElementById('note');
       const countEl = document.getElementById('note-count');
@@ -544,8 +552,6 @@
       const chars = noteEl.value.length;
       countEl.textContent = `${words} / 300 • ${chars} / 2000`;
     }
-
-    // Enforce live caps: 300 words and 2000 characters
     const noteEl = document.getElementById('note');
     noteEl.addEventListener('input', () => {
       if (countWords(noteEl.value) > 300) {
@@ -558,9 +564,6 @@
     });
     updateNoteCounter();
 
-    // ===== TRANSLATE (frontend-only, with robust fallbacks) =====
-
-    // Timeout wrapper
     function withTimeout(promise, ms = 9000) {
       const controller = new AbortController();
       const t = setTimeout(() => controller.abort(), ms);
@@ -572,9 +575,7 @@
       ]);
     }
 
-    // Providers (no keys, public endpoints; order matters)
     const translators = [
-      // LibreTranslate main
       async (text, source, target, signal) => {
         const res = await fetch('https://libretranslate.com/translate', {
           method: 'POST', signal,
@@ -586,7 +587,6 @@
         if (!j.translatedText) throw new Error('LT_main_no_text');
         return j.translatedText;
       },
-      // LibreTranslate mirror (Astian)
       async (text, source, target, signal) => {
         const res = await fetch('https://translate.astian.org/translate', {
           method: 'POST', signal,
@@ -598,7 +598,6 @@
         if (!j.translatedText) throw new Error('LT_ast_no_text');
         return j.translatedText;
       },
-      // LibreTranslate mirror (.de)
       async (text, source, target, signal) => {
         const res = await fetch('https://libretranslate.de/translate', {
           method: 'POST', signal,
@@ -610,7 +609,6 @@
         if (!j.translatedText) throw new Error('LT_de_no_text');
         return j.translatedText;
       },
-      // MyMemory (GET)
       async (text, source, target, signal) => {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
         const res = await fetch(url, { signal, headers: { 'Accept': 'application/json' } });
@@ -630,16 +628,12 @@
           return result;
         } catch (e) {
           errors.push(e?.message || String(e));
-          // continue to next provider
         }
       }
       throw new Error('all_providers_failed: ' + errors.join(' | '));
     }
 
-    // Arabic detection
-    function looksArabic(text) {
-      return /[\u0600-\u06FF]/.test(text);
-    }
+    function looksArabic(text) { return /[\u0600-\u06FF]/.test(text); }
 
     const translateBtn = document.getElementById('translateBtn');
     const translateStatus = document.getElementById('translate-status');
@@ -650,33 +644,23 @@
       const val = (ta.value || '').trim();
 
       translateStatus.textContent = '';
-      if (!val) {
-        translateStatus.textContent = t.translateErrEmpty;
-        return;
-      }
+      if (!val) { translateStatus.textContent = t.translateErrEmpty; return; }
 
       const fromIsArabic = looksArabic(val);
       const source = fromIsArabic ? 'ar' : 'en';
       const target = fromIsArabic ? 'en' : 'ar';
 
-      // Busy UI state
       translateBtn.disabled = true;
       const oldBtnText = translateBtn.textContent;
       translateBtn.textContent = t.translating;
 
       try {
         let out = await translateText(val, source, target);
-
-        // Respect caps
         if (countWords(out) > 300) out = trimToMaxWords(out, 300);
         if (out.length > 2000) out = out.slice(0, 2000);
-
         ta.value = out;
         updateNoteCounter();
-
-        // Flip textarea direction to match result
         ta.setAttribute('dir', target === 'ar' ? 'rtl' : 'ltr');
-
         translateStatus.textContent = target === 'ar' ? t.translatedToAr : t.translatedToEn;
       } catch (e) {
         console.error(e);
@@ -686,10 +670,8 @@
         translateBtn.textContent = oldBtnText;
       }
     }
-
     translateBtn.addEventListener('click', handleTranslateClick);
 
-    // ===== FORM SUBMIT =====
     document.getElementById('prayerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
@@ -703,7 +685,6 @@
       const prayerType = document.querySelector('input[name="prayerType"]:checked').value;
       const note = document.getElementById('note').value.trim();
 
-      // Gather multi-occasion data
       const deceased = [];
       const addIfChecked = (cbId, type, taId) => {
         const cb = document.getElementById(cbId);
@@ -716,7 +697,6 @@
       addIfChecked('occ-40th', '40th', 'names-40th');
       addIfChecked('occ-yearly', 'yearly', 'names-yearly');
 
-      // Validation (client-side only, server should validate again)
       if (!churchId) {
         statusErr.textContent = translations[currentLang].err;
         statusErr.style.display = 'block';
@@ -737,7 +717,6 @@
       }
 
       if (prayerType === 'deceased') {
-        // Must have at least one remembrance and names for each
         if (deceased.length === 0 || deceased.some(d => !d.names)) {
           statusErr.textContent = translations[currentLang].needOccasion;
           statusErr.style.display = 'block';
@@ -745,13 +724,12 @@
         }
       }
 
-      // Build payload
       const payload = {
         churchId,
         name: name || 'Anonymous',
         note: prayerType === 'note' ? note : '',
         prayerType,
-        deceased,        // array of {type, names}
+        deceased,
         lang: currentLang
       };
 
@@ -764,7 +742,6 @@
 
         if (res.ok) {
           document.getElementById('prayerForm').reset();
-          // Reset UI
           updateTypeUI();
           updateNoteCounter();
           translateStatus.textContent = '';
