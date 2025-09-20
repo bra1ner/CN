@@ -26,17 +26,30 @@
       --muted: #6c6c6b;
       --accent: #800000;
       --accent-light: #a52a2a;
-      --gold: #C8A951;            /* gold accent */
+      --gold: #C8A951;                /* gold accent */
       --focus-ring: rgba(200, 169, 81, 0.3); /* gold highlight */
+
+      /* Spacing + radius */
       --field-pad: 14px;
       --field-radius: 12px;
+
+      /* Responsive helpers */
+      --page-pad: clamp(12px, 2.5vw, 28px);
+      --card-pad: clamp(16px, 3vw, 28px);
+      --btn-pad-y: clamp(10px, 1.8vh, 14px);
+      --btn-pad-x: clamp(14px, 3vw, 22px);
+      --control-font: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
+      --h1-size: clamp(1.25rem, 1.05rem + 1.2vw, 1.6rem);
+      --note-size: clamp(0.82rem, 0.78rem + 0.2vw, 0.9rem);
+      --social-size: clamp(48px, 7vw, 64px);
+      --social-icon: clamp(22px, 3.2vw, 28px);
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 24px;
+      padding: var(--page-pad);               /* responsive page padding */
       font-family: "Noto Sans", Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
@@ -44,8 +57,8 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      flex-direction: column;       /* so the social row sits under the card */
-      gap: 12px;                    /* space between card and social buttons */
+      flex-direction: column;                 /* so the social row sits under the card */
+      gap: 12px;                              /* space between card and social buttons */
     }
 
     .card {
@@ -53,10 +66,10 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       width: 100%;
-      max-width: 600px;
-      padding: 24px;
+      max-width: 600px;                       /* keeps a readable line-length */
+      padding: var(--card-pad);               /* responsive inner padding */
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      margin-inline: auto;          /* keep centered */
+      margin-inline: auto;                    /* keep centered */
     }
 
     /* ===== Header ===== */
@@ -69,23 +82,28 @@
       margin-bottom: 16px;
       text-align: center;
     }
-    .header img { height: 48px; width: auto; display: block; }
+    .header img {
+      height: clamp(40px, 6vw, 52px);
+      width: auto;
+      display: block;
+    }
 
     h1 {
       margin: 0;
-      font-size: 1.4rem;
+      font-size: var(--h1-size);             /* fluid headline */
       font-weight: 700;
       color: var(--accent);
       text-align: center;
     }
 
-    .form-group { margin-bottom: 18px; }
+    .form-group { margin-bottom: clamp(14px, 2.2vw, 20px); }
 
     label {
       display: block;
       margin-bottom: 6px;
       font-weight: 600;
       color: var(--accent);
+      font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
     }
 
     select,
@@ -96,9 +114,9 @@
       border: 1px solid var(--border);
       border-radius: var(--field-radius);
       background: #fff;
-      padding-block: 12px;
+      padding-block: clamp(10px, 1.8vh, 12px);
       padding-inline: var(--field-pad);
-      font-size: 1rem;
+      font-size: var(--control-font);        /* fluid control font size */
       color: var(--text);
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -122,35 +140,40 @@
       background-size: 16px 16px;
       padding-right: calc(var(--field-pad) + 24px);
     }
-
     html[dir="rtl"] select {
       background-position: left 12px center;
       padding-left: calc(var(--field-pad) + 24px);
       padding-right: var(--field-pad);
     }
 
-    textarea { min-height: 160px; resize: vertical; }
+    /* Responsive textarea height */
+    textarea {
+      min-height: clamp(140px, 24vh, 260px);
+      resize: vertical;
+    }
 
     .radio-group {
       display: flex;
-      gap: 16px;
+      gap: clamp(12px, 2.3vw, 18px);
       flex-wrap: wrap;
     }
-
     .radio-group label { font-weight: normal; color: var(--text); }
 
-    .note { font-size: 0.85rem; color: var(--muted); }
+    .note {
+      font-size: var(--note-size);           /* fluid small text */
+      color: var(--muted);
+    }
 
     button {
       background: var(--accent);
       color: #fff;
       border: none;
       border-radius: 10px;
-      padding: 12px 20px;
-      font-size: 1rem;
+      padding: var(--btn-pad-y) var(--btn-pad-x); /* bigger tap targets on small screens */
+      font-size: var(--control-font);
       font-weight: 600;
       cursor: pointer;
-      transition: background-color 0.15s ease;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease;
     }
     button:hover {
       background: var(--accent-light);
@@ -162,7 +185,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 12px;
+      gap: clamp(8px, 1.8vw, 12px);
       margin: 0 0 18px;
       width: 100%;
     }
@@ -176,7 +199,7 @@
       color: var(--text);
       padding: 8px 14px;
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: var(--control-font);
       line-height: 1;
       min-width: 110px;
       flex: 0 0 auto;
@@ -200,7 +223,7 @@
 
     .translate-row {
       display: flex;
-      align-items: stretch;   /* stretch to keep equal height */
+      align-items: stretch;         /* stretch to keep equal height */
       justify-content: space-between;
       gap: 8px;
       margin-top: 8px;
@@ -212,15 +235,14 @@
       color: var(--text);
       padding: 8px 14px;
       border-radius: 8px;
-      font-size: 0.95rem;
+      font-size: var(--control-font);
       line-height: 1;
       cursor: pointer;
-      white-space: nowrap;      /* keep label on one line */
+      white-space: nowrap;          /* keep label on one line */
     }
-
     .translate-btn:hover { background: #f8f8f8; }
 
-    /* NEW: while busy, allow the Translate button to grow naturally */
+    /* while busy, allow the Translate button to grow naturally */
     .translate-btn.busy {
       width: auto !important;
       min-width: 0 !important;
@@ -230,19 +252,19 @@
     /* === Social buttons strip UNDER the card === */
     .social-row{
       width: 100%;
-      max-width: 600px;          /* match .card */
-      margin: 0 auto;            /* center under card */
+      max-width: 600px;             /* match .card */
+      margin: 0 auto;               /* center under card */
       display: flex;
-      justify-content: center;   /* keep them centered */
+      justify-content: center;      /* keep them centered */
       gap: 12px;
-      flex-wrap: wrap;           /* wrap on narrow screens */
+      flex-wrap: wrap;              /* wrap on narrow screens */
     }
     .social-btn{
-      width: 56px;
-      height: 56px;
-      background: #ffffff;       /* little white squares */
+      width: var(--social-size);
+      height: var(--social-size);
+      background: #ffffff;          /* little white squares */
       border: 1px solid var(--border);
-      border-radius: 14px;       /* rounded */
+      border-radius: 14px;          /* rounded */
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
       display: inline-flex;
       align-items: center;
@@ -257,15 +279,25 @@
       transform: translateY(-1px);
     }
     .social-btn img{
-      width: 24px;
-      height: 24px;
+      width: var(--social-icon);
+      height: var(--social-icon);
       display: block;
     }
-    /* temporary placeholder “+” */
     .social-btn span{
       font-size: 22px;
       line-height: 1;
       color: var(--muted);
+    }
+
+    /* --- Extra polish for very narrow devices --- */
+    @media (max-width: 360px) {
+      .field-helper { flex-direction: column; gap: 4px; }
+      .lang-switch button { min-width: 96px; }
+    }
+
+    /* --- Roomy desktops: let the card breathe slightly more if you like --- */
+    @media (min-width: 1100px) {
+      .card { max-width: 640px; }
     }
   </style>
 </head>
@@ -740,6 +772,12 @@
     window.addEventListener('resize', () => {
       clearTimeout(_sbwTimer);
       _sbwTimer = setTimeout(syncButtonWidths, 120);
+    });
+
+    // Ensure all social links open in new tab (safety net)
+    document.querySelectorAll('.social-row a.social-btn').forEach(a => {
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'noopener noreferrer');
     });
   </script>
 </body>
