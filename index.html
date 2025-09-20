@@ -2,23 +2,20 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Coptic Note – Prayer Request</title>
-  <meta
-    name="description"
-    content="Submit a private prayer note or a memorial prayer for the deceased. Choose your church and your request will automatically print at that location."
-  />
+  <meta name="description" content="Submit a private prayer note or a memorial prayer for the deceased. Choose your church and your request will automatically print at that location." />
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
 
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
+    function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-RJ9ZRC3PW3');
   </script>
-
+  
   <style>
     /* Root colour palette: white background with dark red accents */
     :root {
@@ -29,41 +26,26 @@
       --muted: #6c6c6b;
       --accent: #800000;
       --accent-light: #a52a2a;
-      --gold: #C8A951;                  /* gold accent */
+      --gold: #C8A951;            /* gold accent */
       --focus-ring: rgba(200, 169, 81, 0.3); /* gold highlight */
       --field-pad: 14px;
       --field-radius: 12px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.05);
-      --maxw: 600px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%; /* prevent unexpected zoom on iOS */
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      /* Safe-area friendly, fluid outer padding */
-      padding: clamp(12px, 2.5vw, 28px);
-      padding-left:  calc(clamp(12px, 2.5vw, 28px) + env(safe-area-inset-left));
-      padding-right: calc(clamp(12px, 2.5vw, 28px) + env(safe-area-inset-right));
-      padding-top:   calc(clamp(12px, 2.5vw, 28px) + env(safe-area-inset-top));
-      padding-bottom:calc(clamp(12px, 2.5vw, 28px) + env(safe-area-inset-bottom));
-
+      padding: 24px;
       font-family: "Noto Sans", Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      flex-direction: column;   /* so the social row sits under the card */
-      gap: 12px;                /* space between card and social buttons */
+      flex-direction: column;       /* so the social row sits under the card */
+      gap: 12px;                    /* space between card and social buttons */
     }
 
     .card {
@@ -71,10 +53,10 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       width: 100%;
-      max-width: var(--maxw);
-      padding: clamp(18px, 3.2vw, 28px);
-      box-shadow: var(--shadow);
-      margin-inline: auto;      /* keep centered */
+      max-width: 600px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-inline: auto;          /* keep centered */
     }
 
     /* ===== Header ===== */
@@ -83,29 +65,21 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-
       gap: 8px;
       margin-bottom: 16px;
       text-align: center;
     }
-
-    .header img {
-      height: 48px;
-      width: auto;
-      display: block;
-    }
+    .header img { height: 48px; width: auto; display: block; }
 
     h1 {
       margin: 0;
-      font-size: clamp(1.25rem, 1rem + 1.2vw, 1.6rem);
+      font-size: 1.4rem;
       font-weight: 700;
       color: var(--accent);
       text-align: center;
     }
 
-    .form-group {
-      margin-bottom: clamp(14px, 2.2vw, 18px);
-    }
+    .form-group { margin-bottom: 18px; }
 
     label {
       display: block;
@@ -119,22 +93,15 @@
     textarea {
       display: block;
       width: 100%;
-
       border: 1px solid var(--border);
       border-radius: var(--field-radius);
       background: #fff;
-
       padding-block: 12px;
       padding-inline: var(--field-pad);
-
-      font-size: 16px;     /* iOS zoom fix */
-      line-height: 1.35;
+      font-size: 1rem;
       color: var(--text);
-
       outline: none;
       transition: border-color 0.15s ease, box-shadow 0.15s ease;
-
-      min-height: 44px;    /* comfortable tap target */
     }
 
     select:focus,
@@ -149,12 +116,10 @@
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%237d1a1a' d='M4 6l4 4 4-4z'/></svg>");
       background-repeat: no-repeat;
       background-position: right 12px center;
       background-size: 16px 16px;
-
       padding-right: calc(var(--field-pad) + 24px);
     }
 
@@ -164,42 +129,29 @@
       padding-right: var(--field-pad);
     }
 
-    textarea {
-      min-height: 160px;
-      resize: vertical;
-    }
+    textarea { min-height: 160px; resize: vertical; }
 
     .radio-group {
       display: flex;
-      gap: 12px;
+      gap: 16px;
       flex-wrap: wrap;
     }
 
-    .radio-group label {
-      font-weight: normal;
-      color: var(--text);
-    }
+    .radio-group label { font-weight: normal; color: var(--text); }
 
-    .note {
-      font-size: 0.92rem;
-      color: var(--muted);
-    }
+    .note { font-size: 0.85rem; color: var(--muted); }
 
     button {
       background: var(--accent);
       color: #fff;
       border: none;
       border-radius: 10px;
-
       padding: 12px 20px;
-      font-size: 16px;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-
-      transition: background-color 0.15s ease, box-shadow 0.15s ease;
-      min-height: 44px; /* thumbs-friendly */
+      transition: background-color 0.15s ease;
     }
-
     button:hover {
       background: var(--accent-light);
       box-shadow: 0 0 8px var(--gold);
@@ -210,12 +162,10 @@
       display: flex;
       justify-content: center;
       align-items: center;
-
       gap: 12px;
       margin: 0 0 18px;
       width: 100%;
     }
-
     .lang-switch { direction: ltr; }
     #lang-en { order: 0; }
     #lang-ar { order: 1; }
@@ -224,163 +174,98 @@
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text);
-
-      padding: 10px 14px;
+      padding: 8px 14px;
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 0.95rem;
       line-height: 1;
-
       min-width: 110px;
       flex: 0 0 auto;
     }
-
     .lang-switch button.active {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
     }
 
-    .status-message {
-      margin-top: 12px;
-      font-weight: 600;
-    }
-
-    .status-ok {
-      color: #1d8e53;
-    }
-
-    .status-error {
-      color: #b12b2b;
-    }
+    .status-message { margin-top: 12px; font-weight: 600; }
+    .status-ok { color: #1d8e53; }
+    .status-error { color: #b12b2b; }
 
     .field-helper {
       display: flex;
       justify-content: space-between;
       gap: 8px;
       margin-top: 6px;
-      flex-wrap: wrap;
     }
 
     .translate-row {
       display: flex;
-      align-items: stretch; /* stretch to keep equal height */
+      align-items: stretch;   /* stretch to keep equal height */
       justify-content: space-between;
-
       gap: 8px;
       margin-top: 8px;
-      flex-wrap: wrap;
     }
 
     .translate-btn {
       background: #D3D3D3;
       border: 1px solid var(--border);
       color: var(--text);
-
-      padding: 10px 14px;
+      padding: 8px 14px;
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 0.95rem;
       line-height: 1;
       cursor: pointer;
-
-      min-height: 44px;
+      white-space: nowrap;      /* keep label on one line */
     }
 
-    .translate-btn:hover {
-      background: #f0f0f0;
-    }
+    .translate-btn:hover { background: #f8f8f8; }
 
-    #translate-status {
-      flex: 1 1 200px;
-      min-height: 44px;
-
-      display: flex;
-      align-items: center;
+    /* NEW: while busy, allow the Translate button to grow naturally */
+    .translate-btn.busy {
+      width: auto !important;
+      min-width: 0 !important;
+      max-width: none !important;
     }
 
     /* === Social buttons strip UNDER the card === */
-    .social-row {
+    .social-row{
       width: 100%;
-      max-width: var(--maxw);
-      margin: 0 auto;
-
+      max-width: 600px;          /* match .card */
+      margin: 0 auto;            /* center under card */
       display: flex;
-      justify-content: center;
+      justify-content: center;   /* keep them centered */
       gap: 12px;
-      flex-wrap: wrap;
+      flex-wrap: wrap;           /* wrap on narrow screens */
     }
-
-    .social-btn {
+    .social-btn{
       width: 56px;
       height: 56px;
-
       background: #ffffff;       /* little white squares */
       border: 1px solid var(--border);
       border-radius: 14px;       /* rounded */
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-
       display: inline-flex;
       align-items: center;
       justify-content: center;
       text-decoration: none;
       user-select: none;
-
-      transition:
-        box-shadow .15s ease,
-        transform .15s ease,
-        border-color .15s ease;
+      transition: box-shadow .15s ease, transform .15s ease, border-color .15s ease;
     }
-
-    .social-btn:hover {
+    .social-btn:hover{
       border-color: var(--accent);
       box-shadow: 0 0 0 3px var(--focus-ring);
       transform: translateY(-1px);
     }
-
-    .social-btn img {
+    .social-btn img{
       width: 24px;
       height: 24px;
       display: block;
     }
-
-    /* ===== Small phones: tighten spacing & widths ===== */
-    @media (max-width: 380px) {
-      :root {
-        --field-radius: 10px;
-      }
-
-      .lang-switch button {
-        min-width: 96px;
-        padding: 9px 12px;
-        font-size: 14px;
-      }
-
-      .translate-btn {
-        padding: 9px 12px;
-        font-size: 14px;
-      }
-
-      .header img {
-        height: 42px;
-      }
-    }
-
-    /* ===== Larger screens: breathe more ===== */
-    @media (min-width: 768px) {
-      .card {
-        border-radius: 20px;
-        padding: clamp(24px, 2vw, 36px);
-      }
-
-      h1 {
-        font-size: clamp(1.4rem, 1rem + 1.1vw, 1.8rem);
-      }
-    }
-
-    /* Respect reduced motion */
-    @media (prefers-reduced-motion: reduce) {
-      * {
-        transition: none !important;
-      }
+    /* temporary placeholder “+” */
+    .social-btn span{
+      font-size: 22px;
+      line-height: 1;
+      color: var(--muted);
     }
   </style>
 </head>
@@ -413,37 +298,18 @@
       <div class="form-group">
         <label id="lbl-prayerType">Prayer Type</label>
         <div class="radio-group" id="prayerType-group">
-          <label>
-            <input type="radio" name="prayerType" value="note" checked />
-            <span id="lbl-type-note">Prayer Note</span>
-          </label>
-
-          <label>
-            <input type="radio" name="prayerType" value="deceased" />
-            <span id="lbl-type-deceased">Commemoration</span>
-          </label>
+          <label><input type="radio" name="prayerType" value="note" checked /> <span id="lbl-type-note">Prayer Note</span></label>
+          <label><input type="radio" name="prayerType" value="deceased" /> <span id="lbl-type-deceased">Commemoration</span></label>
         </div>
       </div>
 
       <!-- Remembrance and per-option names -->
       <div class="form-group" id="group-occasion" style="display:none;">
         <label id="lbl-occasion">Remembrance</label>
-
         <div class="radio-group">
-          <label>
-            <input type="checkbox" name="occasionMulti" value="recently" id="occ-recently" />
-            <span id="lbl-occasion-recently">Recently</span>
-          </label>
-
-          <label>
-            <input type="checkbox" name="occasionMulti" value="40th" id="occ-40th" />
-            <span id="lbl-occasion-40">40th Day</span>
-          </label>
-
-        <label>
-            <input type="checkbox" name="occasionMulti" value="yearly" id="occ-yearly" />
-            <span id="lbl-occasion-yearly">Yearly</span>
-          </label>
+          <label><input type="checkbox" name="occasionMulti" value="recently" id="occ-recently" /> <span id="lbl-occasion-recently">Recently</span></label>
+          <label><input type="checkbox" name="occasionMulti" value="40th" id="occ-40th" /> <span id="lbl-occasion-40">40th Day</span></label>
+          <label><input type="checkbox" name="occasionMulti" value="yearly" id="occ-yearly" /> <span id="lbl-occasion-yearly">Yearly</span></label>
         </div>
 
         <div class="form-group" id="box-recently" style="display:none; margin-top:10px;">
@@ -470,7 +336,6 @@
       <div class="form-group" id="group-note">
         <label for="note" id="lbl-note">Prayer Note</label>
         <textarea id="note" name="note" placeholder="Write your prayer here… اكتب صلاتك هنا…" maxlength="2000"></textarea>
-
         <div class="field-helper">
           <div class="note" id="note-hint">Max 300 words • 2000 characters.</div>
           <div class="note" id="note-count">0 / 300 • 0 / 2000</div>
@@ -491,25 +356,11 @@
 
   <!-- NEW: Social buttons row under the card (stays within card margins) -->
   <div class="social-row" aria-label="Social links">
-    <a class="social-btn" href="https://instagram.com/copticnote" aria-label="Instagram">
-      <img src="social/instagram.png" alt="Instagram" />
-    </a>
-
-    <a class="social-btn" href="https://discord.gg/q3mUGvSeem" aria-label="Discord">
-      <img src="social/discord.png" alt="Discord" />
-    </a>
-
-    <a class="social-btn" href="https://www.linkedin.com/company/coptic-note/" aria-label="LinkedIn">
-      <img src="social/in.png" alt="LinkedIn" />
-    </a>
-
-    <a class="social-btn" href="https://x.com/CopticNote" aria-label="X / Twitter">
-      <img src="social/x.png" alt="X/Twitter" />
-    </a>
-
-    <a class="social-btn" href="https://facebook.com/CopticNote" aria-label="Facebook">
-      <img src="social/facebook.png" alt="Facebook" />
-    </a>
+    <a class="social-btn" href="https://instagram.com/copticnote" aria-label="Instagram"><img src="social/instagram.png" alt="Instagram"></a>
+    <a class="social-btn" href="https://discord.gg/q3mUGvSeem" aria-label="Discord"><img src="social/discord.png" alt="Discord"></a>
+    <a class="social-btn" href="https://www.linkedin.com/company/coptic-note/" aria-label="LinkedIn"><img src="social/in.png" alt="LinkedIn"></a>
+    <a class="social-btn" href="https://x.com/CopticNote" aria-label="X / Twitter"><img src="social/x.png" alt="X/Twitter"></a>
+    <a class="social-btn" href="https://facebook.com/CopticNote" aria-label="Facebook"><img src="social/facebook.png" alt="Facebook"></a>
   </div>
 
   <script>
@@ -547,7 +398,6 @@
         translatedToAr: 'Translated to Arabic.',
         translatedToEn: 'Translated to English.'
       },
-
       ar: {
         church: 'اختر الكنيسة',
         helpChurch: 'اختر كنيستك لضمان طباعة الطلب في المكان الصحيح.',
@@ -585,19 +435,15 @@
 
     function applyTranslations() {
       const t = translations[currentLang];
-
       document.documentElement.lang = currentLang;
-      document.documentElement.dir  = (currentLang === 'ar') ? 'rtl' : 'ltr';
+      document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
 
       document.getElementById('lbl-church').textContent = t.church;
       document.getElementById('help-church').textContent = t.helpChurch;
-
       document.getElementById('lbl-name').textContent = t.name;
       document.getElementById('lbl-prayerType').textContent = t.type;
-
       document.getElementById('lbl-type-note').textContent = t.typeNote;
       document.getElementById('lbl-type-deceased').textContent = t.typeDeceased;
-
       document.getElementById('lbl-occasion').textContent = t.occasion;
 
       document.getElementById('lbl-occasion-recently').textContent = t.occasionRecently;
@@ -610,10 +456,9 @@
       document.getElementById('lbl-names-yearly').textContent = t.namesYearly;
 
       document.getElementById('deceasedNames').placeholder = t.placeholderNames;
-      document.getElementById('names-recently').placeholder  = t.placeholderNames;
-      document.getElementById('names-40th').placeholder      = t.placeholderNames;
-      document.getElementById('names-yearly').placeholder    = t.placeholderNames;
-
+      document.getElementById('names-recently').placeholder = t.placeholderNames;
+      document.getElementById('names-40th').placeholder = t.placeholderNames;
+      document.getElementById('names-yearly').placeholder = t.placeholderNames;
       document.getElementById('note').placeholder = t.placeholderNote;
 
       document.getElementById('lbl-note').textContent = t.note;
@@ -627,18 +472,16 @@
       currentLang = 'en';
       document.getElementById('lang-en').classList.add('active');
       document.getElementById('lang-ar').classList.remove('active');
-
       applyTranslations();
-      syncButtonWidths(); /* ensure equal width after language change */
+      syncButtonWidths(); // ensure equal width after language change
     });
 
     document.getElementById('lang-ar').addEventListener('click', () => {
       currentLang = 'ar';
       document.getElementById('lang-ar').classList.add('active');
       document.getElementById('lang-en').classList.remove('active');
-
       applyTranslations();
-      syncButtonWidths(); /* ensure equal width after language change */
+      syncButtonWidths(); // ensure equal width after language change
     });
 
     applyTranslations();
@@ -647,32 +490,26 @@
       try {
         const res = await fetch(`${API_BASE}/api/churches`);
         const data = await res.json();
-
         const select = document.getElementById('church');
         select.innerHTML = '';
-
         (data.churches || []).forEach(c => {
           const opt = document.createElement('option');
           opt.value = c.id;
           opt.textContent = c.name;
           select.appendChild(opt);
         });
-
       } catch (err) {
         console.error('Failed to load churches:', err);
       }
     }
-
     loadChurches();
 
     function clearOccasionsUI() {
       const boxes = document.querySelectorAll('input[name="occasionMulti"]');
       boxes.forEach(b => { b.checked = false; });
-
       ['box-recently','box-40th','box-yearly'].forEach(id => {
         const box = document.getElementById(id);
         box.style.display = 'none';
-
         const ta = box.querySelector('textarea');
         if (ta) ta.value = '';
       });
@@ -682,9 +519,9 @@
       const val = document.querySelector('input[name="prayerType"]:checked').value;
       const isDeceased = (val === 'deceased');
 
-      document.getElementById('group-note').style.display     = isDeceased ? 'none' : '';
+      document.getElementById('group-note').style.display = isDeceased ? 'none' : '';
       document.getElementById('group-occasion').style.display = isDeceased ? '' : 'none';
-      document.getElementById('group-names').style.display    = 'none';
+      document.getElementById('group-names').style.display = 'none';
 
       document.getElementById('note').required = !isDeceased;
 
@@ -696,28 +533,20 @@
       }
     }
 
-    document
-      .querySelectorAll('input[name="prayerType"]')
-      .forEach(el => el.addEventListener('change', updateTypeUI));
-
+    document.querySelectorAll('input[name="prayerType"]').forEach(el => {
+      el.addEventListener('change', updateTypeUI);
+    });
     updateTypeUI();
 
     function bindOccasionToggle(checkboxId, boxId, textareaId) {
-      const cb  = document.getElementById(checkboxId);
+      const cb = document.getElementById(checkboxId);
       const box = document.getElementById(boxId);
       const ta  = document.getElementById(textareaId);
-
       cb.addEventListener('change', () => {
-        if (cb.checked) {
-          box.style.display = '';
-          ta.focus();
-        } else {
-          box.style.display = 'none';
-          ta.value = '';
-        }
+        if (cb.checked) { box.style.display = ''; ta.focus(); }
+        else { box.style.display = 'none'; ta.value = ''; }
       });
     }
-
     bindOccasionToggle('occ-recently','box-recently','names-recently');
     bindOccasionToggle('occ-40th','box-40th','names-40th');
     bindOccasionToggle('occ-yearly','box-yearly','names-yearly');
@@ -726,50 +555,37 @@
       const matches = text.trim().match(/\S+/g);
       return matches ? matches.length : 0;
     }
-
     function trimToMaxWords(text, max) {
       const words = text.trim().match(/\S+/g) || [];
       if (words.length <= max) return text.trim();
       return words.slice(0, max).join(' ');
     }
-
     function updateNoteCounter() {
-      const noteEl  = document.getElementById('note');
+      const noteEl = document.getElementById('note');
       const countEl = document.getElementById('note-count');
-
       const words = countWords(noteEl.value);
       const chars = noteEl.value.length;
-
       countEl.textContent = `${words} / 300 • ${chars} / 2000`;
     }
-
     const noteEl = document.getElementById('note');
-
     noteEl.addEventListener('input', () => {
       if (countWords(noteEl.value) > 300) {
         noteEl.value = trimToMaxWords(noteEl.value, 300);
       }
-
       if (noteEl.value.length > 2000) {
         noteEl.value = noteEl.value.slice(0, 2000);
       }
-
       updateNoteCounter();
     });
-
     updateNoteCounter();
 
     function withTimeout(promise, ms = 9000) {
       const controller = new AbortController();
       const t = setTimeout(() => controller.abort(), ms);
-
       return Promise.race([
         (async () => {
-          try {
-            return await promise(controller.signal);
-          } finally {
-            clearTimeout(t);
-          }
+          try { return await promise(controller.signal); }
+          finally { clearTimeout(t); }
         })()
       ]);
     }
@@ -777,308 +593,152 @@
     const translators = [
       async (text, source, target, signal) => {
         const res = await fetch('https://libretranslate.com/translate', {
-          method: 'POST',
-          signal,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            q: text,
-            source,
-            target,
-            format: 'text'
-          })
+          method: 'POST', signal,
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ q: text, source, target, format: 'text' })
         });
-
         if (!res.ok) throw new Error(`LT_main_${res.status}`);
-
         const j = await res.json();
         if (!j.translatedText) throw new Error('LT_main_no_text');
-
         return j.translatedText;
       },
-
       async (text, source, target, signal) => {
         const res = await fetch('https://translate.astian.org/translate', {
-          method: 'POST',
-          signal,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            q: text,
-            source,
-            target,
-            format: 'text'
-          })
+          method: 'POST', signal,
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ q: text, source, target, format: 'text' })
         });
-
         if (!res.ok) throw new Error(`LT_ast_${res.status}`);
-
         const j = await res.json();
         if (!j.translatedText) throw new Error('LT_ast_no_text');
-
         return j.translatedText;
       },
-
       async (text, source, target, signal) => {
         const res = await fetch('https://libretranslate.de/translate', {
-          method: 'POST',
-          signal,
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            q: text,
-            source,
-            target,
-            format: 'text'
-          })
+          method: 'POST', signal,
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ q: text, source, target, format: 'text' })
         });
-
         if (!res.ok) throw new Error(`LT_de_${res.status}`);
-
         const j = await res.json();
         if (!j.translatedText) throw new Error('LT_de_no_text');
-
         return j.translatedText;
       },
-
       async (text, source, target, signal) => {
         const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
-
-        const res = await fetch(url, {
-          signal,
-          headers: { 'Accept': 'application/json' }
-        });
-
+        const res = await fetch(url, { signal, headers: { 'Accept': 'application/json' } });
         if (!res.ok) throw new Error(`MM_${res.status}`);
-
         const j = await res.json();
         const out = j?.responseData?.translatedText;
-
         if (!out) throw new Error('MM_no_text');
-
         return out;
       }
     ];
 
     async function translateText(text, source, target) {
       const errors = [];
-
       for (const fn of translators) {
         try {
-          const result = await withTimeout(
-            (signal) => fn(text, source, target, signal),
-            9000
-          );
+          const result = await withTimeout((signal) => fn(text, source, target, signal), 9000);
           return result;
-
         } catch (e) {
           errors.push(e?.message || String(e));
         }
       }
-
       throw new Error('all_providers_failed: ' + errors.join(' | '));
     }
 
-    function looksArabic(text) {
-      return /[\u0600-\u06FF]/.test(text);
-    }
+    function looksArabic(text) { return /[\u0600-\u06FF]/.test(text); }
 
-    const translateBtn    = document.getElementById('translateBtn');
+    const translateBtn = document.getElementById('translateBtn');
     const translateStatus = document.getElementById('translate-status');
 
     async function handleTranslateClick() {
-      const t  = translations[currentLang];
+      const t = translations[currentLang];
       const ta = document.getElementById('note');
       const val = (ta.value || '').trim();
 
       translateStatus.textContent = '';
-
-      if (!val) {
-        translateStatus.textContent = t.translateErrEmpty;
-        return;
-      }
+      if (!val) { translateStatus.textContent = t.translateErrEmpty; return; }
 
       const fromIsArabic = looksArabic(val);
       const source = fromIsArabic ? 'ar' : 'en';
       const target = fromIsArabic ? 'en' : 'ar';
 
-      translateBtn.disabled = true;
+      /* unlock width while translating */
+      translateBtn.classList.add('busy');
+      translateBtn.setAttribute('aria-busy', 'true');
 
+      translateBtn.disabled = true;
       const oldBtnText = translateBtn.textContent;
       translateBtn.textContent = t.translating;
 
       try {
         let out = await translateText(val, source, target);
-
-        if (countWords(out) > 300)  out = trimToMaxWords(out, 300);
-        if (out.length > 2000)      out = out.slice(0, 2000);
-
+        if (countWords(out) > 300) out = trimToMaxWords(out, 300);
+        if (out.length > 2000) out = out.slice(0, 2000);
         ta.value = out;
         updateNoteCounter();
-
         ta.setAttribute('dir', target === 'ar' ? 'rtl' : 'ltr');
-        translateStatus.textContent = (target === 'ar') ? t.translatedToAr : t.translatedToEn;
-
+        translateStatus.textContent = target === 'ar' ? t.translatedToAr : t.translatedToEn;
       } catch (e) {
         console.error(e);
         translateStatus.textContent = `${t.translateErrGeneric} (${e.message || 'error'})`;
-
       } finally {
+        /* relock: restore label, states, and equal widths */
         translateBtn.disabled = false;
         translateBtn.textContent = oldBtnText;
-
-        /* keep Translate/Submit widths locked after text toggle */
-        syncButtonWidths();
+        translateBtn.classList.remove('busy');
+        translateBtn.removeAttribute('aria-busy');
+        syncButtonWidths(); // keep widths locked after text toggle
       }
     }
-
     translateBtn.addEventListener('click', handleTranslateClick);
 
-    /* ====== Make Translate and Submit the same width (no visual size change) ====== */
+    // ====== Make Translate and Submit the same width (no visual size change) ======
     function syncButtonWidths() {
       const tBtn = document.getElementById('translateBtn');
       const sBtn = document.getElementById('submitBtn');
-
       if (!tBtn || !sBtn) return;
 
-      /* Clear previous locks to measure natural size */
-      tBtn.style.width    = '';
+      // If translate is busy, don't force width; let it grow.
+      if (tBtn.classList.contains('busy')) return;
+
+      // Clear previous locks to measure natural size
+      tBtn.style.width = '';
       tBtn.style.minWidth = '';
       tBtn.style.maxWidth = '';
-
-      sBtn.style.width    = '';
+      sBtn.style.width = '';
       sBtn.style.minWidth = '';
       sBtn.style.maxWidth = '';
 
-      /* Wait for layout (important after language/dir changes) */
+      // Wait for layout (important after language/dir changes)
       requestAnimationFrame(() => {
         const tW = tBtn.offsetWidth;
         const sW = sBtn.offsetWidth;
-
         const maxW = Math.max(tW, sW);
         const w = maxW + 'px';
 
-        tBtn.style.width    = w;
+        tBtn.style.width = w;
         tBtn.style.minWidth = w;
         tBtn.style.maxWidth = w;
 
-        sBtn.style.width    = w;
+        sBtn.style.width = w;
         sBtn.style.minWidth = w;
         sBtn.style.maxWidth = w;
       });
     }
 
-    /* Initial lock after first translations applied */
+    // Initial lock after first translations applied
     document.addEventListener('DOMContentLoaded', () => {
       syncButtonWidths();
     });
 
-    /* Re-sync on resize (debounced) */
+    // Re-sync on resize (debounced)
     let _sbwTimer;
     window.addEventListener('resize', () => {
       clearTimeout(_sbwTimer);
       _sbwTimer = setTimeout(syncButtonWidths, 120);
-    });
-
-    /* Submit handler (same logic, readable formatting) */
-    document.getElementById('prayerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const statusOk  = document.getElementById('status-ok');
-      const statusErr = document.getElementById('status-error');
-
-      statusOk.style.display  = 'none';
-      statusErr.style.display = 'none';
-
-      const churchId   = document.getElementById('church').value;
-      const name       = document.getElementById('name').value.trim();
-      const prayerType = document.querySelector('input[name="prayerType"]:checked').value;
-      const note       = document.getElementById('note').value.trim();
-
-      const deceased = [];
-
-      const addIfChecked = (cbId, type, taId) => {
-        const cb = document.getElementById(cbId);
-        if (cb.checked) {
-          const names = document.getElementById(taId).value.trim();
-          deceased.push({ type, names });
-        }
-      };
-
-      addIfChecked('occ-recently', 'recently', 'names-recently');
-      addIfChecked('occ-40th', '40th', 'names-40th');
-      addIfChecked('occ-yearly', 'yearly', 'names-yearly');
-
-      if (!churchId) {
-        statusErr.textContent = translations[currentLang].err;
-        statusErr.style.display = 'block';
-        return;
-      }
-
-      if (prayerType === 'note') {
-        if (!note) {
-          statusErr.textContent = translations[currentLang].err;
-          statusErr.style.display = 'block';
-          return;
-        }
-
-        if (countWords(note) > 300 || note.length > 2000) {
-          statusErr.textContent = translations[currentLang].overLimit;
-          statusErr.style.display = 'block';
-          return;
-        }
-      }
-
-      if (prayerType === 'deceased') {
-        if (deceased.length === 0 || deceased.some(d => !d.names)) {
-          statusErr.textContent = translations[currentLang].needOccasion;
-          statusErr.style.display = 'block';
-          return;
-        }
-      }
-
-      const payload = {
-        churchId,
-        name: name || 'Anonymous',
-        note: (prayerType === 'note') ? note : '',
-        prayerType,
-        deceased,
-        lang: currentLang
-      };
-
-      try {
-        const res = await fetch(`${API_BASE}/submit-prayer`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-          document.getElementById('prayerForm').reset();
-
-          updateTypeUI();
-          updateNoteCounter();
-          document.getElementById('translate-status').textContent = '';
-
-          statusOk.textContent = translations[currentLang].ok;
-          statusOk.style.display = 'block';
-
-        } else {
-          const j = await res.json().catch(() => ({}));
-          statusErr.textContent = j.error || translations[currentLang].err;
-          statusErr.style.display = 'block';
-        }
-
-      } catch (err) {
-        statusErr.textContent = translations[currentLang].err;
-        statusErr.style.display = 'block';
-      }
     });
   </script>
 </body>
