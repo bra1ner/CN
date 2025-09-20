@@ -200,7 +200,7 @@
 
     .translate-row {
       display: flex;
-      align-items: center;
+      align-items: stretch;   /* stretch to keep equal height */
       justify-content: space-between;
       gap: 8px;
       margin-top: 8px;
@@ -346,12 +346,11 @@
 
   <!-- NEW: Social buttons row under the card (stays within card margins) -->
   <div class="social-row" aria-label="Social links">
-    <!-- Replace # with your links and the span with <img src="assets/your-icon.svg" alt="Facebook"> etc. -->
-    <a class="social-btn" href="https://instagram.com/copticnote" aria-label="Instagram"><img src="social/instagram.png"</a>
-    <a class="social-btn" href="https://discord.gg/q3mUGvSeem" aria-label="Discord"><img src="social/discord.png"</a>
-    <a class="social-btn" href="https://www.linkedin.com/company/coptic-note/" aria-label="LinkedIn"><img src="social/in.png"</a>
-    <a class="social-btn" href="https://x.com/CopticNote" aria-label="X / Twitter"><img src="social/x.png"</a>
-    <a class="social-btn" href="https://facebook.com/CopticNote" aria-label="Facebook"><img src="social/facebook.png"/></a>
+    <a class="social-btn" href="https://instagram.com/copticnote" aria-label="Instagram"><img src="social/instagram.png" alt="Instagram"></a>
+    <a class="social-btn" href="https://discord.gg/q3mUGvSeem" aria-label="Discord"><img src="social/discord.png" alt="Discord"></a>
+    <a class="social-btn" href="https://www.linkedin.com/company/coptic-note/" aria-label="LinkedIn"><img src="social/in.png" alt="LinkedIn"></a>
+    <a class="social-btn" href="https://x.com/CopticNote" aria-label="X / Twitter"><img src="social/x.png" alt="X/Twitter"></a>
+    <a class="social-btn" href="https://facebook.com/CopticNote" aria-label="Facebook"><img src="social/facebook.png" alt="Facebook"></a>
   </div>
 
   <script>
@@ -464,6 +463,7 @@
       document.getElementById('lang-en').classList.add('active');
       document.getElementById('lang-ar').classList.remove('active');
       applyTranslations();
+      syncButtonWidths(); // ensure equal width after language change
     });
 
     document.getElementById('lang-ar').addEventListener('click', () => {
@@ -471,6 +471,7 @@
       document.getElementById('lang-ar').classList.add('active');
       document.getElementById('lang-en').classList.remove('active');
       applyTranslations();
+      syncButtonWidths(); // ensure equal width after language change
     });
 
     applyTranslations();
@@ -672,94 +673,52 @@
       } finally {
         translateBtn.disabled = false;
         translateBtn.textContent = oldBtnText;
+        syncButtonWidths(); // keep widths locked after text toggle
       }
     }
     translateBtn.addEventListener('click', handleTranslateClick);
 
-    document.getElementById('prayerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    // ====== Make Translate and Submit the same width (no visual size change) ======
+    function syncButtonWidths() {
+      const tBtn = document.getElementById('translateBtn');
+      const sBtn = document.getElementById('submitBtn');
+      if (!tBtn || !sBtn) return;
 
-      const statusOk = document.getElementById('status-ok');
-      const statusErr = document.getElementById('status-error');
-      statusOk.style.display = 'none';
-      statusErr.style.display = 'none';
+      // Clear previous locks to measure natural size
+      tBtn.style.width = '';
+      tBtn.style.minWidth = '';
+      tBtn.style.maxWidth = '';
+      sBtn.style.width = '';
+      sBtn.style.minWidth = '';
+      sBtn.style.maxWidth = '';
 
-      const churchId = document.getElementById('church').value;
-      const name = document.getElementById('name').value.trim();
-      const prayerType = document.querySelector('input[name="prayerType"]:checked').value;
-      const note = document.getElementById('note').value.trim();
+      // Wait for layout (important after language/dir changes)
+      requestAnimationFrame(() => {
+        const tW = tBtn.offsetWidth;
+        const sW = sBtn.offsetWidth;
+        const maxW = Math.max(tW, sW);
+        const w = maxW + 'px';
 
-      const deceased = [];
-      const addIfChecked = (cbId, type, taId) => {
-        const cb = document.getElementById(cbId);
-        if (cb.checked) {
-          const names = document.getElementById(taId).value.trim();
-          deceased.push({ type, names });
-        }
-      };
-      addIfChecked('occ-recently', 'recently', 'names-recently');
-      addIfChecked('occ-40th', '40th', 'names-40th');
-      addIfChecked('occ-yearly', 'yearly', 'names-yearly');
+        tBtn.style.width = w;
+        tBtn.style.minWidth = w;
+        tBtn.style.maxWidth = w;
 
-      if (!churchId) {
-        statusErr.textContent = translations[currentLang].err;
-        statusErr.style.display = 'block';
-        return;
-      }
+        sBtn.style.width = w;
+        sBtn.style.minWidth = w;
+        sBtn.style.maxWidth = w;
+      });
+    }
 
-      if (prayerType === 'note') {
-        if (!note) {
-          statusErr.textContent = translations[currentLang].err;
-          statusErr.style.display = 'block';
-          return;
-        }
-        if (countWords(note) > 300 || note.length > 2000) {
-          statusErr.textContent = translations[currentLang].overLimit;
-          statusErr.style.display = 'block';
-          return;
-        }
-      }
+    // Initial lock after first translations applied
+    document.addEventListener('DOMContentLoaded', () => {
+      syncButtonWidths();
+    });
 
-      if (prayerType === 'deceased') {
-        if (deceased.length === 0 || deceased.some(d => !d.names)) {
-          statusErr.textContent = translations[currentLang].needOccasion;
-          statusErr.style.display = 'block';
-          return;
-        }
-      }
-
-      const payload = {
-        churchId,
-        name: name || 'Anonymous',
-        note: prayerType === 'note' ? note : '',
-        prayerType,
-        deceased,
-        lang: currentLang
-      };
-
-      try {
-        const res = await fetch(`${API_BASE}/submit-prayer`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-          document.getElementById('prayerForm').reset();
-          updateTypeUI();
-          updateNoteCounter();
-          translateStatus.textContent = '';
-          statusOk.textContent = translations[currentLang].ok;
-          statusOk.style.display = 'block';
-        } else {
-          const j = await res.json().catch(() => ({}));
-          statusErr.textContent = j.error || translations[currentLang].err;
-          statusErr.style.display = 'block';
-        }
-      } catch (err) {
-        statusErr.textContent = translations[currentLang].err;
-        statusErr.style.display = 'block';
-      }
+    // Re-sync on resize (debounced)
+    let _sbwTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(_sbwTimer);
+      _sbwTimer = setTimeout(syncButtonWidths, 120);
     });
   </script>
 </body>
