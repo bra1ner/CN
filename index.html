@@ -107,7 +107,7 @@
     select:focus,
     input[type="text"]:focus,
     textarea:focus {
-      border-color: var(--accent);
+      border-color: var(--gold);
       box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
@@ -152,7 +152,10 @@
       cursor: pointer;
       transition: background-color 0.15s ease;
     }
-    button:hover { background: var(--accent-light); }
+    button:hover {
+      background: var(--accent-light);
+      box-shadow: 0 0 8px var(--gold);
+    }
 
     /* === Language switch === */
     .lang-switch {
