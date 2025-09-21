@@ -352,6 +352,49 @@
           max-width: 640px;
         }
       }
+      
+      /* === PRINT THEMES === */
+      @media print {
+        html, body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        /* Only print our composed slip */
+        .no-print { display: none !important; }
+        #print-slip { display: block !important; }
+
+        /* Receipt width helper (adjust if your printer expects 80mm/58mm) */
+        .print-sheet {
+          width: 80mm;
+          padding: 6mm;
+          box-sizing: border-box;
+          font-family: "Noto Sans", Arial, sans-serif;
+          line-height: 1.25;
+          font-size: 12pt;
+        }
+        /* Prayer Note: white bg, black text */
+        .print--note {
+          background: #fff !important;
+          color: #000 !important;
+        }
+
+        }
+        .print--note * {
+          background: transparent !important;
+          color: inherit !important;
+          box-shadow: none !important;
+        }
+        /* Commemoration: black bg, white text */
+        .print--commemoration {
+          background: #000 !important;
+          color: #fff !important;
+        }
+        .print--commemoration * {
+          background: transparent !important;
+          color: inherit !important;
+          box-shadow: none !important;
+        }
+      }
     </style>
   </head>
   <body>
@@ -558,6 +601,10 @@
         rel="noopener noreferrer"
         ><img src="social/facebook.png" alt="Facebook"
       /></a>
+    </div>
+    <!-- Hidden container we populate and print -->
+    <div id="print-slip" style="display:none">
+  <!-- content filled by JS, then window.print() -->
     </div>
 
     <script>
