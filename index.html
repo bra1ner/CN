@@ -845,6 +845,88 @@
         countEl.textContent = `${words} / 300 • ${chars} / 2000`;
       }
 
+        // ===== Anti-spam / gibberish detection =====
+      function hasLongRepeat(str) {
+        // e.g., "mmmm", "aaaaa", "........"
+        return /(.)(\1){3,}/u.test(str);
+      }
+
+      function ratioNonAlnum(str) {
+        const total = str.length || 1;
+        const non = (str.match(/[^ \p{L}\p{N}\n]/gu) || []).length;
+        return non / total;
+      }
+
+      function latinVowelRatio(str) {
+        const latin = (str.match(/[A-Za-z]/g) || []).length;
+        if (!latin) return 1; // not latin -> skip this heuristic
+        const vowels = (str.match(/[AEIOUYaeiouy]/g) || []).length;
+        return vowels / latin;
+      }
+
+      function looksMostlyNumbers(str) {
+        const digits = (str.match(/\d/g) || []).length;
+        const letters = (str.match(/\p{L}/gu) || []).length;
+        return digits > letters && digits >= 3; // numbers dominate
+      }
+
+      function tooManyShortTokens(str) {
+        // Many 1–2 char “words” tends to be mash
+        const tokens = (str.trim().match(/\S+/g) || []);
+        if (tokens.length < 4) return false;
+        const short = tokens.filter(w => w.length <= 2).length;
+        return short / tokens.length > 0.6;
+      }
+
+      function isLikelyGibberish(str) {
+        const s = (str || "").trim();
+
+        if (!s) return false;             // empty handled elsewhere
+        if (s.length < 3) return true;    // too short to be meaningful
+
+        // Hard fails
+        if (hasLongRepeat(s)) return true;
+        if (ratioNonAlnum(s) > 0.35) return true; // too much punctuation/symbols
+        if (looksMostlyNumbers(s)) return true;
+        if (tooManyShortTokens(s)) return true;
+
+        // For Latin text, extremely low vowel ratio suggests gibberish
+        if (latinVowelRatio(s) < 0.18) return true;
+
+        return false;
+      }
+
+      // Validate a free-text prayer note
+      function validateNoteContent(str, t) {
+        if (isLikelyGibberish(str)) {
+          return t.invalidGibberish;
+        }
+        return null;
+      }
+
+      // Validate a "names" textarea (allow commas and new lines)
+      function validateNamesContent(str, t) {
+        const s = (str || "").trim();
+        if (!s) return t.invalidNamesFormat;
+
+        // Split by commas or new lines into candidate names
+        const parts = s.split(/[\n,]+/).map(x => x.trim()).filter(Boolean);
+        if (!parts.length) return t.invalidNamesFormat;
+
+        // Each name: mostly letters (Latin/Arabic), few digits/symbols, not repeated chars
+        for (const name of parts) {
+          const letters = (name.match(/\p{L}/gu) || []).length;
+          const digits = (name.match(/\d/g) || []).length;
+          if (letters < 2) return t.invalidNamesFormat;
+          if (digits > 0) return t.invalidNamesFormat;
+          if (hasLongRepeat(name)) return t.invalidNamesFormat;
+          if (ratioNonAlnum(name) > 0.25) return t.invalidNamesFormat;
+        }
+        return null;
+      }
+
+
+      
       const noteEl = document.getElementById("note");
       noteEl.addEventListener("input", () => {
         if (countWords(noteEl.value) > 300) {
