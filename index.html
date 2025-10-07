@@ -1180,6 +1180,13 @@
               statusErr.style.display = "block";
               return;
             }
+            // Anti-gibberish for prayer Note
+            const gibErr = validateNoteContent(note, translations[currentLang]);
+            if (gibErr) {
+              statusErr.textContent = gibErr;
+              statusErr.style.display = "block";
+              return;
+            }
             if (countWords(note) > 300 || note.length > 2000) {
               statusErr.textContent = translations[currentLang].overLimit;
               statusErr.style.display = "block";
@@ -1193,7 +1200,16 @@
               statusErr.style.display = "block";
               return;
             }
-          }
+
+            for (const d of deceased) {
+              const nmErr = validateNamesContent(d.names, translations[currentLang]);
+              if (nmErr) {
+                statusErr.textContent = nmErr;
+                statusErr.style.display = "block";
+                return;
+              }
+            }
+          } 
 
           const payload = {
             churchId,
