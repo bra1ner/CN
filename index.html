@@ -939,6 +939,38 @@
       });
       updateNoteCounter();
 
+      // Live warn on Prayer Note
+      document.getElementById("note").addEventListener("blur", () => {
+        const t = translations[currentLang];
+        const val = document.getElementById("note").value;
+        const err = validateNoteContent(val, t);
+        const statusErr = document.getElementById("status-error");
+        if (err) {
+          statusErr.textContent = err;
+          statusErr.style.display = "block";
+        } else {
+          statusErr.style.display = "none";
+        }
+      });
+
+      // Live warn on Names textareas (recently/40th/yearly)
+      ["names-recently", "names-40th", "names-yearly"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("blur", () => {
+          const t = translations[currentLang];
+          const err = validateNamesContent(el.value, t);
+          const statusErr = document.getElementById("status-error");
+          if (err) {
+            statusErr.textContent = err;
+            statusErr.style.display = "block";
+          } else {
+            statusErr.style.display = "none";
+          }
+        });
+      });
+
+
       function withTimeout(promise, ms = 9000) {
         const controller = new AbortController();
         const t = setTimeout(() => controller.abort(), ms);
