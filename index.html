@@ -1,0 +1,1323 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coptic Note – Prayer Request</title>
+    <meta
+      name="description"
+      content="Submit a private prayer note or a memorial prayer for the deceased. Choose your church and your request will automatically print at that location."
+    />
+    <link rel="icon" type="image/svg+xml" href="assets/fav1con.svg" />
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-RJ9ZRC3PW3");
+    </script>
+
+    <style>
+      /* Root colour palette: white background with dark red accents */
+      :root {
+        --bg: #faf7f2;
+        --paper: #ffffff;
+        --border: #e2e2e0;
+        --text: #2a2a2a;
+        --muted: #6c6c6b;
+        --accent: #800000;
+        --accent-light: #a52a2a;
+        --gold: #c8a951; /* gold accent */
+        --focus-ring: rgba(200, 169, 81, 0.3); /* gold highlight */
+
+        /* Spacing + radius */
+        --field-pad: 14px;
+        --field-radius: 12px;
+
+        /* Responsive helpers */
+        --page-pad: clamp(12px, 2.5vw, 28px);
+        --card-pad: clamp(16px, 3vw, 28px);
+        --btn-pad-y: clamp(10px, 1.8vh, 14px);
+        --btn-pad-x: clamp(14px, 3vw, 22px);
+        --control-font: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
+        --h1-size: clamp(1.25rem, 1.05rem + 1.2vw, 1.6rem);
+        --note-size: clamp(0.82rem, 0.78rem + 0.2vw, 0.9rem);
+        --social-size: clamp(48px, 7vw, 64px);
+        --social-icon: clamp(22px, 3.2vw, 28px);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: var(--page-pad); /* responsive page padding */
+        font-family: "Noto Sans", Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+        flex-direction: column; /* so the social row sits under the card */
+        gap: 12px; /* space between card and social buttons */
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        width: 100%;
+        max-width: 600px; /* keeps a readable line-length */
+        padding: var(--card-pad); /* responsive inner padding */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-inline: auto; /* keep centered */
+      }
+
+      /* ===== Header ===== */
+      .header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 16px;
+        text-align: center;
+      }
+
+      .header img {
+        height: clamp(40px, 6vw, 52px);
+        width: auto;
+        display: block;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: var(--h1-size); /* fluid headline */
+        font-weight: 700;
+        color: var(--accent);
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: clamp(14px, 2.2vw, 20px);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: var(--accent);
+        font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
+      }
+
+      select,
+      input[type="text"],
+      textarea {
+        display: block;
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: var(--field-radius);
+        background: #fff;
+        padding-block: clamp(10px, 1.8vh, 12px);
+        padding-inline: var(--field-pad);
+        font-size: var(--control-font); /* fluid control font size */
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      select:focus,
+      input[type="text"]:focus,
+      textarea:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+      }
+
+      /* Custom arrow for select */
+      select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%237d1a1a' d='M4 6l4 4 4-4z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px 16px;
+        padding-right: calc(var(--field-pad) + 24px);
+      }
+
+      html[dir="rtl"] select {
+        background-position: left 12px center;
+        padding-left: calc(var(--field-pad) + 24px);
+        padding-right: var(--field-pad);
+      }
+
+      /* Responsive textarea height */
+      textarea {
+        min-height: clamp(140px, 24vh, 260px);
+        resize: vertical;
+      }
+
+      .radio-group {
+        display: flex;
+        gap: clamp(12px, 2.3vw, 18px);
+        flex-wrap: wrap;
+      }
+
+      .radio-group label {
+        font-weight: normal;
+        color: var(--text);
+      }
+
+      .note {
+        font-size: var(--note-size); /* fluid small text */
+        color: var(--muted);
+      }
+
+      button {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: var(--btn-pad-y) var(--btn-pad-x); /* bigger tap targets on small screens */
+        font-size: var(--control-font);
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button:hover {
+        background: var(--accent-light);
+        box-shadow: 0 0 8px var(--gold);
+      }
+
+      /* === Language switch === */
+      .lang-switch {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(8px, 1.8vw, 12px);
+        margin: 0 0 18px;
+        width: 100%;
+      }
+
+      .lang-switch {
+        direction: ltr;
+      }
+
+      #lang-en {
+        order: 0;
+      }
+
+      #lang-ar {
+        order: 1;
+      }
+
+      .lang-switch button {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: var(--control-font);
+        line-height: 1;
+        min-width: 110px;
+        flex: 0 0 auto;
+      }
+
+      .lang-switch button.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      .status-message {
+        margin-top: 12px;
+        font-weight: 600;
+      }
+
+      .status-ok {
+        color: #1d8e53;
+      }
+
+      .status-error {
+        color: #b12b2b;
+      }
+
+      .field-helper {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .translate-row {
+        display: flex;
+        align-items: stretch; /* stretch to keep equal height */
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .translate-btn {
+        background: #d3d3d3;
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: var(--control-font);
+        line-height: 1;
+        cursor: pointer;
+        white-space: nowrap; /* keep label on one line */
+      }
+
+      .translate-btn:hover {
+        background: #f8f8f8;
+      }
+
+      /* while busy, allow the Translate button to grow naturally */
+      .translate-btn.busy {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+      }
+
+      /* === Social buttons strip UNDER the card === */
+      .social-row {
+        width: 100%;
+        max-width: 600px; /* match .card */
+        margin: 0 auto; /* center under card */
+        display: flex;
+        justify-content: center; /* keep them centered */
+        gap: 12px;
+        flex-wrap: wrap; /* wrap on narrow screens */
+      }
+
+      .social-btn {
+        width: var(--social-size);
+        height: var(--social-size);
+        background: #ffffff; /* little white squares */
+        border: 1px solid var(--border);
+        border-radius: 14px; /* rounded */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        user-select: none;
+        transition: box-shadow 0.15s ease, transform 0.15s ease,
+          border-color 0.15s ease;
+      }
+
+      .social-btn:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+        transform: translateY(-1px);
+      }
+
+      .social-btn img {
+        width: var(--social-icon);
+        height: var(--social-icon);
+        display: block;
+      }
+
+      .social-btn span {
+        font-size: 22px;
+        line-height: 1;
+        color: var(--muted);
+      }
+
+      /* --- Extra polish for very narrow devices --- */
+      @media (max-width: 360px) {
+        .field-helper {
+          flex-direction: column;
+          gap: 4px;
+        }
+        .lang-switch button {
+          min-width: 96px;
+        }
+      }
+
+      /* --- Roomy desktops: let the card breathe slightly more if you like --- */
+      @media (min-width: 1100px) {
+        .card {
+          max-width: 640px;
+        }
+      }
+      
+      /* === PRINT THEMES === */
+      @media print {
+        html, body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        /* Only print our composed slip */
+        .no-print { display: none !important; }
+        #print-slip { display: block !important; }
+
+        /* Receipt width helper (adjust if your printer expects 80mm/58mm) */
+        .print-sheet {
+          width: 80mm;
+          padding: 6mm;
+          box-sizing: border-box;
+          font-family: "Noto Sans", Arial, sans-serif;
+          line-height: 1.25;
+          font-size: 12pt;
+        }
+        /* Prayer Note: white bg, black text */
+        .print--note {
+          background: #fff !important;
+          color: #000 !important;
+        }
+
+        }
+        .print--note * {
+          background: transparent !important;
+          color: inherit !important;
+          box-shadow: none !important;
+        }
+        /* Commemoration: black bg, white text */
+        .print--commemoration {
+          background: #000 !important;
+          color: #fff !important;
+        }
+        .print--commemoration * {
+          background: transparent !important;
+          color: inherit !important;
+          box-shadow: none !important;
+        }
+      /* Copyright (c) 2025 Moheb Mikhael / Coptic Note
+         All rights reserved. Unauthorized copying or redistribution prohibited.*/
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="header">
+        <img src="assets/logo-coptic-note.svg" alt="Coptic Note logo" />
+        <h1>Coptic Note</h1>
+        <div style="width: 60px; height: 2px; background: var(--gold)"></div>
+      </div>
+
+      <!-- Language switch -->
+      <div class="lang-switch">
+        <button type="button" id="lang-en" class="active">English</button>
+        <button type="button" id="lang-ar">العربية</button>
+      </div>
+
+      <form id="prayerForm" novalidate>
+        <div class="form-group">
+          <label for="church" id="lbl-church">Choose Church</label>
+          <select id="church" name="church" required aria-required="true"></select>
+          <div class="note" id="help-church"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="name" id="lbl-name">Name (optional)</label>
+          <input type="text" id="name" name="name" placeholder="Anonymous" />
+        </div>
+
+        <div class="form-group">
+          <label id="lbl-prayerType">Prayer Type</label>
+          <div class="radio-group" id="prayerType-group">
+            <label>
+              <input type="radio" name="prayerType" value="note" checked />
+              <span id="lbl-type-note">Prayer Note</span>
+            </label>
+            <label>
+              <input type="radio" name="prayerType" value="deceased" />
+              <span id="lbl-type-deceased">Commemoration</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Remembrance and per-option names -->
+        <div class="form-group" id="group-occasion" style="display: none">
+          <label id="lbl-occasion">Remembrance</label>
+          <div class="radio-group">
+            <label>
+              <input
+                type="checkbox"
+                name="occasionMulti"
+                value="recently"
+                id="occ-recently"
+              />
+              <span id="lbl-occasion-recently">Recently</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                name="occasionMulti"
+                value="40th"
+                id="occ-40th"
+              />
+              <span id="lbl-occasion-40">40th Day</span>
+            </label>
+            <label>
+              <input
+                type="checkbox"
+                name="occasionMulti"
+                value="yearly"
+                id="occ-yearly"
+              />
+              <span id="lbl-occasion-yearly">Yearly</span>
+            </label>
+          </div>
+
+          <div
+            class="form-group"
+            id="box-recently"
+            style="display: none; margin-top: 10px"
+          >
+            <label for="names-recently" id="lbl-names-recently"
+              >Names (Recently)</label
+            >
+            <textarea
+              id="names-recently"
+              name="names_recently"
+              placeholder="Enter names"
+            ></textarea>
+          </div>
+
+          <div
+            class="form-group"
+            id="box-40th"
+            style="display: none; margin-top: 10px"
+          >
+            <label for="names-40th" id="lbl-names-40th">Names (40th Day)</label>
+            <textarea
+              id="names-40th"
+              name="names_40th_day"
+              placeholder="Enter names"
+            ></textarea>
+          </div>
+
+          <div
+            class="form-group"
+            id="box-yearly"
+            style="display: none; margin-top: 10px"
+          >
+            <label for="names-yearly" id="lbl-names-yearly">Names (Yearly)</label>
+            <textarea
+              id="names-yearly"
+              name="names_yearly"
+              placeholder="Enter names"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="form-group" id="group-names" style="display: none">
+          <label for="deceasedNames" id="lbl-names">Names</label>
+          <textarea
+            id="deceasedNames"
+            name="deceasedNames"
+            placeholder="Enter names"
+          ></textarea>
+        </div>
+
+        <div class="form-group" id="group-note">
+          <label for="note" id="lbl-note">Prayer Note</label>
+          <textarea
+            id="note"
+            name="note"
+            placeholder="Write your prayer here… اكتب صلاتك هنا…"
+            maxlength="2000"
+          ></textarea>
+          <div class="field-helper">
+            <div class="note" id="note-hint">
+              Max 300 words • 2000 characters.
+            </div>
+            <div class="note" id="note-count">0 / 300 • 0 / 2000</div>
+          </div>
+
+          <div class="translate-row">
+            <button type="button" id="translateBtn" class="translate-btn">
+              Translate
+            </button>
+            <div class="note" id="translate-status"></div>
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn">Submit</button>
+
+        <div
+          class="status-message status-ok"
+          id="status-ok"
+          style="display: none"
+        ></div>
+        <div
+          class="status-message status-error"
+          id="status-error"
+          style="display: none"
+        ></div>
+      </form>
+    </div>
+
+    <!-- Social buttons row under the card -->
+    <div class="social-row" aria-label="Social links">
+      <a
+        class="social-btn"
+        href="https://instagram.com/copticnote"
+        aria-label="Instagram"
+        target="_blank"
+        rel="noopener noreferrer"
+        ><img src="social/instagram.png" alt="Instagram"
+      /></a>
+      <a
+        class="social-btn"
+        href="https://discord.gg/7fxRTfNdC2"
+        aria-label="Discord"
+        target="_blank"
+        rel="noopener noreferrer"
+        ><img src="social/discord.png" alt="Discord"
+      /></a>
+      <a
+        class="social-btn"
+        href="https://www.linkedin.com/company/coptic-note/"
+        aria-label="LinkedIn"
+        target="_blank"
+        rel="noopener noreferrer"
+        ><img src="social/in.png" alt="LinkedIn"
+      /></a>
+      <a
+        class="social-btn"
+        href="https://x.com/CopticNote"
+        aria-label="X / Twitter"
+        target="_blank"
+        rel="noopener noreferrer"
+        ><img src="social/x.png" alt="X/Twitter"
+      /></a>
+      <a
+        class="social-btn"
+        href="https://facebook.com/CopticNote"
+        aria-label="Facebook"
+        target="_blank"
+        rel="noopener noreferrer"
+        ><img src="social/facebook.png" alt="Facebook"
+      /></a>
+    </div>
+    <!-- Hidden container we populate and print -->
+    <div id="print-slip" style="display:none">
+  <!-- content filled by JS, then window.print() -->
+    </div>
+
+    <script>
+      const API_BASE = "https://api.copticnote.com";
+
+      const translations = {
+        en: {
+          church: "Choose Church",
+          helpChurch:
+            "Select your parish so the note prints in the right place.",
+          name: "Name (optional)",
+          type: "Prayer Type",
+          typeNote: "Prayer Note",
+          typeDeceased: "Commemoration",
+          occasion: "Remembrance",
+          occasionRecently: "Recently",
+          occasion40: "40th Day",
+          occasionYearly: "Annually",
+          names: "Names",
+          namesRecently: "Names (Recently)",
+          names40: "Names (40th Day)",
+          namesYearly: "Names (Annually)",
+          note: "Prayer Note",
+          placeholderNames: "Enter names",
+          placeholderNote: "Write your prayer here… اكتب صلاتك هنا…",
+          submit: "Submit",
+          ok: "Your request has been received.",
+          err: "There was a problem. Please try again.",
+          noteHint: "Max 300 words • 2000 characters.",
+          overLimit:
+            "Prayer Note must be 300 words or fewer and 2000 characters or fewer.",
+          needOccasion:
+            "Please choose at least one remembrance and enter names for each.",
+          translateBtn: "Translate",
+          translating: "Translating…",
+          translateErrEmpty: "Write something to translate.",
+          translateErrGeneric: "Translation failed. Please try again.",
+          translatedToAr: "Translated to Arabic.",
+          translatedToEn: "Translated to English.",
+          invalidGibberish: "Please write meaningful text (avoid repeated letters, random symbols, or gibberish).",
+          invalidNamesFormat: "Please enter valid names (letters only, avoid random symbols or numbers).",
+        },
+        ar: {
+          church: "اختر الكنيسة",
+          helpChurch: "اختر كنيستك لضمان طباعة الطلب في المكان الصحيح.",
+          name: "الاسم (اختياري)",
+          type: "نوع الطلب",
+          typeNote: "طلب صلاة",
+          typeDeceased: "صلاة الترحيم",
+          occasion: "الذكرى",
+          occasionRecently: "حديثًا",
+          occasion40: "الأربعين",
+          occasionYearly: "السنوية",
+          names: "الأسماء",
+          namesRecently: "الأسماء (حديثًا)",
+          names40: "الأسماء (الأربعين)",
+          namesYearly: "الأسماء (السنوية)",
+          note: "نص الصلاة",
+          placeholderNames: "اكتب الأسماء",
+          placeholderNote: "اكتب صلاتك هنا…",
+          submit: "إرسال",
+          ok: "تم استلام طلبك.",
+          err: "حدث خطأ، يرجى المحاولة مرة أخرى.",
+          noteHint: "الحد الأقصى ٣٠٠ كلمة • ٢٠٠٠ حرف.",
+          overLimit: "يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.",
+          needOccasion:
+            "يرجى اختيار مناسبة واحدة على الأقل وكتابة الأسماء لكل منها.",
+          translateBtn: "ترجمة",
+          translating: "جارٍ الترجمة…",
+          translateErrEmpty: "اكتب ما تريد ترجمته أولًا.",
+          translateErrGeneric: "فشلت الترجمة. حاول مرة أخرى.",
+          translatedToAr: "تمت الترجمة إلى العربية.",
+          translatedToEn: "تمت الترجمة إلى الإنجليزية.",
+          invalidGibberish: "يرجى كتابة نص مفهوم (بدون تكرار حروف أو رموز عشوائية).",
+          invalidNamesFormat: "يرجى إدخال أسماء صحيحة (حروف فقط وبدون رموز أو أرقام عشوائية).",
+        },
+      };
+
+      let currentLang = "en";
+
+      function applyTranslations() {
+        const t = translations[currentLang];
+        document.documentElement.lang = currentLang;
+        document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+
+        document.getElementById("lbl-church").textContent = t.church;
+        document.getElementById("help-church").textContent = t.helpChurch;
+        document.getElementById("lbl-name").textContent = t.name;
+        document.getElementById("lbl-prayerType").textContent = t.type;
+        document.getElementById("lbl-type-note").textContent = t.typeNote;
+        document.getElementById("lbl-type-deceased").textContent =
+          t.typeDeceased;
+        document.getElementById("lbl-occasion").textContent = t.occasion;
+
+        document.getElementById("lbl-occasion-recently").textContent =
+          t.occasionRecently;
+        document.getElementById("lbl-occasion-40").textContent = t.occasion40;
+        document.getElementById("lbl-occasion-yearly").textContent =
+          t.occasionYearly;
+
+        document.getElementById("lbl-names").textContent = t.names;
+        document.getElementById("lbl-names-recently").textContent =
+          t.namesRecently;
+        document.getElementById("lbl-names-40th").textContent = t.names40;
+        document.getElementById("lbl-names-yearly").textContent =
+          t.namesYearly;
+
+        document.getElementById("deceasedNames").placeholder =
+          t.placeholderNames;
+        document.getElementById("names-recently").placeholder =
+          t.placeholderNames;
+        document.getElementById("names-40th").placeholder = t.placeholderNames;
+        document.getElementById("names-yearly").placeholder =
+          t.placeholderNames;
+        document.getElementById("note").placeholder = t.placeholderNote;
+
+        document.getElementById("lbl-note").textContent = t.note;
+        document.getElementById("submitBtn").textContent = t.submit;
+        document.getElementById("note-hint").textContent = t.noteHint;
+
+        document.getElementById("translateBtn").textContent = t.translateBtn;
+      }
+
+      document.getElementById("lang-en").addEventListener("click", () => {
+        currentLang = "en";
+        document.getElementById("lang-en").classList.add("active");
+        document.getElementById("lang-ar").classList.remove("active");
+        applyTranslations();
+        syncButtonWidths(); // ensure equal width after language change
+      });
+
+      document.getElementById("lang-ar").addEventListener("click", () => {
+        currentLang = "ar";
+        document.getElementById("lang-ar").classList.add("active");
+        document.getElementById("lang-en").classList.remove("active");
+        applyTranslations();
+        syncButtonWidths(); // ensure equal width after language change
+      });
+
+      applyTranslations();
+
+      async function loadChurches() {
+        try {
+          const res = await fetch(`${API_BASE}/api/churches`);
+          const data = await res.json();
+          const select = document.getElementById("church");
+          select.innerHTML = "";
+          (data.churches || []).forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.id;
+            opt.textContent = c.name;
+            select.appendChild(opt);
+          });
+        } catch (err) {
+          console.error("Failed to load churches:", err);
+        }
+      }
+      loadChurches();
+
+      function clearOccasionsUI() {
+        const boxes = document.querySelectorAll('input[name="occasionMulti"]');
+        boxes.forEach((b) => {
+          b.checked = false;
+        });
+        ["box-recently", "box-40th", "box-yearly"].forEach((id) => {
+          const box = document.getElementById(id);
+          box.style.display = "none";
+          const ta = box.querySelector("textarea");
+          if (ta) ta.value = "";
+        });
+      }
+
+      function updateTypeUI() {
+        const val = document.querySelector(
+          'input[name="prayerType"]:checked'
+        ).value;
+        const isDeceased = val === "deceased";
+
+        document.getElementById("group-note").style.display = isDeceased
+          ? "none"
+          : "";
+        document.getElementById("group-occasion").style.display = isDeceased
+          ? ""
+          : "none";
+        document.getElementById("group-names").style.display = "none";
+
+        document.getElementById("note").required = !isDeceased;
+
+        if (isDeceased) {
+          document.getElementById("note").value = "";
+          updateNoteCounter();
+        } else {
+          clearOccasionsUI();
+        }
+      }
+
+      document
+        .querySelectorAll('input[name="prayerType"]')
+        .forEach((el) => el.addEventListener("change", updateTypeUI));
+      updateTypeUI();
+
+      function bindOccasionToggle(checkboxId, boxId, textareaId) {
+        const cb = document.getElementById(checkboxId);
+        const box = document.getElementById(boxId);
+        const ta = document.getElementById(textareaId);
+        cb.addEventListener("change", () => {
+          if (cb.checked) {
+            box.style.display = "";
+            ta.focus();
+          } else {
+            box.style.display = "none";
+            ta.value = "";
+          }
+        });
+      }
+      bindOccasionToggle("occ-recently", "box-recently", "names-recently");
+      bindOccasionToggle("occ-40th", "box-40th", "names-40th");
+      bindOccasionToggle("occ-yearly", "box-yearly", "names-yearly");
+
+      function countWords(text) {
+        const matches = text.trim().match(/\S+/g);
+        return matches ? matches.length : 0;
+      }
+
+      function trimToMaxWords(text, max) {
+        const words = text.trim().match(/\S+/g) || [];
+        if (words.length <= max) return text.trim();
+        return words.slice(0, max).join(" ");
+      }
+
+      function updateNoteCounter() {
+        const noteEl = document.getElementById("note");
+        const countEl = document.getElementById("note-count");
+        const words = countWords(noteEl.value);
+        const chars = noteEl.value.length;
+        countEl.textContent = `${words} / 300 • ${chars} / 2000`;
+      }
+
+        // ===== Anti-spam / gibberish detection =====
+      function hasLongRepeat(str) {
+        // e.g., "mmmm", "aaaaa", "........"
+        return /(.)(\1){3,}/u.test(str);
+      }
+
+      function ratioNonAlnum(str) {
+        const total = str.length || 1;
+        const non = (str.match(/[^ \p{L}\p{N}\n]/gu) || []).length;
+        return non / total;
+      }
+
+      function latinVowelRatio(str) {
+        const latin = (str.match(/[A-Za-z]/g) || []).length;
+        if (!latin) return 1; // not latin -> skip this heuristic
+        const vowels = (str.match(/[AEIOUYaeiouy]/g) || []).length;
+        return vowels / latin;
+      }
+
+      function looksMostlyNumbers(str) {
+        const digits = (str.match(/\d/g) || []).length;
+        const letters = (str.match(/\p{L}/gu) || []).length;
+        return digits > letters && digits >= 3; // numbers dominate
+      }
+
+      function tooManyShortTokens(str) {
+        // Many 1–2 char “words” tends to be mash
+        const tokens = (str.trim().match(/\S+/g) || []);
+        if (tokens.length < 4) return false;
+        const short = tokens.filter(w => w.length <= 2).length;
+        return short / tokens.length > 0.6;
+      }
+
+      /**
+       * Determine whether a piece of text is likely gibberish/spam.
+       *
+       * The original implementation returned `true` as soon as a single
+       * heuristic failed, which could generate false positives for normal
+       * prayer notes. To focus on truly spammy submissions, this function
+       * now tallies how many red–flag heuristics trigger and only treats the
+       * input as gibberish when multiple independent signals are present.
+       *
+       * Thresholds have also been slightly relaxed: punctuation tolerance
+       * is increased, numeric content must dominate to be flagged, and
+       * vowel ratio checks only apply in extreme cases. These changes help
+       * ensure sincere messages aren't rejected while still catching
+       * obviously spammy input.
+       *
+       * @param {string} str The input text to evaluate.
+       * @returns {boolean} True if the text is likely gibberish.
+       */
+      function isLikelyGibberish(str) {
+        const s = (str || "").trim();
+        if (!s) return false;             // empty handled elsewhere
+        if (s.length < 3) return true;    // too short to be meaningful
+
+        let failCount = 0;
+
+        // Long repeated characters or punctuation (e.g. "aaaaaa" or "......")
+        if (hasLongRepeat(s)) failCount++;
+
+        // Too much punctuation/symbols relative to letters/numbers
+        // Increase tolerance slightly to avoid flagging expressive punctuation
+        if (ratioNonAlnum(s) > 0.45) failCount++;
+
+        // Predominantly numeric tokens (e.g. "1234567")
+        // Require numbers to significantly outnumber letters and be longer
+        if (looksMostlyNumbers(s)) failCount++;
+
+        // A high ratio of very short tokens often appears in random mash
+        if (tooManyShortTokens(s)) failCount++;
+
+        // For Latin text, an extremely low vowel ratio may indicate gibberish.
+        // Lower the threshold slightly and count as another weak signal.
+        if (latinVowelRatio(s) < 0.12) failCount++;
+
+        // If two or more heuristics trigger, treat as gibberish. Single failures
+        // may occur in legitimate input (e.g. numeric dates or abbreviations).
+        return failCount >= 2;
+      }
+
+      // Validate a free-text prayer note
+      function validateNoteContent(str, t) {
+        if (isLikelyGibberish(str)) {
+          return t.invalidGibberish;
+        }
+        return null;
+      }
+
+      // Validate a "names" textarea (allow commas and new lines)
+      function validateNamesContent(str, t) {
+        const s = (str || "").trim();
+        if (!s) return t.invalidNamesFormat;
+
+        // Split by commas or new lines into candidate names
+        const parts = s.split(/[\n,]+/).map(x => x.trim()).filter(Boolean);
+        if (!parts.length) return t.invalidNamesFormat;
+
+        // Each name: mostly letters (Latin/Arabic), allow occasional digits (e.g. "II"),
+        // and some punctuation/diacritics. To reduce false positives, a single
+        // heuristic failure should not immediately invalidate a name. Instead,
+        // count issues and only reject when multiple red flags appear.
+        for (const name of parts) {
+          let issues = 0;
+          const letters = (name.match(/\p{L}/gu) || []).length;
+          const digits = (name.match(/\d/g) || []).length;
+          // Require at least two letters to ensure the name looks meaningful
+          if (letters < 2) issues++;
+          // Allow at most one digit, accommodating generational suffixes (e.g. "John II")
+          if (digits > 1) issues++;
+          // Flag long repeated characters within a single name
+          if (hasLongRepeat(name)) issues++;
+          // Allow more non-alphanumeric symbols in names (e.g. hyphens, accents)
+          if (ratioNonAlnum(name) > 0.4) issues++;
+          // If two or more issues are detected, treat the name as invalid
+          if (issues >= 2) return t.invalidNamesFormat;
+        }
+        return null;
+      }
+
+
+      
+      const noteEl = document.getElementById("note");
+      noteEl.addEventListener("input", () => {
+        if (countWords(noteEl.value) > 300) {
+          noteEl.value = trimToMaxWords(noteEl.value, 300);
+        }
+        if (noteEl.value.length > 2000) {
+          noteEl.value = noteEl.value.slice(0, 2000);
+        }
+        updateNoteCounter();
+      });
+      updateNoteCounter();
+
+      // Live warn on Prayer Note
+      document.getElementById("note").addEventListener("blur", () => {
+        const t = translations[currentLang];
+        const val = document.getElementById("note").value;
+        const err = validateNoteContent(val, t);
+        const statusErr = document.getElementById("status-error");
+        if (err) {
+          statusErr.textContent = err;
+          statusErr.style.display = "block";
+        } else {
+          statusErr.style.display = "none";
+        }
+      });
+
+      // Live warn on Names textareas (recently/40th/yearly)
+      ["names-recently", "names-40th", "names-yearly"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("blur", () => {
+          const t = translations[currentLang];
+          const err = validateNamesContent(el.value, t);
+          const statusErr = document.getElementById("status-error");
+          if (err) {
+            statusErr.textContent = err;
+            statusErr.style.display = "block";
+          } else {
+            statusErr.style.display = "none";
+          }
+        });
+      });
+
+
+      function withTimeout(promise, ms = 9000) {
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), ms);
+        return Promise.race([
+          (async () => {
+            try {
+              return await promise(controller.signal);
+            } finally {
+              clearTimeout(t);
+            }
+          })(),
+        ]);
+      }
+
+      const translators = [
+        async (text, source, target, signal) => {
+          const res = await fetch("https://libretranslate.com/translate", {
+            method: "POST",
+            signal,
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ q: text, source, target, format: "text" }),
+          });
+          if (!res.ok) throw new Error(`LT_main_${res.status}`);
+          const j = await res.json();
+          if (!j.translatedText) throw new Error("LT_main_no_text");
+          return j.translatedText;
+        },
+        async (text, source, target, signal) => {
+          const res = await fetch("https://translate.astian.org/translate", {
+            method: "POST",
+            signal,
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ q: text, source, target, format: "text" }),
+          });
+          if (!res.ok) throw new Error(`LT_ast_${res.status}`);
+          const j = await res.json();
+          if (!j.translatedText) throw new Error("LT_ast_no_text");
+          return j.translatedText;
+        },
+        async (text, source, target, signal) => {
+          const res = await fetch("https://libretranslate.de/translate", {
+            method: "POST",
+            signal,
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ q: text, source, target, format: "text" }),
+          });
+          if (!res.ok) throw new Error(`LT_de_${res.status}`);
+          const j = await res.json();
+          if (!j.translatedText) throw new Error("LT_de_no_text");
+          return j.translatedText;
+        },
+        async (text, source, target, signal) => {
+          const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+            text
+          )}&langpair=${source}|${target}`;
+          const res = await fetch(url, {
+            signal,
+            headers: { Accept: "application/json" },
+          });
+          if (!res.ok) throw new Error(`MM_${res.status}`);
+          const j = await res.json();
+          const out = j?.responseData?.translatedText;
+          if (!out) throw new Error("MM_no_text");
+          return out;
+        },
+      ];
+
+      async function translateText(text, source, target) {
+        const errors = [];
+        for (const fn of translators) {
+          try {
+            const result = await withTimeout(
+              (signal) => fn(text, source, target, signal),
+              9000
+            );
+            return result;
+          } catch (e) {
+            errors.push(e?.message || String(e));
+          }
+        }
+        throw new Error("all_providers_failed: " + errors.join(" | "));
+      }
+
+      function looksArabic(text) {
+        return /[\u0600-\u06FF]/.test(text);
+      }
+
+      const translateBtn = document.getElementById("translateBtn");
+      const translateStatus = document.getElementById("translate-status");
+
+      async function handleTranslateClick() {
+        const t = translations[currentLang];
+        const ta = document.getElementById("note");
+        const val = (ta.value || "").trim();
+
+        translateStatus.textContent = "";
+        if (!val) {
+          translateStatus.textContent = t.translateErrEmpty;
+          return;
+        }
+
+        const fromIsArabic = looksArabic(val);
+        const source = fromIsArabic ? "ar" : "en";
+        const target = fromIsArabic ? "en" : "ar";
+
+        /* unlock width while translating */
+        translateBtn.classList.add("busy");
+        translateBtn.setAttribute("aria-busy", "true");
+
+        translateBtn.disabled = true;
+        const oldBtnText = translateBtn.textContent;
+        translateBtn.textContent = t.translating;
+
+        try {
+          let out = await translateText(val, source, target);
+          if (countWords(out) > 300) out = trimToMaxWords(out, 300);
+          if (out.length > 2000) out = out.slice(0, 2000);
+          ta.value = out;
+          updateNoteCounter();
+          ta.setAttribute("dir", target === "ar" ? "rtl" : "ltr");
+          translateStatus.textContent =
+            target === "ar" ? t.translatedToAr : t.translatedToEn;
+        } catch (e) {
+          console.error(e);
+          translateStatus.textContent = `${t.translateErrGeneric} (${
+            e.message || "error"
+          })`;
+        } finally {
+          /* relock: restore label, states, and equal widths */
+          translateBtn.disabled = false;
+          translateBtn.textContent = oldBtnText;
+          translateBtn.classList.remove("busy");
+          translateBtn.removeAttribute("aria-busy");
+          syncButtonWidths(); // keep widths locked after text toggle
+        }
+      }
+      translateBtn.addEventListener("click", handleTranslateClick);
+
+      // ====== Make Translate and Submit the same width (no visual size change) ======
+      function syncButtonWidths() {
+        const tBtn = document.getElementById("translateBtn");
+        const sBtn = document.getElementById("submitBtn");
+        if (!tBtn || !sBtn) return;
+
+        // If translate is busy, don't force width; let it grow.
+        if (tBtn.classList.contains("busy")) return;
+
+        // Clear previous locks to measure natural size
+        tBtn.style.width = "";
+        tBtn.style.minWidth = "";
+        tBtn.style.maxWidth = "";
+        sBtn.style.width = "";
+        sBtn.style.minWidth = "";
+        sBtn.style.maxWidth = "";
+
+        // Wait for layout (important after language/dir changes)
+        requestAnimationFrame(() => {
+          const tW = tBtn.offsetWidth;
+          const sW = sBtn.offsetWidth;
+          const maxW = Math.max(tW, sW);
+          const w = maxW + "px";
+
+          tBtn.style.width = w;
+          tBtn.style.minWidth = w;
+          tBtn.style.maxWidth = w;
+
+          sBtn.style.width = w;
+          sBtn.style.minWidth = w;
+          sBtn.style.maxWidth = w;
+        });
+      }
+
+      // Initial lock after first translations applied
+      document.addEventListener("DOMContentLoaded", () => {
+        syncButtonWidths();
+      });
+
+      // Re-sync on resize (debounced)
+      let _sbwTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(_sbwTimer);
+        _sbwTimer = setTimeout(syncButtonWidths, 120);
+      });
+
+      // Ensure all social links open in new tab (safety net)
+      document.querySelectorAll(".social-row a.social-btn").forEach((a) => {
+        a.setAttribute("target", "_blank");
+        a.setAttribute("rel", "noopener noreferrer");
+      });
+
+      /* ---------- Submit handler (no nested <script>!) ---------- */
+      document
+        .getElementById("prayerForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const statusOk = document.getElementById("status-ok");
+          const statusErr = document.getElementById("status-error");
+          statusOk.style.display = "none";
+          statusErr.style.display = "none";
+
+          const churchId = document.getElementById("church").value;
+          const name = document.getElementById("name").value.trim();
+          const prayerType = document.querySelector(
+            'input[name="prayerType"]:checked'
+          ).value;
+          const note = document.getElementById("note").value.trim();
+
+          const deceased = [];
+          const addIfChecked = (cbId, type, taId) => {
+            const cb = document.getElementById(cbId);
+            if (cb && cb.checked) {
+              const names = document.getElementById(taId).value.trim();
+              deceased.push({ type, names });
+            }
+          };
+          addIfChecked("occ-recently", "recently", "names-recently");
+          addIfChecked("occ-40th", "40th", "names-40th");
+          addIfChecked("occ-yearly", "yearly", "names-yearly");
+
+          if (!churchId) {
+            statusErr.textContent = translations[currentLang].err;
+            statusErr.style.display = "block";
+            return;
+          }
+
+          if (prayerType === "note") {
+            if (!note) {
+              statusErr.textContent = translations[currentLang].err;
+              statusErr.style.display = "block";
+              return;
+            }
+            // Anti-gibberish for prayer Note
+            const gibErr = validateNoteContent(note, translations[currentLang]);
+            if (gibErr) {
+              statusErr.textContent = gibErr;
+              statusErr.style.display = "block";
+              return;
+            }
+            if (countWords(note) > 300 || note.length > 2000) {
+              statusErr.textContent = translations[currentLang].overLimit;
+              statusErr.style.display = "block";
+              return;
+            }
+          }
+
+          if (prayerType === "deceased") {
+            if (deceased.length === 0 || deceased.some((d) => !d.names)) {
+              statusErr.textContent = translations[currentLang].needOccasion;
+              statusErr.style.display = "block";
+              return;
+            }
+
+            for (const d of deceased) {
+              const nmErr = validateNamesContent(d.names, translations[currentLang]);
+              if (nmErr) {
+                statusErr.textContent = nmErr;
+                statusErr.style.display = "block";
+                return;
+              }
+            }
+          } 
+
+          const payload = {
+            churchId,
+            name: name || "Anonymous",
+            note: prayerType === "note" ? note : "",
+            prayerType,
+            deceased,
+            lang: currentLang,
+          };
+
+          try {
+            const res = await fetch(`${API_BASE}/submit-prayer`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (res.ok) {
+              document.getElementById("prayerForm").reset();
+              updateTypeUI();
+              updateNoteCounter();
+              document.getElementById("translate-status").textContent = "";
+              statusOk.textContent = translations[currentLang].ok;
+              statusOk.style.display = "block";
+              syncButtonWidths();
+            } else {
+              const j = await res.json().catch(() => ({}));
+              statusErr.textContent =
+                j.error || translations[currentLang].err;
+              statusErr.style.display = "block";
+            }
+          } catch (err) {
+            statusErr.textContent = translations[currentLang].err;
+            statusErr.style.display = "block";
+          }
+        });
+    </script>
+  </body>
+</html>
