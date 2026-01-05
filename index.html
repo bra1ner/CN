@@ -10,6 +10,14 @@
     />
     <link rel="icon" type="image/svg+xml" href="assets/favors.svg" />
 
+    <!-- Make Safari/Chrome top+bottom (overscroll/status bar) match page -->
+    <meta name="theme-color" content="#fbf8f3" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0b0b0b"
+    />
+
     <!-- Google tag (gtag.js) -->
     <script
       async
@@ -29,6 +37,7 @@
       :root {
         /* Background */
         --bg: #faf7f2;
+        --bg-solid: #fbf8f3; /* used for html overscroll/status area */
 
         /* Glass surfaces */
         --paper: rgba(255, 255, 255, 0.55);
@@ -73,6 +82,11 @@
         box-sizing: border-box;
       }
 
+      /* Ensures top/bottom browser areas (overscroll) match the page */
+      html {
+        background: var(--bg-solid);
+      }
+
       body {
         margin: 0;
         padding: var(--page-pad);
@@ -85,12 +99,35 @@
         flex-direction: column;
         gap: 12px;
 
+        /* Solid fallback so transitions look seamless */
+        background-color: var(--bg-solid);
+
         /* Soft bright background with subtle Coptic tones */
         background:
           radial-gradient(900px 520px at 14% 6%, rgba(122, 0, 0, 0.10), transparent 58%),
           radial-gradient(820px 520px at 92% 16%, rgba(200, 169, 81, 0.14), transparent 56%),
           radial-gradient(640px 460px at 50% 98%, rgba(122, 0, 0, 0.08), transparent 62%),
           linear-gradient(180deg, #fbf8f3, #f6f1ea);
+      }
+
+      /* Optional: cover iOS safe-area insets with the same base color */
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        left: 0;
+        right: 0;
+        pointer-events: none;
+        background: var(--bg-solid);
+        z-index: -1;
+      }
+      body::before {
+        top: 0;
+        height: env(safe-area-inset-top, 0px);
+      }
+      body::after {
+        bottom: 0;
+        height: env(safe-area-inset-bottom, 0px);
       }
 
       .card {
@@ -719,7 +756,7 @@
         en: {
           church: "Choose Church",
           helpChurch:
-            "Select your church so the note prints in the right place.",
+            "Select your parish so the note prints in the right place.",
           name: "Name (optional)",
           type: "Prayer Type",
           typeNote: "Prayer Note",
