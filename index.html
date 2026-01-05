@@ -25,17 +25,33 @@
     </script>
 
     <style>
-      /* Root colour palette: white background with dark red accents */
+      /* ===== Light + modern glass theme (no backend/JS touched) ===== */
       :root {
+        /* Background */
         --bg: #faf7f2;
-        --paper: #ffffff;
-        --border: #e2e2e0;
-        --text: #2a2a2a;
-        --muted: #6c6c6b;
-        --accent: #800000;
-        --accent-light: #a52a2a;
-        --gold: #c8a951; /* gold accent */
-        --focus-ring: rgba(200, 169, 81, 0.3); /* gold highlight */
+
+        /* Glass surfaces */
+        --paper: rgba(255, 255, 255, 0.55);
+        --glass-strong: rgba(255, 255, 255, 0.72);
+        --border: rgba(128, 0, 0, 0.14);
+        --inner-border: rgba(255, 255, 255, 0.55);
+
+        /* Text */
+        --text: #1f1f1f;
+        --muted: rgba(31, 31, 31, 0.62);
+
+        /* Coptic accents */
+        --accent: #7a0000;
+        --accent-light: #980000;
+        --gold: #c8a951;
+
+        /* Focus ring */
+        --focus-ring: rgba(200, 169, 81, 0.28);
+
+        /* Glass FX */
+        --glass-blur: 18px;
+        --shadow: 0 18px 50px rgba(24, 10, 10, 0.14);
+        --shadow-soft: 0 8px 24px rgba(24, 10, 10, 0.10);
 
         /* Spacing + radius */
         --field-pad: 14px;
@@ -59,27 +75,73 @@
 
       body {
         margin: 0;
-        padding: var(--page-pad); /* responsive page padding */
+        padding: var(--page-pad);
         font-family: "Noto Sans", Arial, sans-serif;
-        background: var(--bg);
         color: var(--text);
         min-height: 100vh;
         display: flex;
         align-items: flex-start;
         justify-content: center;
-        flex-direction: column; /* so the social row sits under the card */
-        gap: 12px; /* space between card and social buttons */
+        flex-direction: column;
+        gap: 12px;
+
+        /* Soft bright background with subtle Coptic tones */
+        background:
+          radial-gradient(900px 520px at 14% 6%, rgba(122, 0, 0, 0.10), transparent 58%),
+          radial-gradient(820px 520px at 92% 16%, rgba(200, 169, 81, 0.14), transparent 56%),
+          radial-gradient(640px 460px at 50% 98%, rgba(122, 0, 0, 0.08), transparent 62%),
+          linear-gradient(180deg, #fbf8f3, #f6f1ea);
       }
 
       .card {
-        background: var(--paper);
-        border: 1px solid var(--border);
-        border-radius: 16px;
+        position: relative;
         width: 100%;
-        max-width: 600px; /* keeps a readable line-length */
-        padding: var(--card-pad); /* responsive inner padding */
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        margin-inline: auto; /* keep centered */
+        max-width: 600px;
+        padding: var(--card-pad);
+        margin-inline: auto;
+
+        /* Glass */
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.72),
+          rgba(255, 255, 255, 0.40)
+        );
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: var(--shadow);
+
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+        backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+        overflow: hidden;
+      }
+
+      /* subtle highlight sheen */
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(520px 220px at 18% 10%, rgba(255, 255, 255, 0.75), transparent 60%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.20), transparent 35%);
+        opacity: 0.9;
+      }
+
+      /* inner thin border for extra "glass edge" */
+      .card::after {
+        content: "";
+        position: absolute;
+        inset: 10px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.45);
+        pointer-events: none;
+        opacity: 0.55;
+      }
+
+      /* keep all content above the pseudo layers */
+      .card > * {
+        position: relative;
+        z-index: 1;
       }
 
       /* ===== Header ===== */
@@ -97,14 +159,16 @@
         height: clamp(40px, 6vw, 52px);
         width: auto;
         display: block;
+        filter: drop-shadow(0 6px 14px rgba(24, 10, 10, 0.12));
       }
 
       h1 {
         margin: 0;
-        font-size: var(--h1-size); /* fluid headline */
-        font-weight: 700;
+        font-size: var(--h1-size);
+        font-weight: 750;
         color: var(--accent);
         text-align: center;
+        letter-spacing: 0.2px;
       }
 
       .form-group {
@@ -114,8 +178,8 @@
       label {
         display: block;
         margin-bottom: 6px;
-        font-weight: 600;
-        color: var(--accent);
+        font-weight: 650;
+        color: rgba(122, 0, 0, 0.92);
         font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
       }
 
@@ -124,30 +188,41 @@
       textarea {
         display: block;
         width: 100%;
-        border: 1px solid var(--border);
+        border: 1px solid rgba(122, 0, 0, 0.14);
         border-radius: var(--field-radius);
-        background: #fff;
+        background: rgba(255, 255, 255, 0.70);
         padding-block: clamp(10px, 1.8vh, 12px);
         padding-inline: var(--field-pad);
-        font-size: var(--control-font); /* fluid control font size */
+        font-size: var(--control-font);
         color: var(--text);
         outline: none;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+
+        box-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.55) inset,
+          0 8px 18px rgba(24, 10, 10, 0.06);
+
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
       }
 
       select:focus,
       input[type="text"]:focus,
       textarea:focus {
-        border-color: var(--gold);
-        box-shadow: 0 0 0 3px var(--focus-ring);
+        border-color: rgba(200, 169, 81, 0.75);
+        box-shadow:
+          0 0 0 3px var(--focus-ring),
+          0 1px 0 rgba(255, 255, 255, 0.55) inset,
+          0 12px 26px rgba(24, 10, 10, 0.10);
+        background: rgba(255, 255, 255, 0.82);
       }
 
-      /* Custom arrow for select */
       select {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%237d1a1a' d='M4 6l4 4 4-4z'/></svg>");
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%237a0000' d='M4 6l4 4 4-4z'/></svg>");
         background-repeat: no-repeat;
         background-position: right 12px center;
         background-size: 16px 16px;
@@ -160,7 +235,6 @@
         padding-right: var(--field-pad);
       }
 
-      /* Responsive textarea height */
       textarea {
         min-height: clamp(140px, 24vh, 260px);
         resize: vertical;
@@ -178,25 +252,37 @@
       }
 
       .note {
-        font-size: var(--note-size); /* fluid small text */
+        font-size: var(--note-size);
         color: var(--muted);
       }
 
       button {
-        background: var(--accent);
-        color: #fff;
         border: none;
-        border-radius: 10px;
-        padding: var(--btn-pad-y) var(--btn-pad-x); /* bigger tap targets on small screens */
+        border-radius: 12px;
+        padding: var(--btn-pad-y) var(--btn-pad-x);
         font-size: var(--control-font);
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
-        transition: background-color 0.15s ease, box-shadow 0.15s ease;
+        transition: transform 0.12s ease, box-shadow 0.15s ease, background-color 0.15s ease;
       }
 
-      button:hover {
-        background: var(--accent-light);
-        box-shadow: 0 0 8px var(--gold);
+      /* Primary (Submit) */
+      #submitBtn {
+        color: #fff;
+        background: linear-gradient(180deg, rgba(152, 0, 0, 0.95), rgba(122, 0, 0, 0.95));
+        box-shadow: 0 14px 28px rgba(122, 0, 0, 0.22);
+      }
+
+      #submitBtn:hover {
+        transform: translateY(-1px);
+        box-shadow:
+          0 18px 34px rgba(122, 0, 0, 0.26),
+          0 0 0 3px rgba(200, 169, 81, 0.18);
+        background: linear-gradient(180deg, rgba(168, 0, 0, 0.96), rgba(122, 0, 0, 0.96));
+      }
+
+      #submitBtn:active {
+        transform: translateY(0px);
       }
 
       /* === Language switch === */
@@ -207,45 +293,43 @@
         gap: clamp(8px, 1.8vw, 12px);
         margin: 0 0 18px;
         width: 100%;
-      }
-
-      .lang-switch {
         direction: ltr;
       }
 
-      #lang-en {
-        order: 0;
-      }
-
-      #lang-ar {
-        order: 1;
-      }
+      #lang-en { order: 0; }
+      #lang-ar { order: 1; }
 
       .lang-switch button {
-        background: transparent;
-        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid rgba(122, 0, 0, 0.14);
         color: var(--text);
         padding: 8px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: var(--control-font);
         line-height: 1;
         min-width: 110px;
         flex: 0 0 auto;
+
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+
+        box-shadow: 0 8px 18px rgba(24, 10, 10, 0.06);
       }
 
       .lang-switch button.active {
-        background: var(--accent);
+        background: linear-gradient(180deg, rgba(152, 0, 0, 0.95), rgba(122, 0, 0, 0.95));
         color: #fff;
-        border-color: var(--accent);
+        border-color: rgba(122, 0, 0, 0.35);
+        box-shadow: 0 14px 26px rgba(122, 0, 0, 0.20);
       }
 
       .status-message {
         margin-top: 12px;
-        font-weight: 600;
+        font-weight: 650;
       }
 
       .status-ok {
-        color: #1d8e53;
+        color: #167a49;
       }
 
       .status-error {
@@ -261,29 +345,37 @@
 
       .translate-row {
         display: flex;
-        align-items: stretch; /* stretch to keep equal height */
+        align-items: stretch;
         justify-content: space-between;
         gap: 8px;
         margin-top: 8px;
       }
 
       .translate-btn {
-        background: #d3d3d3;
-        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.60);
+        border: 1px solid rgba(122, 0, 0, 0.14);
         color: var(--text);
         padding: 8px 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: var(--control-font);
         line-height: 1;
         cursor: pointer;
-        white-space: nowrap; /* keep label on one line */
+        white-space: nowrap;
+
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+
+        box-shadow: 0 10px 20px rgba(24, 10, 10, 0.06);
       }
 
       .translate-btn:hover {
-        background: #f8f8f8;
+        transform: translateY(-1px);
+        box-shadow:
+          0 14px 26px rgba(24, 10, 10, 0.10),
+          0 0 0 3px rgba(200, 169, 81, 0.16);
+        background: rgba(255, 255, 255, 0.75);
       }
 
-      /* while busy, allow the Translate button to grow naturally */
       .translate-btn.busy {
         width: auto !important;
         min-width: 0 !important;
@@ -293,40 +385,49 @@
       /* === Social buttons strip UNDER the card === */
       .social-row {
         width: 100%;
-        max-width: 600px; /* match .card */
-        margin: 0 auto; /* center under card */
+        max-width: 600px;
+        margin: 0 auto;
         display: flex;
-        justify-content: center; /* keep them centered */
+        justify-content: center;
         gap: 12px;
-        flex-wrap: wrap; /* wrap on narrow screens */
+        flex-wrap: wrap;
       }
 
       .social-btn {
         width: var(--social-size);
         height: var(--social-size);
-        background: #ffffff; /* little white squares */
-        border: 1px solid var(--border);
-        border-radius: 14px; /* rounded */
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+
+        background: rgba(255, 255, 255, 0.55);
+        border: 1px solid rgba(122, 0, 0, 0.14);
+        border-radius: 16px;
+
+        -webkit-backdrop-filter: blur(14px) saturate(145%);
+        backdrop-filter: blur(14px) saturate(145%);
+
+        box-shadow: var(--shadow-soft);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         text-decoration: none;
         user-select: none;
-        transition: box-shadow 0.15s ease, transform 0.15s ease,
-          border-color 0.15s ease;
+
+        transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
       }
 
       .social-btn:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--focus-ring);
+        border-color: rgba(122, 0, 0, 0.28);
+        box-shadow:
+          0 0 0 3px rgba(200, 169, 81, 0.18),
+          0 16px 32px rgba(24, 10, 10, 0.12);
         transform: translateY(-1px);
+        background: rgba(255, 255, 255, 0.70);
       }
 
       .social-btn img {
         width: var(--social-icon);
         height: var(--social-icon);
         display: block;
+        filter: drop-shadow(0 4px 10px rgba(24, 10, 10, 0.10));
       }
 
       .social-btn span {
@@ -335,7 +436,6 @@
         color: var(--muted);
       }
 
-      /* --- Extra polish for very narrow devices --- */
       @media (max-width: 360px) {
         .field-helper {
           flex-direction: column;
@@ -346,24 +446,26 @@
         }
       }
 
-      /* --- Roomy desktops: let the card breathe slightly more if you like --- */
       @media (min-width: 1100px) {
         .card {
           max-width: 640px;
         }
       }
-      
+
       /* === PRINT THEMES === */
       @media print {
-        html, body {
+        html,
+        body {
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
         }
-        /* Only print our composed slip */
-        .no-print { display: none !important; }
-        #print-slip { display: block !important; }
+        .no-print {
+          display: none !important;
+        }
+        #print-slip {
+          display: block !important;
+        }
 
-        /* Receipt width helper (adjust if your printer expects 80mm/58mm) */
         .print-sheet {
           width: 80mm;
           padding: 6mm;
@@ -372,19 +474,17 @@
           line-height: 1.25;
           font-size: 12pt;
         }
-        /* Prayer Note: white bg, black text */
+
         .print--note {
           background: #fff !important;
           color: #000 !important;
-        }
-
         }
         .print--note * {
           background: transparent !important;
           color: inherit !important;
           box-shadow: none !important;
         }
-        /* Commemoration: black bg, white text */
+
         .print--commemoration {
           background: #000 !important;
           color: #fff !important;
@@ -394,11 +494,13 @@
           color: inherit !important;
           box-shadow: none !important;
         }
-      /* Copyright (c) 2025 Moheb Mikhael / Coptic Note
-         All rights reserved. Unauthorized copying or redistribution prohibited.*/
+
+        /* Copyright (c) 2025 Moheb Mikhael / Coptic Note
+           All rights reserved. Unauthorized copying or redistribution prohibited.*/
       }
     </style>
   </head>
+
   <body>
     <div class="card">
       <div class="header">
@@ -604,9 +706,10 @@
         ><img src="social/facebook.png" alt="Facebook"
       /></a>
     </div>
+
     <!-- Hidden container we populate and print -->
     <div id="print-slip" style="display:none">
-  <!-- content filled by JS, then window.print() -->
+      <!-- content filled by JS, then window.print() -->
     </div>
 
     <script>
@@ -735,7 +838,7 @@
         document.getElementById("lang-en").classList.add("active");
         document.getElementById("lang-ar").classList.remove("active");
         applyTranslations();
-        syncButtonWidths(); // ensure equal width after language change
+        syncButtonWidths();
       });
 
       document.getElementById("lang-ar").addEventListener("click", () => {
@@ -743,7 +846,7 @@
         document.getElementById("lang-ar").classList.add("active");
         document.getElementById("lang-en").classList.remove("active");
         applyTranslations();
-        syncButtonWidths(); // ensure equal width after language change
+        syncButtonWidths();
       });
 
       applyTranslations();
@@ -845,9 +948,7 @@
         countEl.textContent = `${words} / 300 • ${chars} / 2000`;
       }
 
-        // ===== Anti-spam / gibberish detection =====
       function hasLongRepeat(str) {
-        // e.g., "mmmm", "aaaaa", "........"
         return /(.)(\1){3,}/u.test(str);
       }
 
@@ -859,7 +960,7 @@
 
       function latinVowelRatio(str) {
         const latin = (str.match(/[A-Za-z]/g) || []).length;
-        if (!latin) return 1; // not latin -> skip this heuristic
+        if (!latin) return 1;
         const vowels = (str.match(/[AEIOUYaeiouy]/g) || []).length;
         return vowels / latin;
       }
@@ -867,11 +968,10 @@
       function looksMostlyNumbers(str) {
         const digits = (str.match(/\d/g) || []).length;
         const letters = (str.match(/\p{L}/gu) || []).length;
-        return digits > letters && digits >= 3; // numbers dominate
+        return digits > letters && digits >= 3;
       }
 
       function tooManyShortTokens(str) {
-        // Many 1–2 char “words” tends to be mash
         const tokens = (str.trim().match(/\S+/g) || []);
         if (tokens.length < 4) return false;
         const short = tokens.filter(w => w.length <= 2).length;
@@ -881,22 +981,19 @@
       function isLikelyGibberish(str) {
         const s = (str || "").trim();
 
-        if (!s) return false;             // empty handled elsewhere
-        if (s.length < 3) return true;    // too short to be meaningful
+        if (!s) return false;
+        if (s.length < 3) return true;
 
-        // Hard fails
         if (hasLongRepeat(s)) return true;
-        if (ratioNonAlnum(s) > 0.35) return true; // too much punctuation/symbols
+        if (ratioNonAlnum(s) > 0.35) return true;
         if (looksMostlyNumbers(s)) return true;
         if (tooManyShortTokens(s)) return true;
 
-        // For Latin text, extremely low vowel ratio suggests gibberish
         if (latinVowelRatio(s) < 0.18) return true;
 
         return false;
       }
 
-      // Validate a free-text prayer note
       function validateNoteContent(str, t) {
         if (isLikelyGibberish(str)) {
           return t.invalidGibberish;
@@ -904,16 +1001,13 @@
         return null;
       }
 
-      // Validate a "names" textarea (allow commas and new lines)
       function validateNamesContent(str, t) {
         const s = (str || "").trim();
         if (!s) return t.invalidNamesFormat;
 
-        // Split by commas or new lines into candidate names
         const parts = s.split(/[\n,]+/).map(x => x.trim()).filter(Boolean);
         if (!parts.length) return t.invalidNamesFormat;
 
-        // Each name: mostly letters (Latin/Arabic), few digits/symbols, not repeated chars
         for (const name of parts) {
           const letters = (name.match(/\p{L}/gu) || []).length;
           const digits = (name.match(/\d/g) || []).length;
@@ -925,8 +1019,6 @@
         return null;
       }
 
-
-      
       const noteEl = document.getElementById("note");
       noteEl.addEventListener("input", () => {
         if (countWords(noteEl.value) > 300) {
@@ -939,7 +1031,6 @@
       });
       updateNoteCounter();
 
-      // Live warn on Prayer Note
       document.getElementById("note").addEventListener("blur", () => {
         const t = translations[currentLang];
         const val = document.getElementById("note").value;
@@ -953,7 +1044,6 @@
         }
       });
 
-      // Live warn on Names textareas (recently/40th/yearly)
       ["names-recently", "names-40th", "names-yearly"].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
@@ -969,7 +1059,6 @@
           }
         });
       });
-
 
       function withTimeout(promise, ms = 9000) {
         const controller = new AbortController();
@@ -1085,7 +1174,6 @@
         const source = fromIsArabic ? "ar" : "en";
         const target = fromIsArabic ? "en" : "ar";
 
-        /* unlock width while translating */
         translateBtn.classList.add("busy");
         translateBtn.setAttribute("aria-busy", "true");
 
@@ -1108,26 +1196,22 @@
             e.message || "error"
           })`;
         } finally {
-          /* relock: restore label, states, and equal widths */
           translateBtn.disabled = false;
           translateBtn.textContent = oldBtnText;
           translateBtn.classList.remove("busy");
           translateBtn.removeAttribute("aria-busy");
-          syncButtonWidths(); // keep widths locked after text toggle
+          syncButtonWidths();
         }
       }
       translateBtn.addEventListener("click", handleTranslateClick);
 
-      // ====== Make Translate and Submit the same width (no visual size change) ======
       function syncButtonWidths() {
         const tBtn = document.getElementById("translateBtn");
         const sBtn = document.getElementById("submitBtn");
         if (!tBtn || !sBtn) return;
 
-        // If translate is busy, don't force width; let it grow.
         if (tBtn.classList.contains("busy")) return;
 
-        // Clear previous locks to measure natural size
         tBtn.style.width = "";
         tBtn.style.minWidth = "";
         tBtn.style.maxWidth = "";
@@ -1135,7 +1219,6 @@
         sBtn.style.minWidth = "";
         sBtn.style.maxWidth = "";
 
-        // Wait for layout (important after language/dir changes)
         requestAnimationFrame(() => {
           const tW = tBtn.offsetWidth;
           const sW = sBtn.offsetWidth;
@@ -1152,25 +1235,21 @@
         });
       }
 
-      // Initial lock after first translations applied
       document.addEventListener("DOMContentLoaded", () => {
         syncButtonWidths();
       });
 
-      // Re-sync on resize (debounced)
       let _sbwTimer;
       window.addEventListener("resize", () => {
         clearTimeout(_sbwTimer);
         _sbwTimer = setTimeout(syncButtonWidths, 120);
       });
 
-      // Ensure all social links open in new tab (safety net)
       document.querySelectorAll(".social-row a.social-btn").forEach((a) => {
         a.setAttribute("target", "_blank");
         a.setAttribute("rel", "noopener noreferrer");
       });
 
-      /* ---------- Submit handler (no nested <script>!) ---------- */
       document
         .getElementById("prayerForm")
         .addEventListener("submit", async (e) => {
@@ -1212,7 +1291,6 @@
               statusErr.style.display = "block";
               return;
             }
-            // Anti-gibberish for prayer Note
             const gibErr = validateNoteContent(note, translations[currentLang]);
             if (gibErr) {
               statusErr.textContent = gibErr;
@@ -1241,7 +1319,7 @@
                 return;
               }
             }
-          } 
+          }
 
           const payload = {
             churchId,
