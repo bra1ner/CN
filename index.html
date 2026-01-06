@@ -6,7 +6,7 @@
     <title>Coptic Note – Prayer Request</title>
     <meta
       name="description"
-      content="Submit a private prayer note or a memorial prayer for the deceased. Choose your church and your request will automatically print at that location."
+      content="Submit a private prayer note. Choose your church and your request will automatically print at that location."
     />
     <link rel="icon" type="image/svg+xml" href="assets/favors.svg" />
 
@@ -166,17 +166,6 @@
         resize: vertical;
       }
 
-      .radio-group {
-        display: flex;
-        gap: clamp(12px, 2.3vw, 18px);
-        flex-wrap: wrap;
-      }
-
-      .radio-group label {
-        font-weight: normal;
-        color: var(--text);
-      }
-
       .note {
         font-size: var(--note-size); /* fluid small text */
         color: var(--muted);
@@ -205,18 +194,14 @@
         justify-content: center;
         align-items: center;
         gap: clamp(8px, 1.8vw, 12px);
-        margin: 0 0 18px;
+        margin: 0 0 12px;
         width: 100%;
-      }
-
-      .lang-switch {
         direction: ltr;
       }
 
       #lang-en {
         order: 0;
       }
-
       #lang-ar {
         order: 1;
       }
@@ -237,6 +222,37 @@
         background: var(--accent);
         color: #fff;
         border-color: var(--accent);
+      }
+
+      /* ===== Commemoration nav button (go to separate page) ===== */
+      .nav-row {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 0 0 18px;
+      }
+
+      .nav-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        border-radius: 10px;
+        text-decoration: none;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 10px 14px;
+        font-size: var(--control-font);
+        font-weight: 600;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease,
+          background-color 0.15s ease;
+      }
+
+      .nav-link:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+        background: #fff;
       }
 
       .status-message {
@@ -346,22 +362,27 @@
         }
       }
 
-      /* --- Roomy desktops: let the card breathe slightly more if you like --- */
+      /* --- Roomy desktops --- */
       @media (min-width: 1100px) {
         .card {
           max-width: 640px;
         }
       }
-      
+
       /* === PRINT THEMES === */
       @media print {
-        html, body {
+        html,
+        body {
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
         }
         /* Only print our composed slip */
-        .no-print { display: none !important; }
-        #print-slip { display: block !important; }
+        .no-print {
+          display: none !important;
+        }
+        #print-slip {
+          display: block !important;
+        }
 
         /* Receipt width helper (adjust if your printer expects 80mm/58mm) */
         .print-sheet {
@@ -372,33 +393,24 @@
           line-height: 1.25;
           font-size: 12pt;
         }
+
         /* Prayer Note: white bg, black text */
         .print--note {
           background: #fff !important;
           color: #000 !important;
-        }
-
         }
         .print--note * {
           background: transparent !important;
           color: inherit !important;
           box-shadow: none !important;
         }
-        /* Commemoration: black bg, white text */
-        .print--commemoration {
-          background: #000 !important;
-          color: #fff !important;
-        }
-        .print--commemoration * {
-          background: transparent !important;
-          color: inherit !important;
-          box-shadow: none !important;
-        }
-      /* Copyright (c) 2025 Moheb Mikhael / Coptic Note
-         All rights reserved. Unauthorized copying or redistribution prohibited.*/
+
+        /* Copyright (c) 2025 Moheb Mikhael / Coptic Note
+           All rights reserved. Unauthorized copying or redistribution prohibited. */
       }
     </style>
   </head>
+
   <body>
     <div class="card">
       <div class="header">
@@ -413,114 +425,28 @@
         <button type="button" id="lang-ar">العربية</button>
       </div>
 
+      <!-- Commemoration button (separate project/page) -->
+      <div class="nav-row">
+        <a class="nav-link" id="commemorationLink" href="commemoration.html"
+          >Commemoration</a
+        >
+      </div>
+
       <form id="prayerForm" novalidate>
         <div class="form-group">
           <label for="church" id="lbl-church">Choose Church</label>
-          <select id="church" name="church" required aria-required="true"></select>
+          <select
+            id="church"
+            name="church"
+            required
+            aria-required="true"
+          ></select>
           <div class="note" id="help-church"></div>
         </div>
 
         <div class="form-group">
           <label for="name" id="lbl-name">Name (optional)</label>
           <input type="text" id="name" name="name" placeholder="Anonymous" />
-        </div>
-
-        <div class="form-group">
-          <label id="lbl-prayerType">Prayer Type</label>
-          <div class="radio-group" id="prayerType-group">
-            <label>
-              <input type="radio" name="prayerType" value="note" checked />
-              <span id="lbl-type-note">Prayer Note</span>
-            </label>
-            <label>
-              <input type="radio" name="prayerType" value="deceased" />
-              <span id="lbl-type-deceased">Commemoration</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Remembrance and per-option names -->
-        <div class="form-group" id="group-occasion" style="display: none">
-          <label id="lbl-occasion">Remembrance</label>
-          <div class="radio-group">
-            <label>
-              <input
-                type="checkbox"
-                name="occasionMulti"
-                value="recently"
-                id="occ-recently"
-              />
-              <span id="lbl-occasion-recently">Recently</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="occasionMulti"
-                value="40th"
-                id="occ-40th"
-              />
-              <span id="lbl-occasion-40">40th Day</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                name="occasionMulti"
-                value="yearly"
-                id="occ-yearly"
-              />
-              <span id="lbl-occasion-yearly">Yearly</span>
-            </label>
-          </div>
-
-          <div
-            class="form-group"
-            id="box-recently"
-            style="display: none; margin-top: 10px"
-          >
-            <label for="names-recently" id="lbl-names-recently"
-              >Names (Recently)</label
-            >
-            <textarea
-              id="names-recently"
-              name="names_recently"
-              placeholder="Enter names"
-            ></textarea>
-          </div>
-
-          <div
-            class="form-group"
-            id="box-40th"
-            style="display: none; margin-top: 10px"
-          >
-            <label for="names-40th" id="lbl-names-40th">Names (40th Day)</label>
-            <textarea
-              id="names-40th"
-              name="names_40th_day"
-              placeholder="Enter names"
-            ></textarea>
-          </div>
-
-          <div
-            class="form-group"
-            id="box-yearly"
-            style="display: none; margin-top: 10px"
-          >
-            <label for="names-yearly" id="lbl-names-yearly">Names (Yearly)</label>
-            <textarea
-              id="names-yearly"
-              name="names_yearly"
-              placeholder="Enter names"
-            ></textarea>
-          </div>
-        </div>
-
-        <div class="form-group" id="group-names" style="display: none">
-          <label for="deceasedNames" id="lbl-names">Names</label>
-          <textarea
-            id="deceasedNames"
-            name="deceasedNames"
-            placeholder="Enter names"
-          ></textarea>
         </div>
 
         <div class="form-group" id="group-note">
@@ -530,11 +456,11 @@
             name="note"
             placeholder="Write your prayer here… اكتب صلاتك هنا…"
             maxlength="2000"
+            required
           ></textarea>
+
           <div class="field-helper">
-            <div class="note" id="note-hint">
-              Max 300 words • 2000 characters.
-            </div>
+            <div class="note" id="note-hint">Max 300 words • 2000 characters.</div>
             <div class="note" id="note-count">0 / 300 • 0 / 2000</div>
           </div>
 
@@ -548,11 +474,7 @@
 
         <button type="submit" id="submitBtn">Submit</button>
 
-        <div
-          class="status-message status-ok"
-          id="status-ok"
-          style="display: none"
-        ></div>
+        <div class="status-message status-ok" id="status-ok" style="display: none"></div>
         <div
           class="status-message status-error"
           id="status-error"
@@ -604,10 +526,9 @@
         ><img src="social/facebook.png" alt="Facebook"
       /></a>
     </div>
+
     <!-- Hidden container we populate and print -->
-    <div id="print-slip" style="display:none">
-  <!-- content filled by JS, then window.print() -->
-    </div>
+    <div id="print-slip" style="display: none"></div>
 
     <script>
       const API_BASE = "https://api.copticnote.com";
@@ -615,22 +536,9 @@
       const translations = {
         en: {
           church: "Choose Church",
-          helpChurch:
-            "Select your parish so the note prints in the right place.",
+          helpChurch: "Select your parish so the note prints in the right place.",
           name: "Name (optional)",
-          type: "Prayer Type",
-          typeNote: "Prayer Note",
-          typeDeceased: "Commemoration",
-          occasion: "Remembrance",
-          occasionRecently: "Recently",
-          occasion40: "40th Day",
-          occasionYearly: "Annually",
-          names: "Names",
-          namesRecently: "Names (Recently)",
-          names40: "Names (40th Day)",
-          namesYearly: "Names (Annually)",
           note: "Prayer Note",
-          placeholderNames: "Enter names",
           placeholderNote: "Write your prayer here… اكتب صلاتك هنا…",
           submit: "Submit",
           ok: "Your request has been received.",
@@ -638,42 +546,27 @@
           noteHint: "Max 300 words • 2000 characters.",
           overLimit:
             "Prayer Note must be 300 words or fewer and 2000 characters or fewer.",
-          needOccasion:
-            "Please choose at least one remembrance and enter names for each.",
           translateBtn: "Translate",
           translating: "Translating…",
           translateErrEmpty: "Write something to translate.",
           translateErrGeneric: "Translation failed. Please try again.",
           translatedToAr: "Translated to Arabic.",
           translatedToEn: "Translated to English.",
-          invalidGibberish: "Please write meaningful text (avoid repeated letters, random symbols, or gibberish).",
-          invalidNamesFormat: "Please enter valid names (letters only, avoid random symbols or numbers).",
+          invalidGibberish:
+            "Please write meaningful text (avoid repeated letters, random symbols, or gibberish).",
+          commemorationBtn: "Commemoration",
         },
         ar: {
           church: "اختر الكنيسة",
           helpChurch: "اختر كنيستك لضمان طباعة الطلب في المكان الصحيح.",
           name: "الاسم (اختياري)",
-          type: "نوع الطلب",
-          typeNote: "طلب صلاة",
-          typeDeceased: "صلاة الترحيم",
-          occasion: "الذكرى",
-          occasionRecently: "حديثًا",
-          occasion40: "الأربعين",
-          occasionYearly: "السنوية",
-          names: "الأسماء",
-          namesRecently: "الأسماء (حديثًا)",
-          names40: "الأسماء (الأربعين)",
-          namesYearly: "الأسماء (السنوية)",
           note: "نص الصلاة",
-          placeholderNames: "اكتب الأسماء",
           placeholderNote: "اكتب صلاتك هنا…",
           submit: "إرسال",
           ok: "تم استلام طلبك.",
           err: "حدث خطأ، يرجى المحاولة مرة أخرى.",
           noteHint: "الحد الأقصى ٣٠٠ كلمة • ٢٠٠٠ حرف.",
           overLimit: "يجب ألا يزيد نص الصلاة عن ٣٠٠ كلمة و٢٠٠٠ حرف.",
-          needOccasion:
-            "يرجى اختيار مناسبة واحدة على الأقل وكتابة الأسماء لكل منها.",
           translateBtn: "ترجمة",
           translating: "جارٍ الترجمة…",
           translateErrEmpty: "اكتب ما تريد ترجمته أولًا.",
@@ -681,7 +574,7 @@
           translatedToAr: "تمت الترجمة إلى العربية.",
           translatedToEn: "تمت الترجمة إلى الإنجليزية.",
           invalidGibberish: "يرجى كتابة نص مفهوم (بدون تكرار حروف أو رموز عشوائية).",
-          invalidNamesFormat: "يرجى إدخال أسماء صحيحة (حروف فقط وبدون رموز أو أرقام عشوائية).",
+          commemorationBtn: "صلاة الترحيم",
         },
       };
 
@@ -695,39 +588,14 @@
         document.getElementById("lbl-church").textContent = t.church;
         document.getElementById("help-church").textContent = t.helpChurch;
         document.getElementById("lbl-name").textContent = t.name;
-        document.getElementById("lbl-prayerType").textContent = t.type;
-        document.getElementById("lbl-type-note").textContent = t.typeNote;
-        document.getElementById("lbl-type-deceased").textContent =
-          t.typeDeceased;
-        document.getElementById("lbl-occasion").textContent = t.occasion;
-
-        document.getElementById("lbl-occasion-recently").textContent =
-          t.occasionRecently;
-        document.getElementById("lbl-occasion-40").textContent = t.occasion40;
-        document.getElementById("lbl-occasion-yearly").textContent =
-          t.occasionYearly;
-
-        document.getElementById("lbl-names").textContent = t.names;
-        document.getElementById("lbl-names-recently").textContent =
-          t.namesRecently;
-        document.getElementById("lbl-names-40th").textContent = t.names40;
-        document.getElementById("lbl-names-yearly").textContent =
-          t.namesYearly;
-
-        document.getElementById("deceasedNames").placeholder =
-          t.placeholderNames;
-        document.getElementById("names-recently").placeholder =
-          t.placeholderNames;
-        document.getElementById("names-40th").placeholder = t.placeholderNames;
-        document.getElementById("names-yearly").placeholder =
-          t.placeholderNames;
+        document.getElementById("lbl-note").textContent = t.note;
         document.getElementById("note").placeholder = t.placeholderNote;
 
-        document.getElementById("lbl-note").textContent = t.note;
         document.getElementById("submitBtn").textContent = t.submit;
         document.getElementById("note-hint").textContent = t.noteHint;
-
         document.getElementById("translateBtn").textContent = t.translateBtn;
+
+        document.getElementById("commemorationLink").textContent = t.commemorationBtn;
       }
 
       document.getElementById("lang-en").addEventListener("click", () => {
@@ -735,7 +603,7 @@
         document.getElementById("lang-en").classList.add("active");
         document.getElementById("lang-ar").classList.remove("active");
         applyTranslations();
-        syncButtonWidths(); // ensure equal width after language change
+        syncButtonWidths();
       });
 
       document.getElementById("lang-ar").addEventListener("click", () => {
@@ -743,7 +611,7 @@
         document.getElementById("lang-ar").classList.add("active");
         document.getElementById("lang-en").classList.remove("active");
         applyTranslations();
-        syncButtonWidths(); // ensure equal width after language change
+        syncButtonWidths();
       });
 
       applyTranslations();
@@ -766,66 +634,6 @@
       }
       loadChurches();
 
-      function clearOccasionsUI() {
-        const boxes = document.querySelectorAll('input[name="occasionMulti"]');
-        boxes.forEach((b) => {
-          b.checked = false;
-        });
-        ["box-recently", "box-40th", "box-yearly"].forEach((id) => {
-          const box = document.getElementById(id);
-          box.style.display = "none";
-          const ta = box.querySelector("textarea");
-          if (ta) ta.value = "";
-        });
-      }
-
-      function updateTypeUI() {
-        const val = document.querySelector(
-          'input[name="prayerType"]:checked'
-        ).value;
-        const isDeceased = val === "deceased";
-
-        document.getElementById("group-note").style.display = isDeceased
-          ? "none"
-          : "";
-        document.getElementById("group-occasion").style.display = isDeceased
-          ? ""
-          : "none";
-        document.getElementById("group-names").style.display = "none";
-
-        document.getElementById("note").required = !isDeceased;
-
-        if (isDeceased) {
-          document.getElementById("note").value = "";
-          updateNoteCounter();
-        } else {
-          clearOccasionsUI();
-        }
-      }
-
-      document
-        .querySelectorAll('input[name="prayerType"]')
-        .forEach((el) => el.addEventListener("change", updateTypeUI));
-      updateTypeUI();
-
-      function bindOccasionToggle(checkboxId, boxId, textareaId) {
-        const cb = document.getElementById(checkboxId);
-        const box = document.getElementById(boxId);
-        const ta = document.getElementById(textareaId);
-        cb.addEventListener("change", () => {
-          if (cb.checked) {
-            box.style.display = "";
-            ta.focus();
-          } else {
-            box.style.display = "none";
-            ta.value = "";
-          }
-        });
-      }
-      bindOccasionToggle("occ-recently", "box-recently", "names-recently");
-      bindOccasionToggle("occ-40th", "box-40th", "names-40th");
-      bindOccasionToggle("occ-yearly", "box-yearly", "names-yearly");
-
       function countWords(text) {
         const matches = text.trim().match(/\S+/g);
         return matches ? matches.length : 0;
@@ -845,9 +653,8 @@
         countEl.textContent = `${words} / 300 • ${chars} / 2000`;
       }
 
-        // ===== Anti-spam / gibberish detection =====
+      // ===== Anti-spam / gibberish detection =====
       function hasLongRepeat(str) {
-        // e.g., "mmmm", "aaaaa", "........"
         return /(.)(\1){3,}/u.test(str);
       }
 
@@ -859,7 +666,7 @@
 
       function latinVowelRatio(str) {
         const latin = (str.match(/[A-Za-z]/g) || []).length;
-        if (!latin) return 1; // not latin -> skip this heuristic
+        if (!latin) return 1;
         const vowels = (str.match(/[AEIOUYaeiouy]/g) || []).length;
         return vowels / latin;
       }
@@ -867,66 +674,33 @@
       function looksMostlyNumbers(str) {
         const digits = (str.match(/\d/g) || []).length;
         const letters = (str.match(/\p{L}/gu) || []).length;
-        return digits > letters && digits >= 3; // numbers dominate
+        return digits > letters && digits >= 3;
       }
 
       function tooManyShortTokens(str) {
-        // Many 1–2 char “words” tends to be mash
-        const tokens = (str.trim().match(/\S+/g) || []);
+        const tokens = str.trim().match(/\S+/g) || [];
         if (tokens.length < 4) return false;
-        const short = tokens.filter(w => w.length <= 2).length;
+        const short = tokens.filter((w) => w.length <= 2).length;
         return short / tokens.length > 0.6;
       }
 
       function isLikelyGibberish(str) {
         const s = (str || "").trim();
-
-        if (!s) return false;             // empty handled elsewhere
-        if (s.length < 3) return true;    // too short to be meaningful
-
-        // Hard fails
+        if (!s) return false;
+        if (s.length < 3) return true;
         if (hasLongRepeat(s)) return true;
-        if (ratioNonAlnum(s) > 0.35) return true; // too much punctuation/symbols
+        if (ratioNonAlnum(s) > 0.35) return true;
         if (looksMostlyNumbers(s)) return true;
         if (tooManyShortTokens(s)) return true;
-
-        // For Latin text, extremely low vowel ratio suggests gibberish
         if (latinVowelRatio(s) < 0.18) return true;
-
         return false;
       }
 
-      // Validate a free-text prayer note
       function validateNoteContent(str, t) {
-        if (isLikelyGibberish(str)) {
-          return t.invalidGibberish;
-        }
+        if (isLikelyGibberish(str)) return t.invalidGibberish;
         return null;
       }
 
-      // Validate a "names" textarea (allow commas and new lines)
-      function validateNamesContent(str, t) {
-        const s = (str || "").trim();
-        if (!s) return t.invalidNamesFormat;
-
-        // Split by commas or new lines into candidate names
-        const parts = s.split(/[\n,]+/).map(x => x.trim()).filter(Boolean);
-        if (!parts.length) return t.invalidNamesFormat;
-
-        // Each name: mostly letters (Latin/Arabic), few digits/symbols, not repeated chars
-        for (const name of parts) {
-          const letters = (name.match(/\p{L}/gu) || []).length;
-          const digits = (name.match(/\d/g) || []).length;
-          if (letters < 2) return t.invalidNamesFormat;
-          if (digits > 0) return t.invalidNamesFormat;
-          if (hasLongRepeat(name)) return t.invalidNamesFormat;
-          if (ratioNonAlnum(name) > 0.25) return t.invalidNamesFormat;
-        }
-        return null;
-      }
-
-
-      
       const noteEl = document.getElementById("note");
       noteEl.addEventListener("input", () => {
         if (countWords(noteEl.value) > 300) {
@@ -953,24 +727,6 @@
         }
       });
 
-      // Live warn on Names textareas (recently/40th/yearly)
-      ["names-recently", "names-40th", "names-yearly"].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.addEventListener("blur", () => {
-          const t = translations[currentLang];
-          const err = validateNamesContent(el.value, t);
-          const statusErr = document.getElementById("status-error");
-          if (err) {
-            statusErr.textContent = err;
-            statusErr.style.display = "block";
-          } else {
-            statusErr.style.display = "none";
-          }
-        });
-      });
-
-
       function withTimeout(promise, ms = 9000) {
         const controller = new AbortController();
         const t = setTimeout(() => controller.abort(), ms);
@@ -990,10 +746,7 @@
           const res = await fetch("https://libretranslate.com/translate", {
             method: "POST",
             signal,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_main_${res.status}`);
@@ -1005,10 +758,7 @@
           const res = await fetch("https://translate.astian.org/translate", {
             method: "POST",
             signal,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_ast_${res.status}`);
@@ -1020,10 +770,7 @@
           const res = await fetch("https://libretranslate.de/translate", {
             method: "POST",
             signal,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_de_${res.status}`);
@@ -1035,10 +782,7 @@
           const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
             text
           )}&langpair=${source}|${target}`;
-          const res = await fetch(url, {
-            signal,
-            headers: { Accept: "application/json" },
-          });
+          const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
           if (!res.ok) throw new Error(`MM_${res.status}`);
           const j = await res.json();
           const out = j?.responseData?.translatedText;
@@ -1051,10 +795,7 @@
         const errors = [];
         for (const fn of translators) {
           try {
-            const result = await withTimeout(
-              (signal) => fn(text, source, target, signal),
-              9000
-            );
+            const result = await withTimeout((signal) => fn(text, source, target, signal), 9000);
             return result;
           } catch (e) {
             errors.push(e?.message || String(e));
@@ -1069,215 +810,3 @@
 
       const translateBtn = document.getElementById("translateBtn");
       const translateStatus = document.getElementById("translate-status");
-
-      async function handleTranslateClick() {
-        const t = translations[currentLang];
-        const ta = document.getElementById("note");
-        const val = (ta.value || "").trim();
-
-        translateStatus.textContent = "";
-        if (!val) {
-          translateStatus.textContent = t.translateErrEmpty;
-          return;
-        }
-
-        const fromIsArabic = looksArabic(val);
-        const source = fromIsArabic ? "ar" : "en";
-        const target = fromIsArabic ? "en" : "ar";
-
-        /* unlock width while translating */
-        translateBtn.classList.add("busy");
-        translateBtn.setAttribute("aria-busy", "true");
-
-        translateBtn.disabled = true;
-        const oldBtnText = translateBtn.textContent;
-        translateBtn.textContent = t.translating;
-
-        try {
-          let out = await translateText(val, source, target);
-          if (countWords(out) > 300) out = trimToMaxWords(out, 300);
-          if (out.length > 2000) out = out.slice(0, 2000);
-          ta.value = out;
-          updateNoteCounter();
-          ta.setAttribute("dir", target === "ar" ? "rtl" : "ltr");
-          translateStatus.textContent =
-            target === "ar" ? t.translatedToAr : t.translatedToEn;
-        } catch (e) {
-          console.error(e);
-          translateStatus.textContent = `${t.translateErrGeneric} (${
-            e.message || "error"
-          })`;
-        } finally {
-          /* relock: restore label, states, and equal widths */
-          translateBtn.disabled = false;
-          translateBtn.textContent = oldBtnText;
-          translateBtn.classList.remove("busy");
-          translateBtn.removeAttribute("aria-busy");
-          syncButtonWidths(); // keep widths locked after text toggle
-        }
-      }
-      translateBtn.addEventListener("click", handleTranslateClick);
-
-      // ====== Make Translate and Submit the same width (no visual size change) ======
-      function syncButtonWidths() {
-        const tBtn = document.getElementById("translateBtn");
-        const sBtn = document.getElementById("submitBtn");
-        if (!tBtn || !sBtn) return;
-
-        // If translate is busy, don't force width; let it grow.
-        if (tBtn.classList.contains("busy")) return;
-
-        // Clear previous locks to measure natural size
-        tBtn.style.width = "";
-        tBtn.style.minWidth = "";
-        tBtn.style.maxWidth = "";
-        sBtn.style.width = "";
-        sBtn.style.minWidth = "";
-        sBtn.style.maxWidth = "";
-
-        // Wait for layout (important after language/dir changes)
-        requestAnimationFrame(() => {
-          const tW = tBtn.offsetWidth;
-          const sW = sBtn.offsetWidth;
-          const maxW = Math.max(tW, sW);
-          const w = maxW + "px";
-
-          tBtn.style.width = w;
-          tBtn.style.minWidth = w;
-          tBtn.style.maxWidth = w;
-
-          sBtn.style.width = w;
-          sBtn.style.minWidth = w;
-          sBtn.style.maxWidth = w;
-        });
-      }
-
-      // Initial lock after first translations applied
-      document.addEventListener("DOMContentLoaded", () => {
-        syncButtonWidths();
-      });
-
-      // Re-sync on resize (debounced)
-      let _sbwTimer;
-      window.addEventListener("resize", () => {
-        clearTimeout(_sbwTimer);
-        _sbwTimer = setTimeout(syncButtonWidths, 120);
-      });
-
-      // Ensure all social links open in new tab (safety net)
-      document.querySelectorAll(".social-row a.social-btn").forEach((a) => {
-        a.setAttribute("target", "_blank");
-        a.setAttribute("rel", "noopener noreferrer");
-      });
-
-      /* ---------- Submit handler (no nested <script>!) ---------- */
-      document
-        .getElementById("prayerForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-
-          const statusOk = document.getElementById("status-ok");
-          const statusErr = document.getElementById("status-error");
-          statusOk.style.display = "none";
-          statusErr.style.display = "none";
-
-          const churchId = document.getElementById("church").value;
-          const name = document.getElementById("name").value.trim();
-          const prayerType = document.querySelector(
-            'input[name="prayerType"]:checked'
-          ).value;
-          const note = document.getElementById("note").value.trim();
-
-          const deceased = [];
-          const addIfChecked = (cbId, type, taId) => {
-            const cb = document.getElementById(cbId);
-            if (cb && cb.checked) {
-              const names = document.getElementById(taId).value.trim();
-              deceased.push({ type, names });
-            }
-          };
-          addIfChecked("occ-recently", "recently", "names-recently");
-          addIfChecked("occ-40th", "40th", "names-40th");
-          addIfChecked("occ-yearly", "yearly", "names-yearly");
-
-          if (!churchId) {
-            statusErr.textContent = translations[currentLang].err;
-            statusErr.style.display = "block";
-            return;
-          }
-
-          if (prayerType === "note") {
-            if (!note) {
-              statusErr.textContent = translations[currentLang].err;
-              statusErr.style.display = "block";
-              return;
-            }
-            // Anti-gibberish for prayer Note
-            const gibErr = validateNoteContent(note, translations[currentLang]);
-            if (gibErr) {
-              statusErr.textContent = gibErr;
-              statusErr.style.display = "block";
-              return;
-            }
-            if (countWords(note) > 300 || note.length > 2000) {
-              statusErr.textContent = translations[currentLang].overLimit;
-              statusErr.style.display = "block";
-              return;
-            }
-          }
-
-          if (prayerType === "deceased") {
-            if (deceased.length === 0 || deceased.some((d) => !d.names)) {
-              statusErr.textContent = translations[currentLang].needOccasion;
-              statusErr.style.display = "block";
-              return;
-            }
-
-            for (const d of deceased) {
-              const nmErr = validateNamesContent(d.names, translations[currentLang]);
-              if (nmErr) {
-                statusErr.textContent = nmErr;
-                statusErr.style.display = "block";
-                return;
-              }
-            }
-          } 
-
-          const payload = {
-            churchId,
-            name: name || "Anonymous",
-            note: prayerType === "note" ? note : "",
-            prayerType,
-            deceased,
-            lang: currentLang,
-          };
-
-          try {
-            const res = await fetch(`${API_BASE}/submit-prayer`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
-
-            if (res.ok) {
-              document.getElementById("prayerForm").reset();
-              updateTypeUI();
-              updateNoteCounter();
-              document.getElementById("translate-status").textContent = "";
-              statusOk.textContent = translations[currentLang].ok;
-              statusOk.style.display = "block";
-              syncButtonWidths();
-            } else {
-              const j = await res.json().catch(() => ({}));
-              statusErr.textContent =
-                j.error || translations[currentLang].err;
-              statusErr.style.display = "block";
-            }
-          } catch (err) {
-            statusErr.textContent = translations[currentLang].err;
-            statusErr.style.display = "block";
-          }
-        });
-    </script>
-  </body>
-</html>
