@@ -224,7 +224,7 @@
         border-color: var(--accent);
       }
 
-      /* ===== Commemoration navigation link ===== */
+      /* ===== Commemoration navigation link (kept for compatibility; not used in layout now) ===== */
       .nav-row {
         width: 100%;
         display: flex;
@@ -303,6 +303,35 @@
         width: auto !important;
         min-width: 0 !important;
         max-width: none !important;
+      }
+
+      /* ===== Buttons group under Prayer Note (Commemoration + Translate) ===== */
+      .buttons-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: stretch;
+      }
+
+      .commemoration-btn {
+        background: #660000; /* darker red */
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: var(--control-font);
+        line-height: 1;
+        text-decoration: none;
+        cursor: pointer;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .commemoration-btn:hover {
+        background: #800000;
+        box-shadow: 0 0 0 3px var(--focus-ring);
       }
 
       /* === Social buttons strip UNDER the card === */
@@ -417,7 +446,7 @@
       </div>
 
       <!-- Navigation to commemoration page -->
-      <div class="nav-row">
+      <div class="nav-row" style="display:none">
         <a class="nav-link" id="commemorationLink" href="commemoration.html"
           >Commemoration</a
         >
@@ -451,9 +480,17 @@
           </div>
 
           <div class="translate-row">
-            <button type="button" id="translateBtn" class="translate-btn">
-              Translate
-            </button>
+            <div class="buttons-group">
+              <a
+                class="commemoration-btn"
+                id="commemorationLinkInline"
+                href="commemoration.html"
+                >Commemoration</a
+              >
+              <button type="button" id="translateBtn" class="translate-btn">
+                Translate
+              </button>
+            </div>
             <div class="note" id="translate-status"></div>
           </div>
         </div>
@@ -577,7 +614,11 @@
         document.getElementById("note-hint").textContent = t.noteHint;
         document.getElementById("translateBtn").textContent = t.translateBtn;
 
-        document.getElementById("commemorationLink").textContent = t.commemorationBtn;
+        // keep existing id, but apply text to the inline button (and the hidden one if present)
+        const topLink = document.getElementById("commemorationLink");
+        if (topLink) topLink.textContent = t.commemorationBtn;
+        const inlineLink = document.getElementById("commemorationLinkInline");
+        if (inlineLink) inlineLink.textContent = t.commemorationBtn;
       }
 
       document.getElementById("lang-en").addEventListener("click", () => {
