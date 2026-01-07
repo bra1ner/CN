@@ -93,6 +93,7 @@
 
     <script>
       const statusEl = document.getElementById("status");
+      const API_BASE = location.origin; // <--- important
 
       function setStatus(msg, ok = true) {
         statusEl.textContent = msg;
@@ -102,7 +103,7 @@
       async function printCat(category) {
         try {
           setStatus("Printing...", true);
-          const res = await fetch(`/api/print/${category}`, { method: "POST" });
+          const res = await fetch(`${API_BASE}/api/print/${category}`, { method: "POST" });
           const j = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error(j.error || "Print failed");
           setStatus("Printed.", true);
@@ -115,7 +116,7 @@
         if (!confirm("Clear all commemoration submissions?")) return;
         try {
           setStatus("Clearing...", true);
-          const res = await fetch(`/api/clear`, { method: "POST" });
+          const res = await fetch(`${API_BASE}/api/clear`, { method: "POST" });
           const j = await res.json().catch(() => ({}));
           if (!res.ok) throw new Error(j.error || "Clear failed");
           setStatus("Cleared.", true);
