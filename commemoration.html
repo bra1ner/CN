@@ -592,7 +592,7 @@
       /* Load churches from API */
       async function loadChurches() {
         try {
-          const res = await fetch(`${API_BASE}api/churches`);
+          const res = await fetch(`${API_BASE}/api/churches`);
           const data = await res.json();
           const select = document.getElementById("church");
           select.innerHTML = "";
