@@ -224,37 +224,6 @@
         border-color: var(--accent);
       }
 
-      /* ===== Commemoration navigation link (kept for compatibility; not used in layout now) ===== */
-      .nav-row {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        margin: 0 0 18px;
-      }
-
-      .nav-link {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        border-radius: 10px;
-        text-decoration: none;
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text);
-        padding: 10px 14px;
-        font-size: var(--control-font);
-        font-weight: 600;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease,
-          background-color 0.15s ease;
-      }
-
-      .nav-link:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--focus-ring);
-        background: #fff;
-      }
-
       .status-message {
         margin-top: 12px;
         font-weight: 600;
@@ -313,28 +282,63 @@
         align-items: stretch;
       }
 
+      /* ===== Submit + Commemoration row (opposite sides) ===== */
+      .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 14px;
+        width: 100%;
+      }
+
+      #submitBtn {
+        margin-top: 0;
+      }
+
       .commemoration-btn {
-        background: #000000; /* darker red */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--btn-pad-y) var(--btn-pad-x);
+        border-radius: 10px;
+        background: #000;
         color: #fff;
         border: none;
-        border-radius: 8px;
-        padding: 8px 14px;
         font-size: var(--control-font);
+        font-weight: 600;
         line-height: 1;
         text-decoration: none;
         cursor: pointer;
         white-space: nowrap;
-        display: block;
-        
-        width: fit-content;
-        margin: 10px auto 0;
-        text-align: center;
-        max-width:100%;
+        width: fit-content; /* stretch only to text */
+        transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
       }
 
       .commemoration-btn:hover {
-        background: #800000;
         box-shadow: 0 0 0 3px var(--focus-ring);
+        transform: translateY(-1px);
+        background: #111;
+      }
+
+      html[dir="rtl"] .form-actions {
+        flex-direction: row-reverse;
+      }
+
+      @media (max-width: 420px) {
+        .form-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        html[dir="rtl"] .form-actions {
+          flex-direction: column;
+        }
+        .form-actions > * {
+          width: 100%;
+        }
+        .commemoration-btn {
+          justify-content: center;
+        }
       }
 
       /* === Social buttons strip UNDER the card === */
@@ -429,7 +433,6 @@
           color: inherit !important;
           box-shadow: none !important;
         }
-        /* Copyright notice left intact */
       }
     </style>
   </head>
@@ -449,7 +452,7 @@
       </div>
 
       <!-- Navigation to commemoration page -->
-      <div class="nav-row" style="display:none">
+      <div class="nav-row" style="display: none">
         <a class="nav-link" id="commemorationLink" href="https://copticnote.com/commemoration"
           >Commemoration</a
         >
@@ -486,20 +489,23 @@
             <div class="buttons-group">
               <button type="button" id="translateBtn" class="translate-btn">
                 Translate
-              </button>              
+              </button>
             </div>
             <div class="note" id="translate-status"></div>
           </div>
         </div>
 
-        <button type="submit" id="submitBtn">Submit</button>
+        <!-- Actions row -->
+        <div class="form-actions">
+          <button type="submit" id="submitBtn">Submit</button>
 
-        <a
-          class="commemoration-btn"
-          id="commemorationLinkInline"
-          href="https://copticnote.com/commemoration"
-          >Commemoration</a
-        >
+          <a
+            class="commemoration-btn"
+            id="commemorationLinkInline"
+            href="https://copticnote.com/commemoration"
+            >Commemoration</a
+          >
+        </div>
 
         <div class="status-message status-ok" id="status-ok" style="display: none"></div>
         <div class="status-message status-error" id="status-error" style="display: none"></div>
@@ -618,7 +624,6 @@
         document.getElementById("note-hint").textContent = t.noteHint;
         document.getElementById("translateBtn").textContent = t.translateBtn;
 
-        // keep existing id, but apply text to the inline button (and the hidden one if present)
         const topLink = document.getElementById("commemorationLink");
         if (topLink) topLink.textContent = t.commemorationBtn;
         const inlineLink = document.getElementById("commemorationLinkInline");
@@ -680,7 +685,6 @@
         countEl.textContent = `${words} / 300 • ${chars} / 2000`;
       }
 
-      // ===== Anti-spam / gibberish detection =====
       function hasLongRepeat(str) {
         return /(.)(\1){3,}/u.test(str);
       }
@@ -740,7 +744,6 @@
       });
       updateNoteCounter();
 
-      // Live warn on Prayer Note
       document.getElementById("note").addEventListener("blur", () => {
         const t = translations[currentLang];
         const val = document.getElementById("note").value;
@@ -881,7 +884,6 @@
       }
       translateBtn.addEventListener("click", handleTranslateClick);
 
-      // ====== Make Translate and Submit the same width (no visual size change) ======
       function syncButtonWidths() {
         const tBtn = document.getElementById("translateBtn");
         const sBtn = document.getElementById("submitBtn");
@@ -926,7 +928,6 @@
         a.setAttribute("rel", "noopener noreferrer");
       });
 
-      /* ---------- Submit handler ---------- */
       document.getElementById("prayerForm").addEventListener("submit", async (e) => {
         e.preventDefault();
 
