@@ -293,6 +293,45 @@
         box-shadow: 0 0 0 3px var(--focus-ring);
         background: #ffffff;
       }
+      
+      /* === Social buttons strip UNDER the card === */
+      .social-row {
+        width: 100%;
+        max-width: 600px; /* match .card */
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .social-btn {
+        width: var(--social-size);
+        height: var(--social-size);
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        user-select: none;
+        transition: box-shadow 0.15s ease, transform 0.15s ease,
+        border-color 0.15s ease;
+      }
+
+      .social-btn:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--focus-ring);
+        transform: translateY(-1px);
+      }
+
+      .social-btn img {
+        width: var(--social-icon);
+        height: var(--social-icon);
+        display: block;
+      }  
     </style>
   </head>
   <body>
@@ -398,6 +437,60 @@
         <div class="status-message status-error" id="status-error" style="display: none"></div>
       </form>
     </div>
+
+    <!-- Social buttons row under the card -->
+    <div class="social-row" aria-label="Social links">
+      <a
+        class="social-btn"
+        href="https://instagram.com/copticnote"
+        aria-label="Instagram"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="social/instagram.png" alt="Instagram" />
+      </a>
+
+      <a
+        class="social-btn"
+        href="https://discord.gg/7fxRTfNdC2"
+        aria-label="Discord"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="social/discord.png" alt="Discord" />
+      </a>
+
+      <a
+        class="social-btn"
+        href="https://www.linkedin.com/company/coptic-note/"
+        aria-label="LinkedIn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="social/in.png" alt="LinkedIn" />
+      </a>
+
+      <a
+        class="social-btn"
+        href="https://x.com/CopticNote"
+        aria-label="X / Twitter"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="social/x.png" alt="X/Twitter" />
+      </a>
+
+      <a
+        class="social-btn"
+        href="https://facebook.com/CopticNote"
+        aria-label="Facebook"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img src="social/facebook.png" alt="Facebook" />
+      </a>
+    </div>
+
 
     <script>
       const API_BASE = "/"; // update this to your backend API base if needed
