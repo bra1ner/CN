@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coptic Note – Buttons</title>
+
+    <style>
+      :root {
+        --bg: #faf7f2;
+        --paper: #ffffff;
+        --border: #e2e2e0;
+        --text: #2a2a2a;
+        --accent: #800000;
+        --accent-light: #a52a2a;
+        --gold: #c8a951;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 16px;
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        width: 100%;
+        max-width: 520px;
+        padding: 24px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 18px;
+        color: var(--accent);
+        font-size: 22px;
+      }
+
+      .buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      button {
+        padding: 18px 12px;
+        font-size: 18px;
+        font-weight: 700;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+        background: var(--accent);
+        color: #fff;
+        transition: background 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      button:hover {
+        background: var(--accent-light);
+        box-shadow: 0 0 10px rgba(200, 169, 81, 0.5);
+      }
+
+      .danger {
+        background: #fff;
+        color: var(--accent);
+        border: 2px solid var(--accent);
+      }
+
+      .danger:hover {
+        background: #fff5f5;
+      }
+
+      .status {
+        margin-top: 16px;
+        font-weight: 700;
+        min-height: 1.2em;
+      }
+
+      .ok {
+        color: #1d8e53;
+      }
+
+      .err {
+        color: #b12b2b;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <h1>Commemoration Printing</h1>
+
+      <div class="buttons">
+        <button onclick="printCategory('recently')">Recently</button>
+        <button onclick="printCategory('40th')">40th Day</button>
+        <button onclick="printCategory('annually')">Annually</button>
+        <button class="danger" onclick="clearAll()">Clear</button>
+      </div>
+
+      <div id="status" class="status"></div>
+    </div>
+
+    <script>
+      const API_BASE = "http://127.0.0.1:8080";
+      const statusEl = document.getElementById("status");
+
+      function setStatus(msg, ok) {
+        statusEl.textContent = msg;
+        statusEl.className = "status " + (ok ? "ok" : "err");
+      }
+
+      async function printCategory(category) {
+        setStatus("Printing...", true);
+        try {
+          const res = await fetch(`${API_BASE}/api/print/${category}`, {
+            method: "POST",
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Print failed");
+          setStatus("Printed successfully.", true);
+        } catch (e) {
+          setStatus(e.message, false);
+        }
+      }
+
+      async function clearAll() {
+        const confirmed = confirm(
+          "Are you sure you want to CLEAR all commemoration records?"
+        );
+        if (!confirmed) return;
+
+        setStatus("Clearing...", true);
+        try {
+          const res = await fetch(`${API_BASE}/api/clear`, {
+            method: "POST",
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || "Clear failed");
+          setStatus("All records cleared.", true);
+        } catch (e) {
+          setStatus(e.message, false);
+        }
+      }
+    </script>
+  </body>
+</html>
