@@ -286,11 +286,37 @@
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start; /* <-- changed */
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
+
+      /* Push commemoration to the far right in English (LTR) */
+      .form-actions .commemoration-btn {
+        margin-left: auto; /* <-- new */
+      }
+
+      /* Push commemoration to the far left in Arabic (RTL) */
+      html[dir="rtl"] .form-actions .commemoration-btn {
+        margin-left: 0;
+        margin-right: auto; /* <-- new */
+      }
+
+      /* keep your mobile stacking */
+      @media (max-width: 420px) {
+        .form-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .form-actions .commemoration-btn {
+          margin-left: 0;
+          margin-right: 0;
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
 
       #submitBtn {
         margin-top: 0;
