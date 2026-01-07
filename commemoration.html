@@ -714,11 +714,7 @@
 
         // Send to backend
         try {
-          const res = await fetch(`${API_BASE}/api/submit-commemoration`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
+          const res = await fetch(`${API_BASE}/api/submit-commemoration`, { method: "POST", …});
 
           if (res.ok) {
             document.getElementById("commemorationForm").reset();
