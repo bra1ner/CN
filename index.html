@@ -282,46 +282,23 @@
         align-items: stretch;
       }
 
-      /* ===== Submit + Commemoration row (swap sides by language) ===== */
+      /* ===== Submit + Commemoration row ===== */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between; /* left + right */
+        justify-content: space-between;
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
 
-      /* English/LTR: Submit left, Commemoration right (default) */
+      /* KEY: RTL swaps sides (Submit becomes on the right, Commemoration on the left) */
+      html[dir="rtl"] .form-actions {
+        flex-direction: row-reverse;
+      }
+
       #submitBtn {
-        order: 1;
         margin-top: 0;
-      }
-      #commemorationLinkInline {
-        order: 2;
-      }
-
-      /* Arabic/RTL: Submit right, Commemoration left */
-      html[dir="rtl"] #submitBtn {
-        order: 2;
-      }
-      html[dir="rtl"] #commemorationLinkInline {
-        order: 1;
-      }
-
-      /* Mobile stacking stays stacked */
-      @media (max-width: 420px) {
-        .form-actions {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .form-actions > * {
-          width: 100%;
-        }
-        .commemoration-btn {
-          justify-content: center;
-          width: 100%;
-        }
       }
 
       .commemoration-btn {
@@ -348,6 +325,21 @@
         box-shadow: 0 0 0 3px var(--focus-ring);
         transform: translateY(-1px);
         background: #111;
+      }
+
+      /* keep your mobile stacking */
+      @media (max-width: 420px) {
+        .form-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .form-actions > * {
+          width: 100%;
+        }
+        .commemoration-btn {
+          justify-content: center;
+          width: 100%;
+        }
       }
 
       /* === Social buttons strip UNDER the card === */
@@ -519,16 +511,8 @@
           >
         </div>
 
-        <div
-          class="status-message status-ok"
-          id="status-ok"
-          style="display: none"
-        ></div>
-        <div
-          class="status-message status-error"
-          id="status-error"
-          style="display: none"
-        ></div>
+        <div class="status-message status-ok" id="status-ok" style="display: none"></div>
+        <div class="status-message status-error" id="status-error" style="display: none"></div>
       </form>
     </div>
 
@@ -622,8 +606,7 @@
           translateErrGeneric: "فشلت الترجمة. حاول مرة أخرى.",
           translatedToAr: "تمت الترجمة إلى العربية.",
           translatedToEn: "تمت الترجمة إلى الإنجليزية.",
-          invalidGibberish:
-            "يرجى كتابة نص مفهوم (بدون تكرار حروف أو رموز عشوائية).",
+          invalidGibberish: "يرجى كتابة نص مفهوم (بدون تكرار حروف أو رموز عشوائية).",
           commemorationBtn: "صلاة الترحيم",
         },
       };
@@ -797,10 +780,7 @@
           const res = await fetch("https://libretranslate.com/translate", {
             method: "POST",
             signal,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_main_${res.status}`);
@@ -812,10 +792,7 @@
           const res = await fetch("https://translate.astian.org/translate", {
             method: "POST",
             signal,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_ast_${res.status}`);
@@ -827,10 +804,7 @@
           const res = await fetch("https://libretranslate.de/translate", {
             method: "POST",
             signal,
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_de_${res.status}`);
@@ -842,10 +816,7 @@
           const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
             text
           )}&langpair=${source}|${target}`;
-          const res = await fetch(url, {
-            signal,
-            headers: { Accept: "application/json" },
-          });
+          const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
           if (!res.ok) throw new Error(`MM_${res.status}`);
           const j = await res.json();
           const out = j?.responseData?.translatedText;
@@ -858,10 +829,7 @@
         const errors = [];
         for (const fn of translators) {
           try {
-            const result = await withTimeout(
-              (signal) => fn(text, source, target, signal),
-              9000
-            );
+            const result = await withTimeout((signal) => fn(text, source, target, signal), 9000);
             return result;
           } catch (e) {
             errors.push(e?.message || String(e));
@@ -906,13 +874,10 @@
           ta.value = out;
           updateNoteCounter();
           ta.setAttribute("dir", target === "ar" ? "rtl" : "ltr");
-          translateStatus.textContent =
-            target === "ar" ? t.translatedToAr : t.translatedToEn;
+          translateStatus.textContent = target === "ar" ? t.translatedToAr : t.translatedToEn;
         } catch (e) {
           console.error(e);
-          translateStatus.textContent = `${t.translateErrGeneric} (${
-            e.message || "error"
-          })`;
+          translateStatus.textContent = `${t.translateErrGeneric} (${e.message || "error"})`;
         } finally {
           translateBtn.disabled = false;
           translateBtn.textContent = oldBtnText;
