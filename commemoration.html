@@ -9,21 +9,14 @@
       content="Submit memorial names for the departed. Choose your church and record names for recently departed, the 40th day and annual commemorations."
     />
     <link rel="icon" type="image/svg+xml" href="assets/favors.svg" />
-
     <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"
-    ></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-RJ9ZRC3PW3");
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-RJ9ZRC3PW3');
     </script>
-
     <style>
       /* Root colour palette: white background with dark red accents */
       :root {
@@ -60,7 +53,7 @@
       body {
         margin: 0;
         padding: var(--page-pad);
-        font-family: "Noto Sans", Arial, sans-serif;
+        font-family: 'Noto Sans', Arial, sans-serif;
         background: var(--bg);
         color: var(--text);
         min-height: 100vh;
@@ -197,12 +190,8 @@
         direction: ltr;
       }
 
-      #lang-en {
-        order: 0;
-      }
-      #lang-ar {
-        order: 1;
-      }
+      #lang-en { order: 0; }
+      #lang-ar { order: 1; }
 
       .lang-switch button {
         background: transparent;
@@ -239,7 +228,7 @@
         border-radius: 12px;
         padding: 12px;
         margin-top: 12px;
-        margin-bttom: 16px;
+        margin-bottom: 16px; /* corrected property */
         display: none;
         background: var(--paper);
       }
@@ -273,12 +262,10 @@
         .dual-textareas {
           gap: 10px;
         }
-
         .dual-textareas .half {
           flex: 1 1 48%;
-          min-width: 0; /* important: allows two columns on small screens */
+          min-width: 0; /* allow two columns on small screens */
         }
-
         textarea {
           min-height: 140px; /* smaller boxes on phone */
         }
@@ -312,7 +299,7 @@
       /* === Social buttons strip UNDER the card === */
       .social-row {
         width: 100%;
-        max-width: 600px; /* match .card */
+        max-width: 600px;
         margin: 0 auto;
         display: flex;
         justify-content: center;
@@ -332,8 +319,7 @@
         justify-content: center;
         text-decoration: none;
         user-select: none;
-        transition: box-shadow 0.15s ease, transform 0.15s ease,
-          border-color 0.15s ease;
+        transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
       }
 
       .social-btn:hover {
@@ -436,9 +422,7 @@
         <button type="submit" id="submitBtn">Submit</button>
 
         <!-- Button to return to the prayer note page -->
-        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com"
-          >Prayer Note</a
-        >
+        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com">Prayer Note</a>
 
         <div class="status-message status-ok" id="status-ok" style="display: none"></div>
         <div class="status-message status-error" id="status-error" style="display: none"></div>
@@ -447,59 +431,15 @@
 
     <!-- Social buttons row under the card -->
     <div class="social-row" aria-label="Social links">
-      <a
-        class="social-btn"
-        href="https://instagram.com/copticnote"
-        aria-label="Instagram"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/instagram.png" alt="Instagram" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://discord.gg/7fxRTfNdC2"
-        aria-label="Discord"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/discord.png" alt="Discord" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://www.linkedin.com/company/coptic-note/"
-        aria-label="LinkedIn"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/in.png" alt="LinkedIn" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://x.com/CopticNote"
-        aria-label="X / Twitter"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/x.png" alt="X/Twitter" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://facebook.com/CopticNote"
-        aria-label="Facebook"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/facebook.png" alt="Facebook" />
-      </a>
+      <a class="social-btn" href="https://instagram.com/copticnote" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><img src="social/instagram.png" alt="Instagram" /></a>
+      <a class="social-btn" href="https://discord.gg/7fxRTfNdC2" aria-label="Discord" target="_blank" rel="noopener noreferrer"><img src="social/discord.png" alt="Discord" /></a>
+      <a class="social-btn" href="https://www.linkedin.com/company/coptic-note/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><img src="social/in.png" alt="LinkedIn" /></a>
+      <a class="social-btn" href="https://x.com/CopticNote" aria-label="X / Twitter" target="_blank" rel="noopener noreferrer"><img src="social/x.png" alt="X/Twitter" /></a>
+      <a class="social-btn" href="https://facebook.com/CopticNote" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><img src="social/facebook.png" alt="Facebook" /></a>
     </div>
 
     <script>
-      const API_BASE = "https://api.copticnote.com"; // update this to your backend API base if needed
+      const API_BASE = "https://api.copticnote.com"; // adjust if needed
 
       /* Translation strings for English and Arabic */
       const translations = {
@@ -615,7 +555,6 @@
         cb.addEventListener("change", () => {
           section.style.display = cb.checked ? "block" : "none";
           if (!cb.checked) {
-            // Clear textareas when unchecking
             section.querySelectorAll("textarea").forEach((ta) => (ta.value = ""));
           }
         });
@@ -630,17 +569,17 @@
       }
       function ratioNonAlnum(str) {
         const total = str.length || 1;
-        const non = (str.match(/[^ \p{L}\p{N}\n]/gu) || []).length;
+        const non = (str.match(/[^ \\p{L}\\p{N}\\n]/gu) || []).length;
         return non / total;
       }
       function validateNamesContent(str, t) {
         const s = (str || "").trim();
         if (!s) return t.invalidNamesFormat;
-        const parts = s.split(/[\n,]+/).map((x) => x.trim()).filter(Boolean);
+        const parts = s.split(/[\\n,]+/).map((x) => x.trim()).filter(Boolean);
         if (!parts.length) return t.invalidNamesFormat;
         for (const name of parts) {
-          const letters = (name.match(/\p{L}/gu) || []).length;
-          const digits = (name.match(/\d/g) || []).length;
+          const letters = (name.match(/\\p{L}/gu) || []).length;
+          const digits = (name.match(/\\d/g) || []).length;
           if (letters < 2) return t.invalidNamesFormat;
           if (digits > 0) return t.invalidNamesFormat;
           if (hasLongRepeat(name)) return t.invalidNamesFormat;
@@ -688,7 +627,6 @@
           statusErr.style.display = "block";
           return;
         }
-
         if (!hasCategory) {
           statusErr.textContent = t.needOccasion;
           statusErr.style.display = "block";
@@ -714,7 +652,11 @@
 
         // Send to backend
         try {
-          const res = await fetch(`${API_BASE}/api/submit-commemoration`, { method: "POST", …});
+          const res = await fetch(`${API_BASE}/api/submit-commemoration`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
 
           if (res.ok) {
             document.getElementById("commemorationForm").reset();
