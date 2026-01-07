@@ -592,11 +592,11 @@
       /* Load churches from API */
       async function loadChurches() {
         try {
-          const res = await fetch(`${API_BASE}/api/churches2`);
+          const res = await fetch(`${API_BASE}/api/churches`);
           const data = await res.json();
           const select = document.getElementById("church");
           select.innerHTML = "";
-          (data.churches2 || []).forEach((c) => {
+          (data.churches || []).forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.id;
             opt.textContent = c.name;
