@@ -596,7 +596,7 @@
           const data = await res.json();
           const select = document.getElementById("church");
           select.innerHTML = "";
-          (data.churches || []).forEach((c) => {
+          (data.churches2 || []).forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.id;
             opt.textContent = c.name;
