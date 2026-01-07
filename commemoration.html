@@ -714,7 +714,7 @@
 
         // Send to backend
         try {
-          const res = await fetch(`${API_BASE}submit-commemoration`, {
+          const res = await fetch(`${API_BASE}/submit-commemoration`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
