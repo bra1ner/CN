@@ -274,7 +274,7 @@
         max-width: none !important;
       }
 
-      /* ===== Buttons group under Prayer Note (Commemoration + Translate) ===== */
+      /* ===== Buttons group under Prayer Note (Translate) ===== */
       .buttons-group {
         display: flex;
         gap: 8px;
@@ -282,48 +282,26 @@
         align-items: stretch;
       }
 
-      /* ===== Submit + Commemoration row ===== */
-      /* ===== Submit + Commemoration row ===== */
+      /* ===== Submit + Commemoration row (FIXED) ===== */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
 
-      /* Default (English / LTR): Submit left, Commemoration right */
-      .form-actions #submitBtn {
-        order: 1;
-      }
+      /* LTR: push commemoration to the RIGHT */
       .form-actions #commemorationLinkInline {
-        order: 2;
+        margin-left: auto;
       }
 
-      /* Arabic (RTL): Commemoration left, Submit right */
-      html[dir="rtl"] .form-actions #submitBtn {
-        order: 2;
-      }
+      /* RTL: push commemoration to the LEFT */
       html[dir="rtl"] .form-actions #commemorationLinkInline {
-        order: 1;
+        margin-left: 0;
+        margin-right: auto;
       }
-
-      /* keep your mobile stacking */
-      @media (max-width: 420px) {
-        .form-actions {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .form-actions > * {
-          width: 100%;
-        }
-        .commemoration-btn {
-          justify-content: center;
-          width: 100%;
-        }
-      }
-
 
       #submitBtn {
         margin-top: 0;
@@ -355,7 +333,7 @@
         background: #111;
       }
 
-      /* keep your mobile stacking */
+      /* mobile stacking */
       @media (max-width: 420px) {
         .form-actions {
           flex-direction: column;
@@ -367,6 +345,8 @@
         .commemoration-btn {
           justify-content: center;
           width: 100%;
+          margin-left: 0;
+          margin-right: 0;
         }
       }
 
@@ -438,7 +418,6 @@
           -webkit-print-color-adjust: exact;
           print-color-adjust: exact;
         }
-        /* Only print our composed slip */
         .no-print {
           display: none !important;
         }
@@ -764,13 +743,13 @@
         return null;
       }
 
-      const noteEl = document.getElementById("note");
-      noteEl.addEventListener("input", () => {
-        if (countWords(noteEl.value) > 300) {
-          noteEl.value = trimToMaxWords(noteEl.value, 300);
+      const noteEl2 = document.getElementById("note");
+      noteEl2.addEventListener("input", () => {
+        if (countWords(noteEl2.value) > 300) {
+          noteEl2.value = trimToMaxWords(noteEl2.value, 300);
         }
-        if (noteEl.value.length > 2000) {
-          noteEl.value = noteEl.value.slice(0, 2000);
+        if (noteEl2.value.length > 2000) {
+          noteEl2.value = noteEl2.value.slice(0, 2000);
         }
         updateNoteCounter();
       });
