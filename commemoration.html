@@ -239,13 +239,9 @@
         border-radius: 12px;
         padding: 12px;
         margin-top: 12px;
-        margin-bottom: 16px; /* fixed typo */
+        margin-bottom: 16px;
         display: none;
         background: var(--paper);
-      }
-
-      #submitBtn {
-        margin-top: 14px;
       }
 
       .category-header {
@@ -253,6 +249,7 @@
         color: var(--accent);
         margin-bottom: 6px;
       }
+
       .dual-textareas {
         display: flex;
         gap: 12px;
@@ -284,29 +281,90 @@
         }
       }
 
-      /* Button to return to the prayer note (white background with black text) */
+      /* (Optional) radio-group styling so checkboxes don't look unstyled */
+      .radio-group {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .radio-group label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .radio-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent);
+      }
+      html[dir="rtl"] .radio-group {
+        justify-content: flex-start;
+      }
+
+      /* === Submit + Prayer Note row (opposite sides) === */
+      .form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 14px;
+        width: 100%;
+      }
+
+      /* keep submit from adding extra top margin */
+      #submitBtn {
+        margin-top: 0;
+      }
+
+      /* Prayer Note button: same padding/thickness as submit, black bg + white text */
       .prayernote-btn {
-        background: #ffffff;
-        color: #000;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 8px 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--btn-pad-y) var(--btn-pad-x);
+        border-radius: 10px;
+        background: #000;
+        color: #fff;
+        border: none;
         font-size: var(--control-font);
+        font-weight: 600;
         line-height: 1;
         text-decoration: none;
         cursor: pointer;
         white-space: nowrap;
-        display: block;
-        width: fit-content;
-        margin: 10px auto 0;
-        text-align: center;
-        max-width: 100%;
+        width: fit-content; /* stretches to text size */
+        transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
       }
 
       .prayernote-btn:hover {
-        border-color: var(--accent);
         box-shadow: 0 0 0 3px var(--focus-ring);
-        background: #ffffff;
+        transform: translateY(-1px);
+        background: #111;
+      }
+
+      /* In Arabic (rtl), keep them opposite sides naturally by reversing */
+      html[dir="rtl"] .form-actions {
+        flex-direction: row-reverse;
+      }
+
+      /* On very small screens, stack nicely */
+      @media (max-width: 420px) {
+        .form-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        html[dir="rtl"] .form-actions {
+          flex-direction: column;
+        }
+        .form-actions > * {
+          width: 100%;
+        }
+        .prayernote-btn {
+          justify-content: center;
+        }
       }
 
       /* === Social buttons strip UNDER the card === */
@@ -346,29 +404,6 @@
         width: var(--social-icon);
         height: var(--social-icon);
         display: block;
-      }
-
-      /* (Optional) radio-group styling so checkboxes don't look unstyled */
-      .radio-group {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .radio-group label {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin: 0;
-        font-weight: 600;
-        color: var(--text);
-      }
-      .radio-group input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        accent-color: var(--accent);
-      }
-      html[dir="rtl"] .radio-group {
-        justify-content: flex-start;
       }
     </style>
   </head>
@@ -457,10 +492,14 @@
           </div>
         </div>
 
-        <button type="submit" id="submitBtn">Submit</button>
+        <!-- Actions row -->
+        <div class="form-actions">
+          <button type="submit" id="submitBtn">Submit</button>
 
-        <!-- Button to return to the prayer note page -->
-        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com">Prayer Note</a>
+          <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com">
+            Prayer Note
+          </a>
+        </div>
 
         <div class="status-message status-ok" id="status-ok" style="display: none"></div>
         <div class="status-message status-error" id="status-error" style="display: none"></div>
@@ -681,7 +720,6 @@
 
       /* ===== Validation (single, consistent version) ===== */
 
-      // Split by newline, comma, Arabic comma، semicolon
       function splitNames(str) {
         return (str || "")
           .split(/[\n,،;]+/g)
@@ -697,21 +735,16 @@
         const n = (name || "").trim();
         if (!n) return false;
 
-        // Reject any numbers in any script
         if (/\p{N}/u.test(n)) return false;
 
-        // Normalize apostrophes
         const normalized = n.replace(/[’`]/g, "'");
 
-        // Allow letters/marks with spaces, dot, hyphen, apostrophe between parts
         const ok = /^[\p{L}\p{M}]+(?:[ .'-][\p{L}\p{M}]+)*$/u.test(normalized);
         if (!ok) return false;
 
-        // Need at least 2 letters total
         const letterCount = (normalized.match(/\p{L}/gu) || []).length;
         if (letterCount < 2) return false;
 
-        // Anti-spam: repeated chars
         if (hasLongRepeat(normalized)) return false;
 
         return true;
@@ -719,7 +752,7 @@
 
       function validateNamesOptional(str, t) {
         const s = (str || "").trim();
-        if (!s) return null; // empty is allowed
+        if (!s) return null;
         const parts = splitNames(s);
         if (!parts.length) return t.invalidNamesFormat;
         for (const name of parts) {
@@ -783,7 +816,6 @@
           return;
         }
 
-        // Validate each selected category: at least one of male/female filled, and content valid if present
         for (const key of Object.keys(payload.categories)) {
           const cat = payload.categories[key];
           const male = (cat.male || "").trim();
@@ -807,7 +839,6 @@
           }
         }
 
-        // Send to backend
         try {
           const res = await fetch(`${API_BASE}/api/submit-commemoration`, {
             method: "POST",
