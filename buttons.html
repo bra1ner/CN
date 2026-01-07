@@ -1,155 +1,126 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Coptic Note – Buttons</title>
-
+    <title>Coptic Note – Print Buttons</title>
     <style>
       :root {
         --bg: #faf7f2;
-        --paper: #ffffff;
+        --card: #ffffff;
         --border: #e2e2e0;
-        --text: #2a2a2a;
         --accent: #800000;
-        --accent-light: #a52a2a;
+        --accent2: #a52a2a;
         --gold: #c8a951;
+        --text: #2a2a2a;
       }
-
-      * {
-        box-sizing: border-box;
-      }
-
       body {
         margin: 0;
         min-height: 100vh;
         background: var(--bg);
         font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 16px;
+        display: grid;
+        place-items: center;
+        padding: 20px;
+        color: var(--text);
       }
-
       .card {
-        background: var(--paper);
+        width: min(520px, 95vw);
+        background: var(--card);
         border: 1px solid var(--border);
-        border-radius: 18px;
-        width: 100%;
-        max-width: 520px;
-        padding: 24px;
-        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
+        border-radius: 16px;
+        padding: 18px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      }
+      h1 {
+        margin: 0 0 10px;
+        color: var(--accent);
+        font-size: 20px;
         text-align: center;
       }
-
-      h1 {
-        margin: 0 0 18px;
-        color: var(--accent);
-        font-size: 22px;
+      .line {
+        width: 70px;
+        height: 2px;
+        background: var(--gold);
+        margin: 10px auto 16px;
       }
-
-      .buttons {
+      .grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 14px;
+        gap: 12px;
       }
-
       button {
-        padding: 18px 12px;
-        font-size: 18px;
+        border: 0;
+        border-radius: 12px;
+        padding: 14px 12px;
         font-weight: 700;
-        border-radius: 14px;
-        border: none;
         cursor: pointer;
         background: var(--accent);
-        color: #fff;
-        transition: background 0.15s ease, box-shadow 0.15s ease;
+        color: white;
+        font-size: 16px;
       }
-
-      button:hover {
-        background: var(--accent-light);
-        box-shadow: 0 0 10px rgba(200, 169, 81, 0.5);
-      }
-
-      .danger {
-        background: #fff;
+      button:hover { background: var(--accent2); }
+      .clear {
+        grid-column: 1 / -1;
+        background: white;
         color: var(--accent);
-        border: 2px solid var(--accent);
+        border: 1px solid var(--accent);
       }
-
-      .danger:hover {
-        background: #fff5f5;
+      .clear:hover {
+        background: #fff6f6;
       }
-
       .status {
-        margin-top: 16px;
+        margin-top: 14px;
         font-weight: 700;
-        min-height: 1.2em;
-      }
-
-      .ok {
-        color: #1d8e53;
-      }
-
-      .err {
-        color: #b12b2b;
+        text-align: center;
       }
     </style>
   </head>
-
   <body>
     <div class="card">
-      <h1>Commemoration Printing</h1>
+      <h1>Print Commemoration</h1>
+      <div class="line"></div>
 
-      <div class="buttons">
-        <button onclick="printCategory('recently')">Recently</button>
-        <button onclick="printCategory('40th')">40th Day</button>
-        <button onclick="printCategory('annually')">Annually</button>
-        <button class="danger" onclick="clearAll()">Clear</button>
+      <div class="grid">
+        <button onclick="printCat('recently')">Recently</button>
+        <button onclick="printCat('40th')">40th Day</button>
+        <button onclick="printCat('annually')">Annually</button>
+        <button class="clear" onclick="clearAll()">Clear All Data</button>
       </div>
 
       <div id="status" class="status"></div>
     </div>
 
     <script>
-      const API_BASE = "http://127.0.0.1:8080";
       const statusEl = document.getElementById("status");
 
-      function setStatus(msg, ok) {
+      function setStatus(msg, ok = true) {
         statusEl.textContent = msg;
-        statusEl.className = "status " + (ok ? "ok" : "err");
+        statusEl.style.color = ok ? "#1d8e53" : "#b12b2b";
       }
 
-      async function printCategory(category) {
-        setStatus("Printing...", true);
+      async function printCat(category) {
         try {
-          const res = await fetch(`${API_BASE}/api/print/${category}`, {
-            method: "POST",
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(data.error || "Print failed");
-          setStatus("Printed successfully.", true);
+          setStatus("Printing...", true);
+          const res = await fetch(`/api/print/${category}`, { method: "POST" });
+          const j = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(j.error || "Print failed");
+          setStatus("Printed.", true);
         } catch (e) {
-          setStatus(e.message, false);
+          setStatus(e.message || "Network error", false);
         }
       }
 
       async function clearAll() {
-        const confirmed = confirm(
-          "Are you sure you want to CLEAR all commemoration records?"
-        );
-        if (!confirmed) return;
-
-        setStatus("Clearing...", true);
+        if (!confirm("Clear all commemoration submissions?")) return;
         try {
-          const res = await fetch(`${API_BASE}/api/clear`, {
-            method: "POST",
-          });
-          const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(data.error || "Clear failed");
-          setStatus("All records cleared.", true);
+          setStatus("Clearing...", true);
+          const res = await fetch(`/api/clear`, { method: "POST" });
+          const j = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(j.error || "Clear failed");
+          setStatus("Cleared.", true);
         } catch (e) {
-          setStatus(e.message, false);
+          setStatus(e.message || "Network error", false);
         }
       }
     </script>
