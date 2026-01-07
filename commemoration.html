@@ -270,10 +270,20 @@
       }
 
       @media (max-width: 480px) {
+        .dual-textareas {
+          gap: 10px;
+        }
+
         .dual-textareas .half {
-          flex-basis: 100%;
+          flex: 1 1 48%;
+          min-width: 0; /* important: allows two columns on small screens */
+        }
+
+        textarea {
+          min-height: 140px; /* smaller boxes on phone */
         }
       }
+
 
       /* Button to return to the prayer note (white background with black text) */
       .prayernote-btn {
