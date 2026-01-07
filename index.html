@@ -282,44 +282,46 @@
         align-items: stretch;
       }
 
-      /* ===== Submit + Commemoration row (opposite sides) ===== */
+      /* ===== Submit + Commemoration row (swap sides by language) ===== */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: flex-start; /* <-- changed */
+        justify-content: space-between; /* left + right */
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
 
-      /* Push commemoration to the far right in English (LTR) */
-      .form-actions .commemoration-btn {
-        margin-left: auto; /* <-- new */
+      /* English/LTR: Submit left, Commemoration right (default) */
+      #submitBtn {
+        order: 1;
+        margin-top: 0;
+      }
+      #commemorationLinkInline {
+        order: 2;
       }
 
-      /* Push commemoration to the far left in Arabic (RTL) */
-      html[dir="rtl"] .form-actions .commemoration-btn {
-        margin-left: 0;
-        margin-right: auto; /* <-- new */
+      /* Arabic/RTL: Submit right, Commemoration left */
+      html[dir="rtl"] #submitBtn {
+        order: 2;
+      }
+      html[dir="rtl"] #commemorationLinkInline {
+        order: 1;
       }
 
-      /* keep your mobile stacking */
+      /* Mobile stacking stays stacked */
       @media (max-width: 420px) {
         .form-actions {
           flex-direction: column;
           align-items: stretch;
         }
-        .form-actions .commemoration-btn {
-          margin-left: 0;
-          margin-right: 0;
+        .form-actions > * {
           width: 100%;
-          justify-content: center;
         }
-      }
-
-
-      #submitBtn {
-        margin-top: 0;
+        .commemoration-btn {
+          justify-content: center;
+          width: 100%;
+        }
       }
 
       .commemoration-btn {
@@ -338,30 +340,14 @@
         cursor: pointer;
         white-space: nowrap;
         width: fit-content; /* stretch only to text */
-        transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+        transition: box-shadow 0.15s ease, transform 0.15s ease,
+          background-color 0.15s ease;
       }
 
       .commemoration-btn:hover {
         box-shadow: 0 0 0 3px var(--focus-ring);
         transform: translateY(-1px);
         background: #111;
-      }
-
-      html[dir="rtl"] .form-actions {
-        flex-direction: row-reverse;
-      }
-
-      @media (max-width: 420px) {
-        .form-actions {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .form-actions > * {
-          width: 100%;
-        }
-        .commemoration-btn {
-          justify-content: center;
-        }
       }
 
       /* === Social buttons strip UNDER the card === */
@@ -476,7 +462,10 @@
 
       <!-- Navigation to commemoration page -->
       <div class="nav-row" style="display: none">
-        <a class="nav-link" id="commemorationLink" href="https://copticnote.com/commemoration"
+        <a
+          class="nav-link"
+          id="commemorationLink"
+          href="https://copticnote.com/commemoration"
           >Commemoration</a
         >
       </div>
@@ -530,8 +519,16 @@
           >
         </div>
 
-        <div class="status-message status-ok" id="status-ok" style="display: none"></div>
-        <div class="status-message status-error" id="status-error" style="display: none"></div>
+        <div
+          class="status-message status-ok"
+          id="status-ok"
+          style="display: none"
+        ></div>
+        <div
+          class="status-message status-error"
+          id="status-error"
+          style="display: none"
+        ></div>
       </form>
     </div>
 
@@ -625,7 +622,8 @@
           translateErrGeneric: "فشلت الترجمة. حاول مرة أخرى.",
           translatedToAr: "تمت الترجمة إلى العربية.",
           translatedToEn: "تمت الترجمة إلى الإنجليزية.",
-          invalidGibberish: "يرجى كتابة نص مفهوم (بدون تكرار حروف أو رموز عشوائية).",
+          invalidGibberish:
+            "يرجى كتابة نص مفهوم (بدون تكرار حروف أو رموز عشوائية).",
           commemorationBtn: "صلاة الترحيم",
         },
       };
@@ -799,7 +797,10 @@
           const res = await fetch("https://libretranslate.com/translate", {
             method: "POST",
             signal,
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_main_${res.status}`);
@@ -811,7 +812,10 @@
           const res = await fetch("https://translate.astian.org/translate", {
             method: "POST",
             signal,
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_ast_${res.status}`);
@@ -823,7 +827,10 @@
           const res = await fetch("https://libretranslate.de/translate", {
             method: "POST",
             signal,
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
             body: JSON.stringify({ q: text, source, target, format: "text" }),
           });
           if (!res.ok) throw new Error(`LT_de_${res.status}`);
@@ -835,7 +842,10 @@
           const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
             text
           )}&langpair=${source}|${target}`;
-          const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+          const res = await fetch(url, {
+            signal,
+            headers: { Accept: "application/json" },
+          });
           if (!res.ok) throw new Error(`MM_${res.status}`);
           const j = await res.json();
           const out = j?.responseData?.translatedText;
@@ -848,7 +858,10 @@
         const errors = [];
         for (const fn of translators) {
           try {
-            const result = await withTimeout((signal) => fn(text, source, target, signal), 9000);
+            const result = await withTimeout(
+              (signal) => fn(text, source, target, signal),
+              9000
+            );
             return result;
           } catch (e) {
             errors.push(e?.message || String(e));
@@ -893,10 +906,13 @@
           ta.value = out;
           updateNoteCounter();
           ta.setAttribute("dir", target === "ar" ? "rtl" : "ltr");
-          translateStatus.textContent = target === "ar" ? t.translatedToAr : t.translatedToEn;
+          translateStatus.textContent =
+            target === "ar" ? t.translatedToAr : t.translatedToEn;
         } catch (e) {
           console.error(e);
-          translateStatus.textContent = `${t.translateErrGeneric} (${e.message || "error"})`;
+          translateStatus.textContent = `${t.translateErrGeneric} (${
+            e.message || "error"
+          })`;
         } finally {
           translateBtn.disabled = false;
           translateBtn.textContent = oldBtnText;
