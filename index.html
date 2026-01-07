@@ -283,6 +283,7 @@
       }
 
       /* ===== Submit + Commemoration row ===== */
+      /* ===== Submit + Commemoration row ===== */
       .form-actions {
         display: flex;
         align-items: center;
@@ -292,10 +293,37 @@
         width: 100%;
       }
 
-      /* KEY: RTL swaps sides (Submit becomes on the right, Commemoration on the left) */
-      html[dir="rtl"] .form-actions {
-        flex-direction: row-reverse;
+      /* Default (English / LTR): Submit left, Commemoration right */
+      .form-actions #submitBtn {
+        order: 1;
       }
+      .form-actions #commemorationLinkInline {
+        order: 2;
+      }
+
+      /* Arabic (RTL): Commemoration left, Submit right */
+      html[dir="rtl"] .form-actions #submitBtn {
+        order: 2;
+      }
+      html[dir="rtl"] .form-actions #commemorationLinkInline {
+        order: 1;
+      }
+
+      /* keep your mobile stacking */
+      @media (max-width: 420px) {
+        .form-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .form-actions > * {
+          width: 100%;
+        }
+        .commemoration-btn {
+          justify-content: center;
+          width: 100%;
+        }
+      }
+
 
       #submitBtn {
         margin-top: 0;
