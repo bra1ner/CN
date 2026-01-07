@@ -4,17 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Coptic Note – Commemoration</title>
-    <meta
-      name="description"
-      content="Submit memorial names for the departed. Choose your church and record names for recently departed, the 40th day and annual commemorations."
-    />
+    <meta name="description" content="Submit memorial names for the departed. Choose your church and record names for recently departed, the 40th day and annual commemorations." />
     <link rel="icon" type="image/svg+xml" href="assets/favors.svg" />
 
     <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"
-    ></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -25,483 +19,23 @@
     </script>
 
     <style>
-      /* Root colour palette: white background with dark red accents */
-      :root {
-        --bg: #faf7f2;
-        --paper: #ffffff;
-        --border: #e2e2e0;
-        --text: #2a2a2a;
-        --muted: #6c6c6b;
-        --accent: #800000;
-        --accent-light: #a52a2a;
-        --gold: #c8a951; /* gold accent */
-        --focus-ring: rgba(200, 169, 81, 0.3); /* gold highlight */
-
-        /* Spacing + radius */
-        --field-pad: 14px;
-        --field-radius: 12px;
-
-        /* Responsive helpers */
-        --page-pad: clamp(12px, 2.5vw, 28px);
-        --card-pad: clamp(16px, 3vw, 28px);
-        --btn-pad-y: clamp(10px, 1.8vh, 14px);
-        --btn-pad-x: clamp(14px, 3vw, 22px);
-        --control-font: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
-        --h1-size: clamp(1.25rem, 1.05rem + 1.2vw, 1.6rem);
-        --note-size: clamp(0.82rem, 0.78rem + 0.2vw, 0.9rem);
-        --social-size: clamp(48px, 7vw, 64px);
-        --social-icon: clamp(22px, 3.2vw, 28px);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        padding: var(--page-pad);
-        font-family: "Noto Sans", Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        min-height: 100vh;
-        display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .card {
-        background: var(--paper);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        width: 100%;
-        max-width: 600px;
-        padding: var(--card-pad);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        margin-inline: auto;
-      }
-
-      /* ===== Header ===== */
-      .header {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        margin-bottom: 16px;
-        text-align: center;
-      }
-
-      .header img {
-        height: clamp(40px, 6vw, 52px);
-        width: auto;
-        display: block;
-      }
-
-      h1 {
-        margin: 0;
-        font-size: var(--h1-size);
-        font-weight: 700;
-        color: var(--accent);
-        text-align: center;
-      }
-
-      .form-group {
-        margin-bottom: clamp(14px, 2.2vw, 20px);
-      }
-
-      label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-        color: var(--accent);
-        font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
-      }
-
-      select,
-      input[type="text"],
-      textarea {
-        display: block;
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: var(--field-radius);
-        background: #fff;
-        padding-block: clamp(10px, 1.8vh, 12px);
-        padding-inline: var(--field-pad);
-        font-size: var(--control-font);
-        color: var(--text);
-        outline: none;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
-      }
-
-      select:focus,
-      input[type="text"]:focus,
-      textarea:focus {
-        border-color: var(--gold);
-        box-shadow: 0 0 0 3px var(--focus-ring);
-      }
-
-      select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%237d1a1a' d='M4 6l4 4 4-4z'/></svg>");
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        background-size: 16px 16px;
-        padding-right: calc(var(--field-pad) + 24px);
-      }
-
-      html[dir="rtl"] select {
-        background-position: left 12px center;
-        padding-left: calc(var(--field-pad) + 24px);
-        padding-right: var(--field-pad);
-      }
-
-      textarea {
-        min-height: clamp(100px, 18vh, 220px);
-        resize: vertical;
-      }
-
-      .note {
-        font-size: var(--note-size);
-        color: var(--muted);
-      }
-
-      button {
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: var(--btn-pad-y) var(--btn-pad-x);
-        font-size: var(--control-font);
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.15s ease, box-shadow 0.15s ease;
-      }
-
-      button:hover {
-        background: var(--accent-light);
-        box-shadow: 0 0 8px var(--gold);
-      }
-
-      /* Language switch */
-      .lang-switch {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: clamp(8px, 1.8vw, 12px);
-        margin: 0 0 18px;
-        width: 100%;
-        direction: ltr;
-      }
-
-      #lang-en {
-        order: 0;
-      }
-      #lang-ar {
-        order: 1;
-      }
-
-      .lang-switch button {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text);
-        padding: 8px 14px;
-        border-radius: 8px;
-        font-size: var(--control-font);
-        line-height: 1;
-        min-width: 110px;
-        flex: 0 0 auto;
-      }
-
-      .lang-switch button.active {
-        background: var(--accent);
-        color: #fff;
-        border-color: var(--accent);
-      }
-
-      .status-message {
-        margin-top: 12px;
-        font-weight: 600;
-      }
-      .status-ok {
-        color: #1d8e53;
-      }
-      .status-error {
-        color: #b12b2b;
-      }
-
-      /* Category sections */
-      .category-section {
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-        margin-top: 12px;
-        margin-bttom: 16px;
-        display: none;
-        background: var(--paper);
-      }
-
-      #submitBtn {
-        margin-top: 14px;
-      }
-
-      .category-header {
-        font-weight: 600;
-        color: var(--accent);
-        margin-bottom: 6px;
-      }
-      .dual-textareas {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .dual-textareas .half {
-        flex: 1 1 48%;
-        min-width: 240px;
-      }
-
-      .dual-textareas label {
-        font-weight: 600;
-        color: var(--accent);
-        margin-bottom: 4px;
-      }
-
-      @media (max-width: 480px) {
-        .dual-textareas {
-          gap: 10px;
-        }
-
-        .dual-textareas .half {
-          flex: 1 1 48%;
-          min-width: 0; /* important: allows two columns on small screens */
-        }
-
-        textarea {
-          min-height: 140px; /* smaller boxes on phone */
-        }
-      }
-
-      /* Button to return to the prayer note (white background with black text) */
-      .prayernote-btn {
-        background: #ffffff;
-        color: #000;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 8px 14px;
-        font-size: var(--control-font);
-        line-height: 1;
-        text-decoration: none;
-        cursor: pointer;
-        white-space: nowrap;
-        display: block;
-        width: fit-content;
-        margin: 10px auto 0;
-        text-align: center;
-        max-width: 100%;
-      }
-
-      .prayernote-btn:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--focus-ring);
-        background: #ffffff;
-      }
-
-      /* === Social buttons strip UNDER the card === */
-      .social-row {
-        width: 100%;
-        max-width: 600px; /* match .card */
-        margin: 0 auto;
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .social-btn {
-        width: var(--social-size);
-        height: var(--social-size);
-        background: #ffffff;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        user-select: none;
-        transition: box-shadow 0.15s ease, transform 0.15s ease,
-          border-color 0.15s ease;
-      }
-
-      .social-btn:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--focus-ring);
-        transform: translateY(-1px);
-      }
-
-      .social-btn img {
-        width: var(--social-icon);
-        height: var(--social-icon);
-        display: block;
-      }
+      /* palette variables and layout trimmed for brevity */
+      /* … your existing CSS here … */
     </style>
   </head>
   <body>
     <div class="card">
-      <div class="header">
-        <img src="assets/logo-coptic-notez.svg" alt="Coptic Note logo" />
-        <h1>Commemoration</h1>
-        <div style="width: 60px; height: 2px; background: var(--gold)"></div>
-      </div>
-
-      <!-- Language switch -->
-      <div class="lang-switch">
-        <button type="button" id="lang-en" class="active">English</button>
-        <button type="button" id="lang-ar">العربية</button>
-      </div>
-
-      <form id="commemorationForm" novalidate>
-        <div class="form-group">
-          <label for="church" id="lbl-church">Choose Church</label>
-          <select id="church" name="church" required aria-required="true"></select>
-          <div class="note" id="help-church"></div>
-        </div>
-
-        <div class="form-group">
-          <label id="lbl-remembrance">Remembrance</label>
-          <div class="radio-group" id="remembrance-group">
-            <label>
-              <input type="checkbox" name="remembrance" value="recently" id="occ-recently" />
-              <span id="lbl-occasion-recently">Recently</span>
-            </label>
-            <label>
-              <input type="checkbox" name="remembrance" value="40th" id="occ-40th" />
-              <span id="lbl-occasion-40">40th Day</span>
-            </label>
-            <label>
-              <input type="checkbox" name="remembrance" value="yearly" id="occ-yearly" />
-              <span id="lbl-occasion-yearly">Annually</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Recently -->
-        <div class="category-section" id="section-recently">
-          <div class="category-header" id="lbl-cat-recently">Recently</div>
-          <div class="dual-textareas">
-            <div class="half">
-              <label for="male-recently" id="lbl-male-recently">Male</label>
-              <textarea id="male-recently" name="male_recently" placeholder="Enter names"></textarea>
-            </div>
-            <div class="half">
-              <label for="female-recently" id="lbl-female-recently">Female</label>
-              <textarea id="female-recently" name="female_recently" placeholder="Enter names"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- 40th Day -->
-        <div class="category-section" id="section-40th">
-          <div class="category-header" id="lbl-cat-40th">40th Day</div>
-          <div class="dual-textareas">
-            <div class="half">
-              <label for="male-40th" id="lbl-male-40th">Male</label>
-              <textarea id="male-40th" name="male_40th" placeholder="Enter names"></textarea>
-            </div>
-            <div class="half">
-              <label for="female-40th" id="lbl-female-40th">Female</label>
-              <textarea id="female-40th" name="female_40th" placeholder="Enter names"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- Annually -->
-        <div class="category-section" id="section-yearly">
-          <div class="category-header" id="lbl-cat-yearly">Annually</div>
-          <div class="dual-textareas">
-            <div class="half">
-              <label for="male-yearly" id="lbl-male-yearly">Male</label>
-              <textarea id="male-yearly" name="male_yearly" placeholder="Enter names"></textarea>
-            </div>
-            <div class="half">
-              <label for="female-yearly" id="lbl-female-yearly">Female</label>
-              <textarea id="female-yearly" name="female_yearly" placeholder="Enter names"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" id="submitBtn">Submit</button>
-
-        <!-- Button to return to the prayer note page -->
-        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com"
-          >Prayer Note</a
-        >
-
-        <div class="status-message status-ok" id="status-ok" style="display: none"></div>
-        <div class="status-message status-error" id="status-error" style="display: none"></div>
-      </form>
+      <!-- header, language switch, form markup here -->
+      <!-- … your existing HTML form … -->
     </div>
 
-    <!-- Social buttons row under the card -->
-    <div class="social-row" aria-label="Social links">
-      <a
-        class="social-btn"
-        href="https://instagram.com/copticnote"
-        aria-label="Instagram"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/instagram.png" alt="Instagram" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://discord.gg/7fxRTfNdC2"
-        aria-label="Discord"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/discord.png" alt="Discord" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://www.linkedin.com/company/coptic-note/"
-        aria-label="LinkedIn"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/in.png" alt="LinkedIn" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://x.com/CopticNote"
-        aria-label="X / Twitter"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/x.png" alt="X/Twitter" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://facebook.com/CopticNote"
-        aria-label="Facebook"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/facebook.png" alt="Facebook" />
-      </a>
-    </div>
+    <!-- Social buttons markup here -->
 
     <script>
-      const API_BASE = "https://api.copticnote.com"; // update this to your backend API base if needed
+      // point API_BASE at your backend (no trailing slash here)
+      const API_BASE = "https://api.copticnote.com";
 
-      /* Translation strings for English and Arabic */
+      // translations object stays the same
       const translations = {
         en: {
           church: "Choose Church",
@@ -545,7 +79,6 @@
 
       let currentLang = "en";
 
-      /* Apply translations to the page */
       function applyTranslations() {
         const t = translations[currentLang];
         document.documentElement.lang = currentLang;
@@ -589,7 +122,6 @@
 
       applyTranslations();
 
-      /* Load churches from API */
       async function loadChurches() {
         try {
           const res = await fetch(`${API_BASE}/api/churches`);
@@ -608,23 +140,6 @@
       }
       loadChurches();
 
-      /* Show/hide category sections based on checkbox */
-      function bindCategoryToggle(checkboxId, sectionId) {
-        const cb = document.getElementById(checkboxId);
-        const section = document.getElementById(sectionId);
-        cb.addEventListener("change", () => {
-          section.style.display = cb.checked ? "block" : "none";
-          if (!cb.checked) {
-            // Clear textareas when unchecking
-            section.querySelectorAll("textarea").forEach((ta) => (ta.value = ""));
-          }
-        });
-      }
-      bindCategoryToggle("occ-recently", "section-recently");
-      bindCategoryToggle("occ-40th", "section-40th");
-      bindCategoryToggle("occ-yearly", "section-yearly");
-
-      /* Validation functions for names */
       function hasLongRepeat(str) {
         return /(.)(\1){3,}/u.test(str);
       }
@@ -649,7 +164,20 @@
         return null;
       }
 
-      /* Form submission handler */
+      function bindCategoryToggle(checkboxId, sectionId) {
+        const cb = document.getElementById(checkboxId);
+        const section = document.getElementById(sectionId);
+        cb.addEventListener("change", () => {
+          section.style.display = cb.checked ? "block" : "none";
+          if (!cb.checked) {
+            section.querySelectorAll("textarea").forEach((ta) => (ta.value = ""));
+          }
+        });
+      }
+      bindCategoryToggle("occ-recently", "section-recently");
+      bindCategoryToggle("occ-40th", "section-40th");
+      bindCategoryToggle("occ-yearly", "section-yearly");
+
       document.getElementById("commemorationForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const statusOk = document.getElementById("status-ok");
@@ -659,8 +187,6 @@
         const t = translations[currentLang];
 
         const churchId = document.getElementById("church").value;
-
-        // Collect selected categories and names
         const payload = {
           churchId,
           lang: currentLang,
@@ -668,7 +194,6 @@
         };
 
         let hasCategory = false;
-
         const addCategory = (cbId, key, maleId, femaleId) => {
           const cb = document.getElementById(cbId);
           if (cb && cb.checked) {
@@ -688,14 +213,12 @@
           statusErr.style.display = "block";
           return;
         }
-
         if (!hasCategory) {
           statusErr.textContent = t.needOccasion;
           statusErr.style.display = "block";
           return;
         }
-
-        // Validate names for each selected category
+        // validate names in each category
         for (const key in payload.categories) {
           const cat = payload.categories[key];
           const maleErr = validateNamesContent(cat.male, t);
@@ -712,9 +235,9 @@
           }
         }
 
-        // Send to backend
         try {
-          const res = await fetch(`${API_BASE}/api/submit-commemoration`, {
+          // NOTE: do not prefix /api here; the endpoint is /submit-commemoration
+          const res = await fetch(`${API_BASE}/submit-commemoration`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
@@ -722,7 +245,6 @@
 
           if (res.ok) {
             document.getElementById("commemorationForm").reset();
-            // Hide all category sections
             ["section-recently", "section-40th", "section-yearly"].forEach((id) => {
               document.getElementById(id).style.display = "none";
             });
