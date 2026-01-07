@@ -276,11 +276,11 @@
 
         .dual-textareas .half {
           flex: 1 1 48%;
-          min-width: 0; /* important: allows two columns on small screens */
+          min-width: 0;
         }
 
         textarea {
-          min-height: 140px; /* smaller boxes on phone */
+          min-height: 140px;
         }
       }
 
@@ -312,7 +312,7 @@
       /* === Social buttons strip UNDER the card === */
       .social-row {
         width: 100%;
-        max-width: 600px; /* match .card */
+        max-width: 600px;
         margin: 0 auto;
         display: flex;
         justify-content: center;
@@ -436,9 +436,7 @@
         <button type="submit" id="submitBtn">Submit</button>
 
         <!-- Button to return to the prayer note page -->
-        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com"
-          >Prayer Note</a
-        >
+        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com">Prayer Note</a>
 
         <div class="status-message status-ok" id="status-ok" style="display: none"></div>
         <div class="status-message status-error" id="status-error" style="display: none"></div>
@@ -520,7 +518,10 @@
           ok: "Your names have been recorded.",
           err: "There was a problem. Please try again.",
           needOccasion: "Please choose at least one remembrance and enter names for each.",
-          invalidNamesFormat: "Please enter valid names (letters only, avoid random symbols or numbers).",
+          needNamesForCategory:
+            "For each selected remembrance, enter at least one name (male or female).",
+          invalidNamesFormat:
+            "Please enter valid names (letters only, avoid random symbols or numbers).",
         },
         ar: {
           church: "اختر الكنيسة",
@@ -539,7 +540,9 @@
           ok: "تم تسجيل الأسماء.",
           err: "حدث خطأ، يرجى المحاولة مرة أخرى.",
           needOccasion: "يرجى اختيار مناسبة واحدة على الأقل وإدخال أسماء لكل منها.",
-          invalidNamesFormat: "يرجى إدخال أسماء صحيحة (حروف فقط وبدون رموز أو أرقام عشوائية).",
+          needNamesForCategory: "لكل ذكرى تختارها، اكتب اسمًا واحدًا على الأقل (رجال أو سيدات).",
+          invalidNamesFormat:
+            "يرجى إدخال أسماء صحيحة (حروف فقط وبدون رموز أو أرقام عشوائية).",
         },
       };
 
@@ -615,7 +618,6 @@
         cb.addEventListener("change", () => {
           section.style.display = cb.checked ? "block" : "none";
           if (!cb.checked) {
-            // Clear textareas when unchecking
             section.querySelectorAll("textarea").forEach((ta) => (ta.value = ""));
           }
         });
@@ -647,6 +649,13 @@
           if (ratioNonAlnum(name) > 0.25) return t.invalidNamesFormat;
         }
         return null;
+      }
+
+      // Empty is OK (optional). Validate only if user typed something.
+      function validateNamesOptional(str, t) {
+        const s = (str || "").trim();
+        if (!s) return null;
+        return validateNamesContent(s, t);
       }
 
       /* Form submission handler */
@@ -695,16 +704,26 @@
           return;
         }
 
-        // Validate names for each selected category
+        // Validate: male/female are optional, but at least one must be filled per selected category
         for (const key in payload.categories) {
           const cat = payload.categories[key];
-          const maleErr = validateNamesContent(cat.male, t);
-          const femaleErr = validateNamesContent(cat.female, t);
+          const male = (cat.male || "").trim();
+          const female = (cat.female || "").trim();
+
+          if (!male && !female) {
+            statusErr.textContent = t.needNamesForCategory || t.needOccasion;
+            statusErr.style.display = "block";
+            return;
+          }
+
+          const maleErr = validateNamesOptional(male, t);
           if (maleErr) {
             statusErr.textContent = maleErr;
             statusErr.style.display = "block";
             return;
           }
+
+          const femaleErr = validateNamesOptional(female, t);
           if (femaleErr) {
             statusErr.textContent = femaleErr;
             statusErr.style.display = "block";
@@ -722,7 +741,6 @@
 
           if (res.ok) {
             document.getElementById("commemorationForm").reset();
-            // Hide all category sections
             ["section-recently", "section-40th", "section-yearly"].forEach((id) => {
               document.getElementById(id).style.display = "none";
             });
