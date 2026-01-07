@@ -281,7 +281,6 @@
         }
       }
 
-      /* (Optional) radio-group styling so checkboxes don't look unstyled */
       .radio-group {
         display: flex;
         gap: 12px;
@@ -304,22 +303,31 @@
         justify-content: flex-start;
       }
 
-      /* === Submit + Prayer Note row (opposite sides) === */
+      /* === Submit + Prayer Note row (FIXED like prayer page) === */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: flex-start;
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
 
-      /* keep submit from adding extra top margin */
+      /* LTR: push Prayer Note to the RIGHT */
+      .form-actions #prayernoteLink {
+        margin-left: auto;
+      }
+
+      /* RTL: push Prayer Note to the LEFT */
+      html[dir="rtl"] .form-actions #prayernoteLink {
+        margin-left: 0;
+        margin-right: auto;
+      }
+
       #submitBtn {
         margin-top: 0;
       }
 
-      /* Prayer Note button: same padding/thickness as submit, black bg + white text */
       .prayernote-btn {
         display: inline-flex;
         align-items: center;
@@ -335,7 +343,7 @@
         text-decoration: none;
         cursor: pointer;
         white-space: nowrap;
-        width: fit-content; /* stretches to text size */
+        width: fit-content;
         transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
       }
 
@@ -345,25 +353,19 @@
         background: #111;
       }
 
-      /* In Arabic (rtl), keep them opposite sides naturally by reversing */
-      html[dir="rtl"] .form-actions {
-        flex-direction: row-reverse;
-      }
-
-      /* On very small screens, stack nicely */
       @media (max-width: 420px) {
         .form-actions {
           flex-direction: column;
           align-items: stretch;
-        }
-        html[dir="rtl"] .form-actions {
-          flex-direction: column;
         }
         .form-actions > * {
           width: 100%;
         }
         .prayernote-btn {
           justify-content: center;
+          width: 100%;
+          margin-left: 0;
+          margin-right: 0;
         }
       }
 
@@ -412,7 +414,7 @@
     <div class="card">
       <div class="header">
         <img src="assets/logo-coptic-notez.svg" alt="Coptic Note logo" />
-        <h1>Commemoration</h1>
+        <h1 id="pageTitle">Commemoration</h1>
         <div style="width: 60px; height: 2px; background: var(--gold)"></div>
       </div>
 
@@ -565,6 +567,7 @@
       /* Translation strings for English and Arabic */
       const translations = {
         en: {
+          pageTitle: "Commemoration",
           church: "Choose Church",
           helpChurch: "Select your parish so the list prints in the right place.",
           remembrance: "Remembrance",
@@ -585,8 +588,10 @@
             "For each selected remembrance, enter at least one name (male or female).",
           invalidNamesFormat:
             "Please enter valid names (letters only, avoid random symbols or numbers).",
+          prayerNoteBtn: "Prayer Note",
         },
         ar: {
+          pageTitle: "صلاة الترحيم",
           church: "اختر الكنيسة",
           helpChurch: "اختر كنيستك لضمان طباعة الطلب في المكان الصحيح.",
           remembrance: "الذكرى",
@@ -606,6 +611,7 @@
           needNamesForCategory: "لكل ذكرى تختارها، اكتب اسمًا واحدًا على الأقل (رجال أو سيدات).",
           invalidNamesFormat:
             "يرجى إدخال أسماء صحيحة (حروف فقط وبدون رموز أو أرقام عشوائية).",
+          prayerNoteBtn: "صلاة الطلبة",
         },
       };
 
@@ -620,6 +626,8 @@
         const t = translations[currentLang];
         document.documentElement.lang = currentLang;
         document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+
+        $("pageTitle").textContent = t.pageTitle;
 
         $("lbl-church").textContent = t.church;
         $("help-church").textContent = t.helpChurch;
@@ -648,6 +656,9 @@
         $("female-yearly").placeholder = t.placeholderNames;
 
         $("submitBtn").textContent = t.submit;
+
+        // Prayer Note button translation (Arabic should be "صلاة الطلبة")
+        $("prayernoteLink").textContent = t.prayerNoteBtn;
       }
 
       $("lang-en").addEventListener("click", () => {
@@ -681,7 +692,7 @@
           if (!churches.length) {
             const opt = document.createElement("option");
             opt.value = "";
-            opt.textContent = "No churches found";
+            opt.textContent = currentLang === "ar" ? "لا توجد كنائس" : "No churches found";
             select.appendChild(opt);
             return;
           }
@@ -696,6 +707,7 @@
           console.error("Failed to load churches:", err);
           const opt = document.createElement("option");
           opt.value = "";
+          opt.textContent = currentLang === "ar" ? "تعذر تحميل الكنائس" : "Failed to load churches";
           select.appendChild(opt);
         }
       }
@@ -718,7 +730,6 @@
       bindCategoryToggle("occ-yearly", "section-yearly");
 
       /* ===== Validation (single, consistent version) ===== */
-
       function splitNames(str) {
         return (str || "")
           .split(/[\n,،;]+/g)
