@@ -239,7 +239,7 @@
         border-radius: 12px;
         padding: 12px;
         margin-top: 12px;
-        margin-bttom: 16px;
+        margin-bottom: 16px; /* fixed typo */
         display: none;
         background: var(--paper);
       }
@@ -347,666 +347,32 @@
         height: var(--social-icon);
         display: block;
       }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <div class="header">
-        <img src="assets/logo-coptic-notez.svg" alt="Coptic Note logo" />
-        <h1>Commemoration</h1>
-        <div style="width: 60px; height: 2px; background: var(--gold)"></div>
-      </div>
 
-      <!-- Language switch -->
-      <div class="lang-switch">
-        <button type="button" id="lang-en" class="active">English</button>
-        <button type="button" id="lang-ar">العربية</button>
-      </div>
-
-      <form id="commemorationForm" novalidate>
-        <div class="form-group">
-          <label for="church" id="lbl-church">Choose Church</label>
-          <select id="church" name="church" required aria-required="true"></select>
-          <div class="note" id="help-church"></div>
-        </div>
-
-        <div class="form-group">
-          <label id="lbl-remembrance">Remembrance</label>
-          <div class="radio-group" id="remembrance-group">
-            <label>
-              <input type="checkbox" name="remembrance" value="recently" id="occ-recently" />
-              <span id="lbl-occasion-recently">Recently</span>
-            </label>
-            <label>
-              <input type="checkbox" name="remembrance" value="40th" id="occ-40th" />
-              <span id="lbl-occasion-40">40th Day</span>
-            </label>
-            <label>
-              <input type="checkbox" name="remembrance" value="yearly" id="occ-yearly" />
-              <span id="lbl-occasion-yearly">Annually</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Recently -->
-        <div class="category-section" id="section-recently">
-          <div class="category-header" id="lbl-cat-recently">Recently</div>
-          <div class="dual-textareas">
-            <div class="half">
-              <label for="male-recently" id="lbl-male-recently">Male</label>
-              <textarea id="male-recently" name="male_recently" placeholder="Enter names"></textarea>
-            </div>
-            <div class="half">
-              <label for="female-recently" id="lbl-female-recently">Female</label>
-              <textarea id="female-recently" name="female_recently" placeholder="Enter names"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- 40th Day -->
-        <div class="category-section" id="section-40th">
-          <div class="category-header" id="lbl-cat-40th">40th Day</div>
-          <div class="dual-textareas">
-            <div class="half">
-              <label for="male-40th" id="lbl-male-40th">Male</label>
-              <textarea id="male-40th" name="male_40th" placeholder="Enter names"></textarea>
-            </div>
-            <div class="half">
-              <label for="female-40th" id="lbl-female-40th">Female</label>
-              <textarea id="female-40th" name="female_40th" placeholder="Enter names"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- Annually -->
-        <div class="category-section" id="section-yearly">
-          <div class="category-header" id="lbl-cat-yearly">Annually</div>
-          <div class="dual-textareas">
-            <div class="half">
-              <label for="male-yearly" id="lbl-male-yearly">Male</label>
-              <textarea id="male-yearly" name="male_yearly" placeholder="Enter names"></textarea>
-            </div>
-            <div class="half">
-              <label for="female-yearly" id="lbl-female-yearly">Female</label>
-              <textarea id="female-yearly" name="female_yearly" placeholder="Enter names"></textarea>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" id="submitBtn">Submit</button>
-
-        <!-- Button to return to the prayer note page -->
-        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com">Prayer Note</a>
-
-        <div class="status-message status-ok" id="status-ok" style="display: none"></div>
-        <div class="status-message status-error" id="status-error" style="display: none"></div>
-      </form>
-    </div>
-
-    <!-- Social buttons row under the card -->
-    <div class="social-row" aria-label="Social links">
-      <a
-        class="social-btn"
-        href="https://instagram.com/copticnote"
-        aria-label="Instagram"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/instagram.png" alt="Instagram" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://discord.gg/7fxRTfNdC2"
-        aria-label="Discord"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/discord.png" alt="Discord" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://www.linkedin.com/company/coptic-note/"
-        aria-label="LinkedIn"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/in.png" alt="LinkedIn" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://x.com/CopticNote"
-        aria-label="X / Twitter"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/x.png" alt="X/Twitter" />
-      </a>
-
-      <a
-        class="social-btn"
-        href="https://facebook.com/CopticNote"
-        aria-label="Facebook"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <img src="social/facebook.png" alt="Facebook" />
-      </a>
-    </div>
-
-    <script>
-      const API_BASE = "https://api.copticnote.com"; // update this to your backend API base if needed
-
-      /* Translation strings for English and Arabic */
-      const translations = {
-        en: {
-          church: "Choose Church",
-          helpChurch: "Select your parish so the list prints in the right place.",
-          remembrance: "Remembrance",
-          occasionRecently: "Recently",
-          occasion40: "40th Day",
-          occasionYearly: "Annually",
-          categoryRecently: "Recently",
-          category40: "40th Day",
-          categoryYearly: "Annually",
-          male: "Male",
-          female: "Female",
-          placeholderNames: "Enter names",
-          submit: "Submit",
-          ok: "Your names have been recorded.",
-          err: "There was a problem. Please try again.",
-          needOccasion: "Please choose at least one remembrance and enter names for each.",
-          needNamesForCategory:
-            "For each selected remembrance, enter at least one name (male or female).",
-          invalidNamesFormat:
-            "Please enter valid names (letters only, avoid random symbols or numbers).",
-        },
-        ar: {
-          church: "اختر الكنيسة",
-          helpChurch: "اختر كنيستك لضمان طباعة الطلب في المكان الصحيح.",
-          remembrance: "الذكرى",
-          occasionRecently: "حديثًا",
-          occasion40: "الأربعين",
-          occasionYearly: "السنوية",
-          categoryRecently: "حديثًا",
-          category40: "الأربعين",
-          categoryYearly: "السنوية",
-          male: "رجال",
-          female: "سيدات",
-          placeholderNames: "اكتب الأسماء",
-          submit: "إرسال",
-          ok: "تم تسجيل الأسماء.",
-          err: "حدث خطأ، يرجى المحاولة مرة أخرى.",
-          needOccasion: "يرجى اختيار مناسبة واحدة على الأقل وإدخال أسماء لكل منها.",
-          needNamesForCategory: "لكل ذكرى تختارها، اكتب اسمًا واحدًا على الأقل (رجال أو سيدات).",
-          invalidNamesFormat:
-            "يرجى إدخال أسماء صحيحة (حروف فقط وبدون رموز أو أرقام عشوائية).",
-        },
-      };
-
-      let currentLang = "en";
-
-      /* Apply translations to the page */
-      function applyTranslations() {
-        const t = translations[currentLang];
-        document.documentElement.lang = currentLang;
-        document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
-        document.getElementById("lbl-church").textContent = t.church;
-        document.getElementById("help-church").textContent = t.helpChurch;
-        document.getElementById("lbl-remembrance").textContent = t.remembrance;
-        document.getElementById("lbl-occasion-recently").textContent = t.occasionRecently;
-        document.getElementById("lbl-occasion-40").textContent = t.occasion40;
-        document.getElementById("lbl-occasion-yearly").textContent = t.occasionYearly;
-        document.getElementById("lbl-cat-recently").textContent = t.categoryRecently;
-        document.getElementById("lbl-cat-40th").textContent = t.category40;
-        document.getElementById("lbl-cat-yearly").textContent = t.categoryYearly;
-        document.getElementById("lbl-male-recently").textContent = t.male;
-        document.getElementById("lbl-female-recently").textContent = t.female;
-        document.getElementById("lbl-male-40th").textContent = t.male;
-        document.getElementById("lbl-female-40th").textContent = t.female;
-        document.getElementById("lbl-male-yearly").textContent = t.male;
-        document.getElementById("lbl-female-yearly").textContent = t.female;
-        document.getElementById("male-recently").placeholder = t.placeholderNames;
-        document.getElementById("female-recently").placeholder = t.placeholderNames;
-        document.getElementById("male-40th").placeholder = t.placeholderNames;
-        document.getElementById("female-40th").placeholder = t.placeholderNames;
-        document.getElementById("male-yearly").placeholder = t.placeholderNames;
-        document.getElementById("female-yearly").placeholder = t.placeholderNames;
-        document.getElementById("submitBtn").textContent = t.submit;
-      }
-
-      document.getElementById("lang-en").addEventListener("click", () => {
-        currentLang = "en";
-        document.getElementById("lang-en").classList.add("active");
-        document.getElementById("lang-ar").classList.remove("active");
-        applyTranslations();
-      });
-      document.getElementById("lang-ar").addEventListener("click", () => {
-        currentLang = "ar";
-        document.getElementById("lang-ar").classList.add("active");
-        document.getElementById("lang-en").classList.remove("active");
-        applyTranslations();
-      });
-
-      applyTranslations();
-
-      /* Load churches from API */
-      async function loadChurches() {
-        try {
-          const res = await fetch(`${API_BASE}/api/churches`);
-          const data = await res.json();
-          const select = document.getElementById("church");
-          select.innerHTML = "";
-          (data.churches || []).forEach((c) => {
-            const opt = document.createElement("option");
-            opt.value = c.id;
-            opt.textContent = c.name;
-            select.appendChild(opt);
-          });
-        } catch (err) {
-          console.error("Failed to load churches:", err);
-        }
-      }
-      loadChurches();
-
-      /* Show/hide category sections based on checkbox */
-      function bindCategoryToggle(checkboxId, sectionId) {
-        const cb = document.getElementById(checkboxId);
-        const section = document.getElementById(sectionId);
-        cb.addEventListener("change", () => {
-          section.style.display = cb.checked ? "block" : "none";
-          if (!cb.checked) {
-            section.querySelectorAll("textarea").forEach((ta) => (ta.value = ""));
-          }
-        });
-      }
-      bindCategoryToggle("occ-recently", "section-recently");
-      bindCategoryToggle("occ-40th", "section-40th");
-      bindCategoryToggle("occ-yearly", "section-yearly");
-
-      /* Validation functions for names */
-      function hasLongRepeat(str) {
-        return /(.)(\1){3,}/u.test(str);
-      }
-      function ratioNonAlnum(str) {
-        const total = str.length || 1;
-        const non = (str.match(/[^ \p{L}\p{N}\n]/gu) || []).length;
-        return non / total;
-      }
-      function validateNamesContent(str, t) {
-        const s = (str || "").trim();
-        if (!s) return t.invalidNamesFormat;
-        const parts = s.split(/[\n,]+/).map((x) => x.trim()).filter(Boolean);
-        if (!parts.length) return t.invalidNamesFormat;
-        for (const name of parts) {
-          const letters = (name.match(/\p{L}/gu) || []).length;
-          const digits = (name.match(/\d/g) || []).length;
-          if (letters < 2) return t.invalidNamesFormat;
-          if (digits > 0) return t.invalidNamesFormat;
-          if (hasLongRepeat(name)) return t.invalidNamesFormat;
-          if (ratioNonAlnum(name) > 0.25) return t.invalidNamesFormat;
-        }
-        return null;
-      }
-
-      // Empty is OK (optional). Validate only if user typed something.
-      function validateNamesOptional(str, t) {
-        const s = (str || "").trim();
-        if (!s) return null;
-        return validateNamesContent(s, t);
-      }<!doctype html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Coptic Note – Commemoration</title>
-    <meta
-      name="description"
-      content="Submit memorial names for the departed. Choose your church and record names for recently departed, the 40th day and annual commemorations."
-    />
-    <link rel="icon" type="image/svg+xml" href="assets/favors.svg" />
-
-    <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-RJ9ZRC3PW3");
-    </script>
-
-    <style>
-      /* Root colour palette: white background with dark red accents */
-      :root {
-        --bg: #faf7f2;
-        --paper: #ffffff;
-        --border: #e2e2e0;
-        --text: #2a2a2a;
-        --muted: #6c6c6b;
-        --accent: #800000;
-        --accent-light: #a52a2a;
-        --gold: #c8a951; /* gold accent */
-        --focus-ring: rgba(200, 169, 81, 0.3); /* gold highlight */
-
-        /* Spacing + radius */
-        --field-pad: 14px;
-        --field-radius: 12px;
-
-        /* Responsive helpers */
-        --page-pad: clamp(12px, 2.5vw, 28px);
-        --card-pad: clamp(16px, 3vw, 28px);
-        --btn-pad-y: clamp(10px, 1.8vh, 14px);
-        --btn-pad-x: clamp(14px, 3vw, 22px);
-        --control-font: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
-        --h1-size: clamp(1.25rem, 1.05rem + 1.2vw, 1.6rem);
-        --note-size: clamp(0.82rem, 0.78rem + 0.2vw, 0.9rem);
-        --social-size: clamp(48px, 7vw, 64px);
-        --social-icon: clamp(22px, 3.2vw, 28px);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        padding: var(--page-pad);
-        font-family: "Noto Sans", Arial, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        min-height: 100vh;
+      /* (Optional) radio-group styling so checkboxes don't look unstyled */
+      .radio-group {
         display: flex;
-        align-items: flex-start;
-        justify-content: center;
-        flex-direction: column;
         gap: 12px;
+        flex-wrap: wrap;
       }
-
-      .card {
-        background: var(--paper);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        width: 100%;
-        max-width: 600px;
-        padding: var(--card-pad);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        margin-inline: auto;
-      }
-
-      /* ===== Header ===== */
-      .header {
-        display: flex;
-        flex-direction: column;
+      .radio-group label {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
         gap: 8px;
-        margin-bottom: 16px;
-        text-align: center;
-      }
-
-      .header img {
-        height: clamp(40px, 6vw, 52px);
-        width: auto;
-        display: block;
-      }
-
-      h1 {
         margin: 0;
-        font-size: var(--h1-size);
-        font-weight: 700;
-        color: var(--accent);
-        text-align: center;
-      }
-
-      .form-group {
-        margin-bottom: clamp(14px, 2.2vw, 20px);
-      }
-
-      label {
-        display: block;
-        margin-bottom: 6px;
         font-weight: 600;
-        color: var(--accent);
-        font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
-      }
-
-      select,
-      input[type="text"],
-      textarea {
-        display: block;
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: var(--field-radius);
-        background: #fff;
-        padding-block: clamp(10px, 1.8vh, 12px);
-        padding-inline: var(--field-pad);
-        font-size: var(--control-font);
         color: var(--text);
-        outline: none;
-        transition: border-color 0.15s ease, box-shadow 0.15s ease;
       }
-
-      select:focus,
-      input[type="text"]:focus,
-      textarea:focus {
-        border-color: var(--gold);
-        box-shadow: 0 0 0 3px var(--focus-ring);
+      .radio-group input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--accent);
       }
-
-      select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='%237d1a1a' d='M4 6l4 4 4-4z'/></svg>");
-        background-repeat: no-repeat;
-        background-position: right 12px center;
-        background-size: 16px 16px;
-        padding-right: calc(var(--field-pad) + 24px);
-      }
-
-      html[dir="rtl"] select {
-        background-position: left 12px center;
-        padding-left: calc(var(--field-pad) + 24px);
-        padding-right: var(--field-pad);
-      }
-
-      textarea {
-        min-height: clamp(100px, 18vh, 220px);
-        resize: vertical;
-      }
-
-      .note {
-        font-size: var(--note-size);
-        color: var(--muted);
-      }
-
-      button {
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        padding: var(--btn-pad-y) var(--btn-pad-x);
-        font-size: var(--control-font);
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.15s ease, box-shadow 0.15s ease;
-      }
-
-      button:hover {
-        background: var(--accent-light);
-        box-shadow: 0 0 8px var(--gold);
-      }
-
-      /* Language switch */
-      .lang-switch {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: clamp(8px, 1.8vw, 12px);
-        margin: 0 0 18px;
-        width: 100%;
-        direction: ltr;
-      }
-
-      #lang-en {
-        order: 0;
-      }
-      #lang-ar {
-        order: 1;
-      }
-
-      .lang-switch button {
-        background: transparent;
-        border: 1px solid var(--border);
-        color: var(--text);
-        padding: 8px 14px;
-        border-radius: 8px;
-        font-size: var(--control-font);
-        line-height: 1;
-        min-width: 110px;
-        flex: 0 0 auto;
-      }
-
-      .lang-switch button.active {
-        background: var(--accent);
-        color: #fff;
-        border-color: var(--accent);
-      }
-
-      .status-message {
-        margin-top: 12px;
-        font-weight: 600;
-      }
-      .status-ok {
-        color: #1d8e53;
-      }
-      .status-error {
-        color: #b12b2b;
-      }
-
-      /* Category sections */
-      .category-section {
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-        margin-top: 12px;
-        margin-bttom: 16px;
-        display: none;
-        background: var(--paper);
-      }
-
-      #submitBtn {
-        margin-top: 14px;
-      }
-
-      .category-header {
-        font-weight: 600;
-        color: var(--accent);
-        margin-bottom: 6px;
-      }
-      .dual-textareas {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .dual-textareas .half {
-        flex: 1 1 48%;
-        min-width: 240px;
-      }
-
-      .dual-textareas label {
-        font-weight: 600;
-        color: var(--accent);
-        margin-bottom: 4px;
-      }
-
-      @media (max-width: 480px) {
-        .dual-textareas {
-          gap: 10px;
-        }
-
-        .dual-textareas .half {
-          flex: 1 1 48%;
-          min-width: 0;
-        }
-
-        textarea {
-          min-height: 140px;
-        }
-      }
-
-      /* Button to return to the prayer note (white background with black text) */
-      .prayernote-btn {
-        background: #ffffff;
-        color: #000;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 8px 14px;
-        font-size: var(--control-font);
-        line-height: 1;
-        text-decoration: none;
-        cursor: pointer;
-        white-space: nowrap;
-        display: block;
-        width: fit-content;
-        margin: 10px auto 0;
-        text-align: center;
-        max-width: 100%;
-      }
-
-      .prayernote-btn:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--focus-ring);
-        background: #ffffff;
-      }
-
-      /* === Social buttons strip UNDER the card === */
-      .social-row {
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .social-btn {
-        width: var(--social-size);
-        height: var(--social-size);
-        background: #ffffff;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        user-select: none;
-        transition: box-shadow 0.15s ease, transform 0.15s ease,
-          border-color 0.15s ease;
-      }
-
-      .social-btn:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--focus-ring);
-        transform: translateY(-1px);
-      }
-
-      .social-btn img {
-        width: var(--social-icon);
-        height: var(--social-icon);
-        display: block;
+      html[dir="rtl"] .radio-group {
+        justify-content: flex-start;
       }
     </style>
   </head>
+
   <body>
     <div class="card">
       <div class="header">
@@ -1155,7 +521,7 @@
     </div>
 
     <script>
-      const API_BASE = "https://api.copticnote.com"; // update this to your backend API base if needed
+      const API_BASE = "https://api.copticnote.com";
 
       /* Translation strings for English and Arabic */
       const translations = {
@@ -1206,45 +572,56 @@
 
       let currentLang = "en";
 
+      function $(id) {
+        return document.getElementById(id);
+      }
+
       /* Apply translations to the page */
       function applyTranslations() {
         const t = translations[currentLang];
         document.documentElement.lang = currentLang;
         document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
-        document.getElementById("lbl-church").textContent = t.church;
-        document.getElementById("help-church").textContent = t.helpChurch;
-        document.getElementById("lbl-remembrance").textContent = t.remembrance;
-        document.getElementById("lbl-occasion-recently").textContent = t.occasionRecently;
-        document.getElementById("lbl-occasion-40").textContent = t.occasion40;
-        document.getElementById("lbl-occasion-yearly").textContent = t.occasionYearly;
-        document.getElementById("lbl-cat-recently").textContent = t.categoryRecently;
-        document.getElementById("lbl-cat-40th").textContent = t.category40;
-        document.getElementById("lbl-cat-yearly").textContent = t.categoryYearly;
-        document.getElementById("lbl-male-recently").textContent = t.male;
-        document.getElementById("lbl-female-recently").textContent = t.female;
-        document.getElementById("lbl-male-40th").textContent = t.male;
-        document.getElementById("lbl-female-40th").textContent = t.female;
-        document.getElementById("lbl-male-yearly").textContent = t.male;
-        document.getElementById("lbl-female-yearly").textContent = t.female;
-        document.getElementById("male-recently").placeholder = t.placeholderNames;
-        document.getElementById("female-recently").placeholder = t.placeholderNames;
-        document.getElementById("male-40th").placeholder = t.placeholderNames;
-        document.getElementById("female-40th").placeholder = t.placeholderNames;
-        document.getElementById("male-yearly").placeholder = t.placeholderNames;
-        document.getElementById("female-yearly").placeholder = t.placeholderNames;
-        document.getElementById("submitBtn").textContent = t.submit;
+
+        $("lbl-church").textContent = t.church;
+        $("help-church").textContent = t.helpChurch;
+        $("lbl-remembrance").textContent = t.remembrance;
+
+        $("lbl-occasion-recently").textContent = t.occasionRecently;
+        $("lbl-occasion-40").textContent = t.occasion40;
+        $("lbl-occasion-yearly").textContent = t.occasionYearly;
+
+        $("lbl-cat-recently").textContent = t.categoryRecently;
+        $("lbl-cat-40th").textContent = t.category40;
+        $("lbl-cat-yearly").textContent = t.categoryYearly;
+
+        $("lbl-male-recently").textContent = t.male;
+        $("lbl-female-recently").textContent = t.female;
+        $("lbl-male-40th").textContent = t.male;
+        $("lbl-female-40th").textContent = t.female;
+        $("lbl-male-yearly").textContent = t.male;
+        $("lbl-female-yearly").textContent = t.female;
+
+        $("male-recently").placeholder = t.placeholderNames;
+        $("female-recently").placeholder = t.placeholderNames;
+        $("male-40th").placeholder = t.placeholderNames;
+        $("female-40th").placeholder = t.placeholderNames;
+        $("male-yearly").placeholder = t.placeholderNames;
+        $("female-yearly").placeholder = t.placeholderNames;
+
+        $("submitBtn").textContent = t.submit;
       }
 
-      document.getElementById("lang-en").addEventListener("click", () => {
+      $("lang-en").addEventListener("click", () => {
         currentLang = "en";
-        document.getElementById("lang-en").classList.add("active");
-        document.getElementById("lang-ar").classList.remove("active");
+        $("lang-en").classList.add("active");
+        $("lang-ar").classList.remove("active");
         applyTranslations();
       });
-      document.getElementById("lang-ar").addEventListener("click", () => {
+
+      $("lang-ar").addEventListener("click", () => {
         currentLang = "ar";
-        document.getElementById("lang-ar").classList.add("active");
-        document.getElementById("lang-en").classList.remove("active");
+        $("lang-ar").classList.add("active");
+        $("lang-en").classList.remove("active");
         applyTranslations();
       });
 
@@ -1252,12 +629,25 @@
 
       /* Load churches from API */
       async function loadChurches() {
+        const select = $("church");
+        select.innerHTML = "";
+
         try {
-          const res = await fetch(`${API_BASE}/api/churches`);
+          const res = await fetch(`${API_BASE}/api/churches`, { cache: "no-store" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
           const data = await res.json();
-          const select = document.getElementById("church");
-          select.innerHTML = "";
-          (data.churches || []).forEach((c) => {
+          const churches = Array.isArray(data.churches) ? data.churches : [];
+
+          if (!churches.length) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "No churches found";
+            select.appendChild(opt);
+            return;
+          }
+
+          churches.forEach((c) => {
             const opt = document.createElement("option");
             opt.value = c.id;
             opt.textContent = c.name;
@@ -1265,14 +655,19 @@
           });
         } catch (err) {
           console.error("Failed to load churches:", err);
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = "Failed to load churches";
+          select.appendChild(opt);
         }
       }
       loadChurches();
 
       /* Show/hide category sections based on checkbox */
       function bindCategoryToggle(checkboxId, sectionId) {
-        const cb = document.getElementById(checkboxId);
-        const section = document.getElementById(sectionId);
+        const cb = $(checkboxId);
+        const section = $(sectionId);
+
         cb.addEventListener("change", () => {
           section.style.display = cb.checked ? "block" : "none";
           if (!cb.checked) {
@@ -1284,50 +679,78 @@
       bindCategoryToggle("occ-40th", "section-40th");
       bindCategoryToggle("occ-yearly", "section-yearly");
 
-      /* Validation functions for names */
+      /* ===== Validation (single, consistent version) ===== */
+
+      // Split by newline, comma, Arabic comma، semicolon
+      function splitNames(str) {
+        return (str || "")
+          .split(/[\n,،;]+/g)
+          .map((x) => x.trim())
+          .filter(Boolean);
+      }
+
       function hasLongRepeat(str) {
         return /(.)(\1){3,}/u.test(str);
       }
-      function ratioNonAlnum(str) {
-        const total = str.length || 1;
-        const non = (str.match(/[^ \p{L}\p{N}\n]/gu) || []).length;
-        return non / total;
+
+      function isValidPersonName(name) {
+        const n = (name || "").trim();
+        if (!n) return false;
+
+        // Reject any numbers in any script
+        if (/\p{N}/u.test(n)) return false;
+
+        // Normalize apostrophes
+        const normalized = n.replace(/[’`]/g, "'");
+
+        // Allow letters/marks with spaces, dot, hyphen, apostrophe between parts
+        const ok = /^[\p{L}\p{M}]+(?:[ .'-][\p{L}\p{M}]+)*$/u.test(normalized);
+        if (!ok) return false;
+
+        // Need at least 2 letters total
+        const letterCount = (normalized.match(/\p{L}/gu) || []).length;
+        if (letterCount < 2) return false;
+
+        // Anti-spam: repeated chars
+        if (hasLongRepeat(normalized)) return false;
+
+        return true;
       }
-      function validateNamesContent(str, t) {
+
+      function validateNamesOptional(str, t) {
         const s = (str || "").trim();
-        if (!s) return t.invalidNamesFormat;
-        const parts = s.split(/[\n,]+/).map((x) => x.trim()).filter(Boolean);
+        if (!s) return null; // empty is allowed
+        const parts = splitNames(s);
         if (!parts.length) return t.invalidNamesFormat;
         for (const name of parts) {
-          const letters = (name.match(/\p{L}/gu) || []).length;
-          const digits = (name.match(/\d/g) || []).length;
-          if (letters < 2) return t.invalidNamesFormat;
-          if (digits > 0) return t.invalidNamesFormat;
-          if (hasLongRepeat(name)) return t.invalidNamesFormat;
-          if (ratioNonAlnum(name) > 0.25) return t.invalidNamesFormat;
+          if (!isValidPersonName(name)) return t.invalidNamesFormat;
         }
         return null;
       }
 
-      // Empty is OK (optional). Validate only if user typed something.
-      function validateNamesOptional(str, t) {
-        const s = (str || "").trim();
-        if (!s) return null;
-        return validateNamesContent(s, t);
+      function showStatus(okText, errText) {
+        const ok = $("status-ok");
+        const err = $("status-error");
+        ok.style.display = "none";
+        err.style.display = "none";
+
+        if (okText) {
+          ok.textContent = okText;
+          ok.style.display = "block";
+        }
+        if (errText) {
+          err.textContent = errText;
+          err.style.display = "block";
+        }
       }
 
-      /* Form submission handler */
-      document.getElementById("commemorationForm").addEventListener("submit", async (e) => {
+      /* ===== Form submission handler (single) ===== */
+      $("commemorationForm").addEventListener("submit", async (e) => {
         e.preventDefault();
-        const statusOk = document.getElementById("status-ok");
-        const statusErr = document.getElementById("status-error");
-        statusOk.style.display = "none";
-        statusErr.style.display = "none";
         const t = translations[currentLang];
 
-        const churchId = document.getElementById("church").value;
+        const churchId = $("church").value;
 
-        // Collect selected categories and names
         const payload = {
           churchId,
           lang: currentLang,
@@ -1337,11 +760,11 @@
         let hasCategory = false;
 
         const addCategory = (cbId, key, maleId, femaleId) => {
-          const cb = document.getElementById(cbId);
+          const cb = $(cbId);
           if (cb && cb.checked) {
             hasCategory = true;
-            const maleNames = document.getElementById(maleId).value.trim();
-            const femaleNames = document.getElementById(femaleId).value.trim();
+            const maleNames = $(maleId).value.trim();
+            const femaleNames = $(femaleId).value.trim();
             payload.categories[key] = { male: maleNames, female: femaleNames };
           }
         };
@@ -1351,175 +774,35 @@
         addCategory("occ-yearly", "annually", "male-yearly", "female-yearly");
 
         if (!churchId) {
-          statusErr.textContent = t.err;
-          statusErr.style.display = "block";
+          showStatus(null, t.err);
           return;
         }
 
         if (!hasCategory) {
-          statusErr.textContent = t.needOccasion;
-          statusErr.style.display = "block";
+          showStatus(null, t.needOccasion);
           return;
         }
 
-        /* Validation functions for names (male/female optional, but if typed must be valid) */
-        function hasLongRepeat(str) {
-          return /(.)(\1){3,}/u.test(str);
-        }
-
-        // Split by: newline, comma, Arabic comma، semicolon
-        function splitNames(str) {
-          return (str || "")
-            .split(/[\n,،;]+/g)
-            .map((x) => x.trim())
-            .filter(Boolean);
-        }
-
-        // A "name token": letters + optional combining marks (Arabic tashkeel, accents)
-        function isValidPersonName(name) {
-          const n = (name || "").trim();
-          if (!n) return false;
-
-          // Reject any numbers in any script (Arabic-Indic digits etc.)
-          if (/\p{N}/u.test(n)) return false;
-
-          // Normalize common apostrophes
-          const normalized = n.replace(/[’`]/g, "'");
-
-          // Allow: letters/marks, spaces, hyphen, apostrophe, dot (for abbreviations like St. Mary)
-          // Must start/end with a letter/mark
-          const ok = /^[\p{L}\p{M}]+(?:[ .'-][\p{L}\p{M}]+)*$/u.test(normalized);
-          if (!ok) return false;
-
-          // Need at least 2 letters total (ignore spaces/punct/marks)
-          const letterCount = (normalized.match(/\p{L}/gu) || []).length;
-          if (letterCount < 2) return false;
-
-          // Anti-spam: long repeated character runs
-          if (hasLongRepeat(normalized)) return false;
-
-          return true;
-        }
-
-        function validateNamesContent(str, t) {
-          const s = (str || "").trim();
-          if (!s) return t.invalidNamesFormat;
-
-          const parts = splitNames(s);
-          if (!parts.length) return t.invalidNamesFormat;
-
-          for (const name of parts) {
-            if (!isValidPersonName(name)) return t.invalidNamesFormat;
-          }
-          return null;
-        }
-
-        // Empty is OK (optional). Validate only if user typed something.
-        function validateNamesOptional(str, t) {
-          const s = (str || "").trim();
-          if (!s) return null;
-          return validateNamesContent(s, t);
-        }
-
-
-        // Send to backend
-        try {
-          const res = await fetch(`${API_BASE}/api/submit-commemoration`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-          if (res.ok) {
-            document.getElementById("commemorationForm").reset();
-            ["section-recently", "section-40th", "section-yearly"].forEach((id) => {
-              document.getElementById(id).style.display = "none";
-            });
-            statusOk.textContent = t.ok;
-            statusOk.style.display = "block";
-          } else {
-            const j = await res.json().catch(() => ({}));
-            statusErr.textContent = j.error || t.err;
-            statusErr.style.display = "block";
-          }
-        } catch (err) {
-          statusErr.textContent = t.err;
-          statusErr.style.display = "block";
-        }
-      });
-    </script>
-  </body>
-</html>
-
-      /* Form submission handler */
-      document.getElementById("commemorationForm").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const statusOk = document.getElementById("status-ok");
-        const statusErr = document.getElementById("status-error");
-        statusOk.style.display = "none";
-        statusErr.style.display = "none";
-        const t = translations[currentLang];
-
-        const churchId = document.getElementById("church").value;
-
-        // Collect selected categories and names
-        const payload = {
-          churchId,
-          lang: currentLang,
-          categories: {},
-        };
-
-        let hasCategory = false;
-
-        const addCategory = (cbId, key, maleId, femaleId) => {
-          const cb = document.getElementById(cbId);
-          if (cb && cb.checked) {
-            hasCategory = true;
-            const maleNames = document.getElementById(maleId).value.trim();
-            const femaleNames = document.getElementById(femaleId).value.trim();
-            payload.categories[key] = { male: maleNames, female: femaleNames };
-          }
-        };
-
-        addCategory("occ-recently", "recently", "male-recently", "female-recently");
-        addCategory("occ-40th", "40th", "male-40th", "female-40th");
-        addCategory("occ-yearly", "annually", "male-yearly", "female-yearly");
-
-        if (!churchId) {
-          statusErr.textContent = t.err;
-          statusErr.style.display = "block";
-          return;
-        }
-
-        if (!hasCategory) {
-          statusErr.textContent = t.needOccasion;
-          statusErr.style.display = "block";
-          return;
-        }
-
-        // Validate: male/female are optional, but at least one must be filled per selected category
-        for (const key in payload.categories) {
+        // Validate each selected category: at least one of male/female filled, and content valid if present
+        for (const key of Object.keys(payload.categories)) {
           const cat = payload.categories[key];
           const male = (cat.male || "").trim();
           const female = (cat.female || "").trim();
 
           if (!male && !female) {
-            statusErr.textContent = t.needNamesForCategory || t.needOccasion;
-            statusErr.style.display = "block";
+            showStatus(null, t.needNamesForCategory || t.needOccasion);
             return;
           }
 
           const maleErr = validateNamesOptional(male, t);
           if (maleErr) {
-            statusErr.textContent = maleErr;
-            statusErr.style.display = "block";
+            showStatus(null, maleErr);
             return;
           }
 
           const femaleErr = validateNamesOptional(female, t);
           if (femaleErr) {
-            statusErr.textContent = femaleErr;
-            statusErr.style.display = "block";
+            showStatus(null, femaleErr);
             return;
           }
         }
@@ -1533,20 +816,17 @@
           });
 
           if (res.ok) {
-            document.getElementById("commemorationForm").reset();
+            $("commemorationForm").reset();
             ["section-recently", "section-40th", "section-yearly"].forEach((id) => {
-              document.getElementById(id).style.display = "none";
+              $(id).style.display = "none";
             });
-            statusOk.textContent = t.ok;
-            statusOk.style.display = "block";
+            showStatus(t.ok, null);
           } else {
             const j = await res.json().catch(() => ({}));
-            statusErr.textContent = j.error || t.err;
-            statusErr.style.display = "block";
+            showStatus(null, j.error || t.err);
           }
         } catch (err) {
-          statusErr.textContent = t.err;
-          statusErr.style.display = "block";
+          showStatus(null, t.err);
         }
       });
     </script>
