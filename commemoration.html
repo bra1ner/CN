@@ -243,7 +243,7 @@
         display: none;
         background: var(--paper);
       }
-      
+
       #submitBtn {
         margin-top: 14px;
       }
@@ -284,7 +284,6 @@
         }
       }
 
-
       /* Button to return to the prayer note (white background with black text) */
       .prayernote-btn {
         background: #ffffff;
@@ -309,7 +308,7 @@
         box-shadow: 0 0 0 3px var(--focus-ring);
         background: #ffffff;
       }
-      
+
       /* === Social buttons strip UNDER the card === */
       .social-row {
         width: 100%;
@@ -334,7 +333,7 @@
         text-decoration: none;
         user-select: none;
         transition: box-shadow 0.15s ease, transform 0.15s ease,
-        border-color 0.15s ease;
+          border-color 0.15s ease;
       }
 
       .social-btn:hover {
@@ -347,7 +346,7 @@
         width: var(--social-icon);
         height: var(--social-icon);
         display: block;
-      }  
+      }
     </style>
   </head>
   <body>
@@ -369,11 +368,6 @@
           <label for="church" id="lbl-church">Choose Church</label>
           <select id="church" name="church" required aria-required="true"></select>
           <div class="note" id="help-church"></div>
-        </div>
-
-        <div class="form-group">
-          <label for="submitterName" id="lbl-name">Name (optional)</label>
-          <input type="text" id="submitterName" name="submitterName" placeholder="Anonymous" />
         </div>
 
         <div class="form-group">
@@ -442,10 +436,7 @@
         <button type="submit" id="submitBtn">Submit</button>
 
         <!-- Button to return to the prayer note page -->
-        <a
-          class="prayernote-btn"
-          id="prayernoteLink"
-          href="https://copticnote.com"
+        <a class="prayernote-btn" id="prayernoteLink" href="https://copticnote.com"
           >Prayer Note</a
         >
 
@@ -507,7 +498,6 @@
       </a>
     </div>
 
-
     <script>
       const API_BASE = "/"; // update this to your backend API base if needed
 
@@ -516,7 +506,6 @@
         en: {
           church: "Choose Church",
           helpChurch: "Select your parish so the list prints in the right place.",
-          name: "Name (optional)",
           remembrance: "Remembrance",
           occasionRecently: "Recently",
           occasion40: "40th Day",
@@ -536,7 +525,6 @@
         ar: {
           church: "اختر الكنيسة",
           helpChurch: "اختر كنيستك لضمان طباعة الطلب في المكان الصحيح.",
-          name: "الاسم (اختياري)",
           remembrance: "الذكرى",
           occasionRecently: "حديثًا",
           occasion40: "الأربعين",
@@ -564,7 +552,6 @@
         document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
         document.getElementById("lbl-church").textContent = t.church;
         document.getElementById("help-church").textContent = t.helpChurch;
-        document.getElementById("lbl-name").textContent = t.name;
         document.getElementById("lbl-remembrance").textContent = t.remembrance;
         document.getElementById("lbl-occasion-recently").textContent = t.occasionRecently;
         document.getElementById("lbl-occasion-40").textContent = t.occasion40;
@@ -672,16 +659,16 @@
         const t = translations[currentLang];
 
         const churchId = document.getElementById("church").value;
-        const submitterName = document.getElementById("submitterName").value.trim() || "Anonymous";
 
         // Collect selected categories and names
         const payload = {
           churchId,
-          submitterName,
           lang: currentLang,
           categories: {},
         };
+
         let hasCategory = false;
+
         const addCategory = (cbId, key, maleId, femaleId) => {
           const cb = document.getElementById(cbId);
           if (cb && cb.checked) {
@@ -691,6 +678,7 @@
             payload.categories[key] = { male: maleNames, female: femaleNames };
           }
         };
+
         addCategory("occ-recently", "recently", "male-recently", "female-recently");
         addCategory("occ-40th", "40th", "male-40th", "female-40th");
         addCategory("occ-yearly", "annually", "male-yearly", "female-yearly");
@@ -700,11 +688,13 @@
           statusErr.style.display = "block";
           return;
         }
+
         if (!hasCategory) {
           statusErr.textContent = t.needOccasion;
           statusErr.style.display = "block";
           return;
         }
+
         // Validate names for each selected category
         for (const key in payload.categories) {
           const cat = payload.categories[key];
@@ -729,6 +719,7 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           });
+
           if (res.ok) {
             document.getElementById("commemorationForm").reset();
             // Hide all category sections
