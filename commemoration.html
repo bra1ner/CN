@@ -657,8 +657,6 @@
         $("female-yearly").placeholder = t.placeholderNames;
 
         $("submitBtn").textContent = t.submit;
-
-        // Prayer Note button translation (Arabic should be "صلاة الطلبة")
         $("prayernoteLink").textContent = t.prayerNoteBtn;
       }
 
@@ -731,10 +729,11 @@
       bindCategoryToggle("occ-yearly", "section-yearly");
 
       /* ============================================================
-         INPUT FILTERING + 2 WORDS PER LINE (EN + AR)
+         INPUT FILTERING + 2 WORDS PER LINE + ALLOW ONLY ONE SPACE BETWEEN WORDS
          - Blocks ALL digits and ALL symbols EXCEPT comma ","
          - Allows letters (English/Arabic), spaces, new lines
          - Enforces max 2 words per line for BOTH English and Arabic
+         - Ensures only ONE space between the 2 words (no double spaces)
          ============================================================ */
 
       function sanitizeNamesInput(value) {
@@ -749,14 +748,15 @@
         // 3) collapse multiple commas
         out = out.replace(/,{2,}/g, ",");
 
+        // 4) collapse multiple spaces/tabs to ONE space (keeps newlines)
+        out = out.replace(/[^\S\r\n]{2,}/g, " ");
+
         return out;
       }
 
-      // --- NEW: 2 words per line (works for Arabic + English the same) ---
+      // 2 words per line + join words with EXACTLY one space
       function formatTwoWordsPerLine(value) {
         const v = (value || "").normalize("NFC");
-
-        // Split lines; keep empty lines
         const lines = v.split("\n");
         const outLines = [];
 
@@ -808,24 +808,30 @@
         };
 
         el.addEventListener("beforeinput", (e) => {
-          // allow deletes/backspace
           if (e.inputType && e.inputType.startsWith("delete")) return;
 
-          // block illegal characters early
           if (e.data) {
             const incoming = e.data;
 
-            // allow comma, whitespace, letters/marks only (Arabic + English both included)
+            // allow comma, whitespace, letters/marks only
             const ok = /^[\p{L}\p{M}\s,]+$/u.test(incoming);
             if (!ok) e.preventDefault();
-
-            // block digits
             if (/\p{N}/u.test(incoming)) e.preventDefault();
           }
 
-          // if user types a space but line already has 2 words -> convert to newline
+          // allow only ONE space between words:
+          // - if previous char is whitespace (space/tab) -> block another space
           if (e.data === " ") {
             const pos = el.selectionStart ?? 0;
+            const prevChar = pos > 0 ? el.value[pos - 1] : "";
+
+            // If immediately after a space/tab, block extra space
+            if (prevChar === " " || prevChar === "\t") {
+              e.preventDefault();
+              return;
+            }
+
+            // If line already has 2 words -> convert space to newline (same behavior)
             const { line } = getCurrentLineInfo(el.value, pos);
             const wordsNow = countWordsInLine(line);
 
@@ -834,16 +840,15 @@
               const start = el.selectionStart ?? 0;
               const end = el.selectionEnd ?? start;
               el.setRangeText("\n", start, end, "end");
+              return;
             }
           }
         });
 
-        // sanitize + enforce on input/paste (mobile safe)
         el.addEventListener("input", applySanitizeAndFormat);
         el.addEventListener("paste", () => setTimeout(applySanitizeAndFormat, 0));
       }
 
-      // Apply to all textareas in the form
       [
         "male-recently",
         "female-recently",
@@ -853,10 +858,10 @@
         "female-yearly",
       ].forEach((id) => enforceTextboxRules($(id)));
 
-      /* ===== Validation (updated to match the rule) ===== */
+      /* ===== Validation ===== */
       function splitNames(str) {
         return (str || "")
-          .split(/[\n,]+/g) // ONLY comma and newline as separators
+          .split(/[\n,]+/g)
           .map((x) => x.trim())
           .filter(Boolean);
       }
@@ -871,8 +876,8 @@
 
         if (/\p{N}/u.test(n)) return false;
 
-        // Only letters/marks and spaces inside each name (max 2 words enforced in UI anyway)
-        const ok = /^[\p{L}\p{M}]+(?:\s+[\p{L}\p{M}]+)*$/u.test(n);
+        // Only letters/marks and single spaces between words
+        const ok = /^[\p{L}\p{M}]+(?:\s[\p{L}\p{M}]+)*$/u.test(n);
         if (!ok) return false;
 
         const letterCount = (n.match(/\p{L}/gu) || []).length;
@@ -912,7 +917,7 @@
         }
       }
 
-      /* ===== Form submission handler (single) ===== */
+      /* ===== Form submission handler ===== */
       $("commemorationForm").addEventListener("submit", async (e) => {
         e.preventDefault();
         const t = translations[currentLang];
@@ -932,11 +937,9 @@
           if (cb && cb.checked) {
             hasCategory = true;
 
-            // sanitize + enforce 2-words-per-line right before submit (extra safety)
             const maleNames = formatTwoWordsPerLine(sanitizeNamesInput($(maleId).value)).trim();
             const femaleNames = formatTwoWordsPerLine(sanitizeNamesInput($(femaleId).value)).trim();
 
-            // write back so user sees what will be sent
             $(maleId).value = maleNames;
             $(femaleId).value = femaleNames;
 
