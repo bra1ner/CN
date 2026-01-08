@@ -344,7 +344,8 @@
         cursor: pointer;
         white-space: nowrap;
         width: fit-content;
-        transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+        transition: box-shadow 0.15s ease, transform 0.15s ease,
+          background-color 0.15s ease;
       }
 
       .prayernote-btn:hover {
@@ -729,10 +730,85 @@
       bindCategoryToggle("occ-40th", "section-40th");
       bindCategoryToggle("occ-yearly", "section-yearly");
 
-      /* ===== Validation (single, consistent version) ===== */
+      /* ============================================================
+         INPUT FILTERING (NEW)
+         - Blocks ALL digits and ALL symbols EXCEPT comma ","
+         - Allows letters (English/Arabic), spaces, new lines
+         - Also removes Arabic comma "،" and semicolons etc (only "," allowed)
+         ============================================================ */
+
+      // Keep only: letters + combining marks + space + newline + "." + "'" + "-" + comma
+      // But YOU asked: no symbols except ",".
+      // So we allow: letters, marks, spaces, newlines, and comma.
+      // (We do NOT allow period, apostrophe, hyphen, etc. Those will be removed.)
+      function sanitizeNamesInput(value) {
+        const v = (value || "").normalize("NFC");
+
+        // 1) remove all digits (any locale)
+        let out = v.replace(/\p{N}+/gu, "");
+
+        // 2) remove all punctuation/symbols EXCEPT comma and whitespace/newlines
+        // Keep:
+        // - Letters: \p{L}
+        // - Marks (for Arabic vowels etc): \p{M}
+        // - Whitespace: \s  (includes spaces, tabs, newlines)
+        // - Comma: ,
+        // Remove everything else: \p{P} punctuation, \p{S} symbols
+        out = out.replace(/[^\p{L}\p{M}\s,]+/gu, "");
+
+        // 3) Optional cleanup: collapse multiple commas/spaces a bit (safe)
+        out = out.replace(/,{2,}/g, ","); // ",,,," -> ","
+        return out;
+      }
+
+      function enforceTextboxRules(el) {
+        if (!el) return;
+
+        const applySanitize = () => {
+          const before = el.value;
+          const after = sanitizeNamesInput(before);
+          if (before !== after) {
+            const pos = el.selectionStart || 0;
+            const delta = before.length - after.length;
+            el.value = after;
+            // best-effort caret correction
+            try {
+              el.setSelectionRange(Math.max(0, pos - delta), Math.max(0, pos - delta));
+            } catch {}
+          }
+        };
+
+        // Block illegal keystrokes early (still keep paste sanitization below)
+        el.addEventListener("beforeinput", (e) => {
+          if (!e.data) return; // e.g., delete/backspace
+          const incoming = e.data;
+
+          // allow comma, whitespace, and letters/marks only
+          const ok = /^[\p{L}\p{M}\s,]+$/u.test(incoming);
+          if (!ok) e.preventDefault();
+          // block any digits
+          if (/\p{N}/u.test(incoming)) e.preventDefault();
+        });
+
+        // Sanitize on paste/input (covers mobile, drag-drop, etc.)
+        el.addEventListener("input", applySanitize);
+        el.addEventListener("paste", () => setTimeout(applySanitize, 0));
+      }
+
+      // Apply to all textareas in the form
+      [
+        "male-recently",
+        "female-recently",
+        "male-40th",
+        "female-40th",
+        "male-yearly",
+        "female-yearly",
+      ].forEach((id) => enforceTextboxRules($(id)));
+
+      /* ===== Validation (updated to match the new rule) ===== */
       function splitNames(str) {
         return (str || "")
-          .split(/[\n,،;]+/g)
+          .split(/[\n,]+/g) // ONLY comma and newline as separators
           .map((x) => x.trim())
           .filter(Boolean);
       }
@@ -745,17 +821,18 @@
         const n = (name || "").trim();
         if (!n) return false;
 
+        // no digits
         if (/\p{N}/u.test(n)) return false;
 
-        const normalized = n.replace(/[’`]/g, "'");
-
-        const ok = /^[\p{L}\p{M}]+(?:[ .'-][\p{L}\p{M}]+)*$/u.test(normalized);
+        // Only letters/marks and spaces inside each name part
+        // (commas are separators, not allowed inside a single name token)
+        const ok = /^[\p{L}\p{M}]+(?:\s+[\p{L}\p{M}]+)*$/u.test(n);
         if (!ok) return false;
 
-        const letterCount = (normalized.match(/\p{L}/gu) || []).length;
+        const letterCount = (n.match(/\p{L}/gu) || []).length;
         if (letterCount < 2) return false;
 
-        if (hasLongRepeat(normalized)) return false;
+        if (hasLongRepeat(n)) return false;
 
         return true;
       }
@@ -763,8 +840,11 @@
       function validateNamesOptional(str, t) {
         const s = (str || "").trim();
         if (!s) return null;
+
+        // If someone typed only commas/spaces/newlines -> invalid
         const parts = splitNames(s);
         if (!parts.length) return t.invalidNamesFormat;
+
         for (const name of parts) {
           if (!isValidPersonName(name)) return t.invalidNamesFormat;
         }
@@ -806,8 +886,15 @@
           const cb = $(cbId);
           if (cb && cb.checked) {
             hasCategory = true;
-            const maleNames = $(maleId).value.trim();
-            const femaleNames = $(femaleId).value.trim();
+
+            // sanitize right before submit too (extra safety)
+            const maleNames = sanitizeNamesInput($(maleId).value).trim();
+            const femaleNames = sanitizeNamesInput($(femaleId).value).trim();
+
+            // write back so user sees what will be sent
+            $(maleId).value = maleNames;
+            $(femaleId).value = femaleNames;
+
             payload.categories[key] = { male: maleNames, female: femaleNames };
           }
         };
