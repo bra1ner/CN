@@ -303,7 +303,7 @@
         justify-content: flex-start;
       }
 
-      /* === Submit + Prayer Note row (FIXED like prayer page) === */
+      /* === Submit + Prayer Note row === */
       .form-actions {
         display: flex;
         align-items: center;
@@ -729,11 +729,11 @@
       bindCategoryToggle("occ-yearly", "section-yearly");
 
       /* ============================================================
-         INPUT FILTERING + 2 WORDS PER LINE + ALLOW ONLY ONE SPACE BETWEEN WORDS
+         INPUT FILTERING + 2 WORDS PER LINE + ONE SPACE BETWEEN WORDS
          - Blocks ALL digits and ALL symbols EXCEPT comma ","
          - Allows letters (English/Arabic), spaces, new lines
          - Enforces max 2 words per line for BOTH English and Arabic
-         - Ensures only ONE space between the 2 words (no double spaces)
+         - Allows typing the 2nd word normally (doesn't trim the space away mid-typing)
          ============================================================ */
 
       function sanitizeNamesInput(value) {
@@ -754,17 +754,26 @@
         return out;
       }
 
-      // 2 words per line + join words with EXACTLY one space
+      // 2 words per line, BUT keep ONE trailing space if user is typing 2nd word
       function formatTwoWordsPerLine(value) {
         const v = (value || "").normalize("NFC");
         const lines = v.split("\n");
         const outLines = [];
 
-        for (const line of lines) {
-          const words = line.trim().split(/\s+/).filter(Boolean);
+        for (const rawLine of lines) {
+          const hasTrailingSpace = /[^\S\r\n]$/.test(rawLine);
+          const trimmed = rawLine.trim();
 
-          if (words.length === 0) {
+          if (!trimmed) {
             outLines.push("");
+            continue;
+          }
+
+          const words = trimmed.split(/\s+/).filter(Boolean);
+
+          // keep "First " while user hasn't typed 2nd word yet
+          if (words.length === 1 && hasTrailingSpace) {
+            outLines.push(words[0] + " ");
             continue;
           }
 
@@ -794,20 +803,24 @@
 
         const applySanitizeAndFormat = () => {
           const before = el.value;
+          const caret = el.selectionStart ?? before.length;
 
           let after = sanitizeNamesInput(before);
           after = formatTwoWordsPerLine(after);
 
           if (before !== after) {
-            const pos = el.selectionStart || 0;
+            const delta = after.length - before.length;
+            const newPos = Math.max(0, Math.min(after.length, caret + delta));
+
             el.value = after;
             try {
-              el.setSelectionRange(Math.min(pos, after.length), Math.min(pos, after.length));
+              el.setSelectionRange(newPos, newPos);
             } catch {}
           }
         };
 
         el.addEventListener("beforeinput", (e) => {
+          // allow deletes/backspace
           if (e.inputType && e.inputType.startsWith("delete")) return;
 
           if (e.data) {
@@ -816,22 +829,23 @@
             // allow comma, whitespace, letters/marks only
             const ok = /^[\p{L}\p{M}\s,]+$/u.test(incoming);
             if (!ok) e.preventDefault();
+
+            // block digits
             if (/\p{N}/u.test(incoming)) e.preventDefault();
           }
 
-          // allow only ONE space between words:
-          // - if previous char is whitespace (space/tab) -> block another space
+          // Space behavior:
+          // - block double spaces
+          // - if line already has 2 words, convert the space to newline
           if (e.data === " ") {
             const pos = el.selectionStart ?? 0;
             const prevChar = pos > 0 ? el.value[pos - 1] : "";
 
-            // If immediately after a space/tab, block extra space
             if (prevChar === " " || prevChar === "\t") {
               e.preventDefault();
               return;
             }
 
-            // If line already has 2 words -> convert space to newline (same behavior)
             const { line } = getCurrentLineInfo(el.value, pos);
             const wordsNow = countWordsInLine(line);
 
@@ -845,6 +859,7 @@
           }
         });
 
+        // sanitize + enforce on input/paste (mobile safe)
         el.addEventListener("input", applySanitizeAndFormat);
         el.addEventListener("paste", () => setTimeout(applySanitizeAndFormat, 0));
       }
