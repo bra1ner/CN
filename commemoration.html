@@ -311,23 +311,12 @@
         gap: 12px;
         margin-top: 14px;
         width: 100%;
-        flex-direction: row; /* keep stable */
+        flex-direction: row; /* English */
       }
 
-      /* LTR: Submit LEFT, Prayer RIGHT */
-      html[dir="ltr"] #submitBtn {
-        order: 0;
-      }
-      html[dir="ltr"] #prayernoteLink {
-        order: 1;
-      }
-
-      /* RTL: Prayer LEFT, Submit RIGHT */
-      html[dir="rtl"] #submitBtn {
-        order: 1;
-      }
-      html[dir="rtl"] #prayernoteLink {
-        order: 0;
+      /* ✅ Arabic: swap positions reliably */
+      html[dir="rtl"] .form-actions {
+        flex-direction: row-reverse;
       }
 
       #submitBtn {
@@ -377,7 +366,6 @@
           width: auto !important;
         }
       }
-
 
       /* === Social buttons strip UNDER the card === */
       .social-row {
@@ -649,28 +637,10 @@
       }
 
       /* Apply translations to the page */
-      function forceActionButtonsOrder() {
-        const submit = $("submitBtn");
-        const prayer = $("prayernoteLink");
-        if (!submit || !prayer) return;
-
-        if (document.documentElement.dir === "rtl") {
-          // Prayer LEFT, Submit RIGHT
-          submit.style.order = "1";
-          prayer.style.order = "0";
-        } else {
-          // Submit LEFT, Prayer RIGHT
-          submit.style.order = "0";
-          prayer.style.order = "1";
-        }
-      }
-
-      
       function applyTranslations() {
         const t = translations[currentLang];
         document.documentElement.lang = currentLang;
         document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
-        console.log("DIR NOW =", document.documentElement.dir);
 
         $("pageTitle").textContent = t.pageTitle;
 
@@ -703,12 +673,8 @@
         $("submitBtn").textContent = t.submit;
         $("prayernoteLink").textContent = t.prayerNoteBtn;
 
-        // force correct visual order for the action buttons
-        forceActionButtonsOrder();
-
         // keep widths synced after language changes
         syncSubmitToPrayerNoteWidth();
-
       }
 
       $("lang-en").addEventListener("click", () => {
