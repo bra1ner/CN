@@ -303,7 +303,7 @@
         justify-content: flex-start;
       }
 
-      /* ===== Submit + Prayer Note (swap correctly + same width) ===== */
+      /* ===== Submit + Prayer Note (ALWAYS swap in Arabic) ===== */
       .form-actions {
         display: flex;
         align-items: center;
@@ -311,15 +311,23 @@
         gap: 12px;
         margin-top: 14px;
         width: 100%;
+        flex-direction: row; /* keep stable */
       }
 
-      /* Force the row direction based on language */
-      html[dir="ltr"] .form-actions {
-        flex-direction: row; /* Submit left, Prayer right */
+      /* LTR: Submit LEFT, Prayer RIGHT */
+      html[dir="ltr"] #submitBtn {
+        order: 0;
+      }
+      html[dir="ltr"] #prayernoteLink {
+        order: 1;
       }
 
-      html[dir="rtl"] .form-actions {
-        flex-direction: row-reverse; /* Prayer left, Submit right */
+      /* RTL: Prayer LEFT, Submit RIGHT */
+      html[dir="rtl"] #submitBtn {
+        order: 1;
+      }
+      html[dir="rtl"] #prayernoteLink {
+        order: 0;
       }
 
       #submitBtn {
@@ -356,7 +364,7 @@
         background: #111;
       }
 
-      /* ✅ MOBILE FIX: keep BOTH buttons on ONE ROW and make them equal width */
+      /* ✅ MOBILE: keep BOTH buttons on ONE ROW and equal width */
       @media (max-width: 520px) {
         .form-actions {
           align-items: stretch;
@@ -369,6 +377,7 @@
           width: auto !important;
         }
       }
+
 
       /* === Social buttons strip UNDER the card === */
       .social-row {
