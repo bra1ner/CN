@@ -303,29 +303,29 @@
         justify-content: flex-start;
       }
 
-      /* === Submit + Prayer Note row === */
+      /* ===== Submit + Prayer Note (swap correctly + same width) ===== */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between; /* far-left + far-right */
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
 
-      /* LTR: push Prayer Note to the RIGHT */
-      .form-actions #prayernoteLink {
-        margin-left: auto;
+      /* Force the row direction based on language */
+      html[dir="ltr"] .form-actions {
+        flex-direction: row; /* Submit left, Prayer right */
       }
 
-      /* RTL: push Prayer Note to the LEFT */
-      html[dir="rtl"] .form-actions #prayernoteLink {
-        margin-left: 0;
-        margin-right: auto;
+      html[dir="rtl"] .form-actions {
+        flex-direction: row-reverse; /* Prayer left, Submit right */
       }
 
       #submitBtn {
         margin-top: 0;
+        flex: 0 0 auto;
+        /* width is set by JS to match Prayer Note (desktop/tablet) */
       }
 
       .prayernote-btn {
@@ -343,7 +343,9 @@
         text-decoration: none;
         cursor: pointer;
         white-space: nowrap;
-        width: fit-content;
+        width: auto;
+        max-width: 100%;
+        flex: 0 0 auto;
         transition: box-shadow 0.15s ease, transform 0.15s ease,
           background-color 0.15s ease;
       }
@@ -354,19 +356,17 @@
         background: #111;
       }
 
-      @media (max-width: 420px) {
+      /* ✅ MOBILE FIX: keep BOTH buttons on ONE ROW and make them equal width */
+      @media (max-width: 520px) {
         .form-actions {
-          flex-direction: column;
           align-items: stretch;
+          gap: 10px;
         }
-        .form-actions > * {
-          width: 100%;
-        }
-        .prayernote-btn {
-          justify-content: center;
-          width: 100%;
-          margin-left: 0;
-          margin-right: 0;
+
+        #submitBtn,
+        #prayernoteLink {
+          flex: 1 1 0;
+          width: auto !important;
         }
       }
 
@@ -622,6 +622,23 @@
         return document.getElementById(id);
       }
 
+      /* Match Submit width to Prayer Note (desktop/tablet). On mobile CSS makes them equal. */
+      function syncSubmitToPrayerNoteWidth() {
+        const submit = document.getElementById("submitBtn");
+        const prayer = document.getElementById("prayernoteLink");
+        if (!submit || !prayer) return;
+
+        // Reset so prayer is measured at natural width
+        submit.style.width = "";
+
+        // Mobile: CSS controls equal widths
+        const isMobileRow = window.matchMedia("(max-width: 520px)").matches;
+        if (isMobileRow) return;
+
+        const w = Math.ceil(prayer.getBoundingClientRect().width);
+        submit.style.width = w + "px";
+      }
+
       /* Apply translations to the page */
       function applyTranslations() {
         const t = translations[currentLang];
@@ -658,6 +675,9 @@
 
         $("submitBtn").textContent = t.submit;
         $("prayernoteLink").textContent = t.prayerNoteBtn;
+
+        // keep widths synced after language changes
+        syncSubmitToPrayerNoteWidth();
       }
 
       $("lang-en").addEventListener("click", () => {
@@ -675,6 +695,17 @@
       });
 
       applyTranslations();
+
+      // Ensure width sync after first paint + on resize
+      document.addEventListener("DOMContentLoaded", () => {
+        syncSubmitToPrayerNoteWidth();
+      });
+
+      let _btnResizeTimer2;
+      window.addEventListener("resize", () => {
+        clearTimeout(_btnResizeTimer2);
+        _btnResizeTimer2 = setTimeout(syncSubmitToPrayerNoteWidth, 120);
+      });
 
       /* Load churches from API */
       async function loadChurches() {
@@ -968,11 +999,13 @@
 
         if (!churchId) {
           showStatus(null, t.err);
+          syncSubmitToPrayerNoteWidth();
           return;
         }
 
         if (!hasCategory) {
           showStatus(null, t.needOccasion);
+          syncSubmitToPrayerNoteWidth();
           return;
         }
 
@@ -983,18 +1016,21 @@
 
           if (!male && !female) {
             showStatus(null, t.needNamesForCategory || t.needOccasion);
+            syncSubmitToPrayerNoteWidth();
             return;
           }
 
           const maleErr = validateNamesOptional(male, t);
           if (maleErr) {
             showStatus(null, maleErr);
+            syncSubmitToPrayerNoteWidth();
             return;
           }
 
           const femaleErr = validateNamesOptional(female, t);
           if (femaleErr) {
             showStatus(null, femaleErr);
+            syncSubmitToPrayerNoteWidth();
             return;
           }
         }
@@ -1012,12 +1048,17 @@
               $(id).style.display = "none";
             });
             showStatus(t.ok, null);
+
+            syncSubmitToPrayerNoteWidth();
           } else {
             const j = await res.json().catch(() => ({}));
             showStatus(null, j.error || t.err);
+
+            syncSubmitToPrayerNoteWidth();
           }
         } catch (err) {
           showStatus(null, t.err);
+          syncSubmitToPrayerNoteWidth();
         }
       });
     </script>
