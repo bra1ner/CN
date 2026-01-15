@@ -649,6 +649,23 @@
       }
 
       /* Apply translations to the page */
+      function forceActionButtonsOrder() {
+        const submit = $("submitBtn");
+        const prayer = $("prayernoteLink");
+        if (!submit || !prayer) return;
+
+        if (document.documentElement.dir === "rtl") {
+          // Prayer LEFT, Submit RIGHT
+          submit.style.order = "1";
+          prayer.style.order = "0";
+        } else {
+          // Submit LEFT, Prayer RIGHT
+          submit.style.order = "0";
+          prayer.style.order = "1";
+        }
+      }
+
+      
       function applyTranslations() {
         const t = translations[currentLang];
         document.documentElement.lang = currentLang;
