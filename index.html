@@ -320,7 +320,7 @@
       #submitBtn {
         margin-top: 0;
         flex: 0 0 auto;
-        /* width is set by JS to match commemoration */
+        /* width is set by JS to match commemoration (desktop/tablet) */
       }
 
       .commemoration-btn {
@@ -351,32 +351,21 @@
         background: #111;
       }
 
+      /* ✅ MOBILE FIX: keep the two buttons on ONE ROW and make them equal width */
       @media (max-width: 520px) {
-        .form-actions {
-          flex-direction: column;
+        .form-actions,
+        .form-actions.stacked-actions {
+          flex-direction: row !important;
           align-items: stretch;
+          gap: 10px;
         }
 
         #submitBtn,
-        .commemoration-btn {
-          width: 100% !important;
+        #commemorationLinkInline {
+          flex: 1 1 0;
+          width: auto !important;
         }
       }
-
-      /* Force actions to be a row on desktop (LTR + RTL) */
-      .form-actions.stacked-actions {
-        flex-direction: row !important;
-        align-items: center;
-      }
-
-      /* Only stack on small screens */
-      @media (max-width: 520px) {
-        .form-actions.stacked-actions {
-          flex-direction: column !important;
-          align-items: stretch;
-        }
-      }
-
 
       /* === Social buttons strip UNDER the card === */
       .social-row {
@@ -658,9 +647,9 @@
         // Reset first so comm is measured at natural width
         submit.style.width = "";
 
-        // If stacked (mobile), let CSS handle 100%
-        const isStacked = window.matchMedia("(max-width: 520px)").matches;
-        if (isStacked) return;
+        // If mobile (we force equal flex widths), let CSS handle it
+        const isMobileRow = window.matchMedia("(max-width: 520px)").matches;
+        if (isMobileRow) return;
 
         const w = Math.ceil(comm.getBoundingClientRect().width);
         submit.style.width = w + "px";
@@ -942,7 +931,6 @@
           ta.setAttribute("dir", target === "ar" ? "rtl" : "ltr");
           translateStatus.textContent = target === "ar" ? t.translatedToAr : t.translatedToEn;
 
-          // Translation can change layout slightly; resync button width
           syncSubmitToCommemorationWidth();
         } catch (e) {
           console.error(e);
@@ -1014,7 +1002,6 @@
             statusOk.textContent = translations[currentLang].ok;
             statusOk.style.display = "block";
 
-            // Reset can slightly change sizes; resync
             syncSubmitToCommemorationWidth();
           } else {
             const j = await res.json().catch(() => ({}));
