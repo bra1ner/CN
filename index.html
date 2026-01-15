@@ -293,14 +293,34 @@
       }
 
       /* ===== Submit + Commemoration row (FIXED) ===== */
+      /* ===== Submit + Commemoration (direction-aware) ===== */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: space-between;
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
+
+      /* English / LTR */
+      html[dir="ltr"] #submitBtn {
+        order: 1;
+      }
+
+      html[dir="ltr"] #commemorationLinkInline {
+        order: 2;
+      }
+
+      /* Arabic / RTL — reverse order */
+      html[dir="rtl"] #submitBtn {
+        order: 2;
+      }
+
+      html[dir="rtl"] #commemorationLinkInline {
+        order: 1;
+      }
+
 
       /* LTR: push commemoration to the RIGHT */
       .form-actions #commemorationLinkInline {
