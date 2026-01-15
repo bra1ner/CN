@@ -256,11 +256,10 @@
         gap: 6px;
       }
 
-/* optional: make status text slightly indented */
-.translate-status {
-  margin-top: 2px;
-}
-
+      /* optional: make status text slightly indented */
+      .translate-status {
+        margin-top: 2px;
+      }
 
       .translate-btn {
         background: #d3d3d3;
@@ -292,12 +291,10 @@
         align-items: stretch;
       }
 
-      /* ===== Submit + Commemoration row (FIXED) ===== */
-      /* ===== Submit + Commemoration (direction-aware) ===== */
+      /* ===== Submit + Commemoration (FINAL FIX) ===== */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         gap: 12px;
         margin-top: 14px;
         width: 100%;
@@ -310,31 +307,23 @@
 
       html[dir="ltr"] #commemorationLinkInline {
         order: 2;
+        margin-left: auto;
       }
 
-      /* Arabic / RTL — reverse order */
+      /* Arabic / RTL */
       html[dir="rtl"] #submitBtn {
         order: 2;
       }
 
       html[dir="rtl"] #commemorationLinkInline {
         order: 1;
-      }
-
-
-      /* LTR: push commemoration to the RIGHT */
-      .form-actions #commemorationLinkInline {
-        margin-left: auto;
-      }
-
-      /* RTL: push commemoration to the LEFT */
-      html[dir="rtl"] .form-actions #commemorationLinkInline {
-        margin-left: 0;
         margin-right: auto;
+        margin-left: 0;
       }
 
       #submitBtn {
         margin-top: 0;
+        flex: 0 0 auto;
       }
 
       .commemoration-btn {
@@ -352,7 +341,9 @@
         text-decoration: none;
         cursor: pointer;
         white-space: nowrap;
-        width: fit-content; /* stretch only to text */
+        width: auto;
+        max-width: 100%;
+        flex: 0 0 auto;
         transition: box-shadow 0.15s ease, transform 0.15s ease,
           background-color 0.15s ease;
       }
@@ -363,9 +354,19 @@
         background: #111;
       }
 
+      @media (max-width: 520px) {
+        .form-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        #submitBtn,
         .commemoration-btn {
-          justify-content: center;
           width: 100%;
+        }
+
+        html[dir="ltr"] #commemorationLinkInline,
+        html[dir="rtl"] #commemorationLinkInline {
           margin-left: 0;
           margin-right: 0;
         }
@@ -527,7 +528,7 @@
               <div class="note translate-status" id="translate-status"></div>
             </div>
           </div>
-
+        </div>
 
         <!-- Actions row -->
         <div class="form-actions stacked-actions">
@@ -669,7 +670,7 @@
         document.getElementById("lang-en").classList.add("active");
         document.getElementById("lang-ar").classList.remove("active");
         applyTranslations();
-        syncButtonWidths();
+        // syncButtonWidths(); // disabled: was making Submit huge
       });
 
       document.getElementById("lang-ar").addEventListener("click", () => {
@@ -677,7 +678,7 @@
         document.getElementById("lang-ar").classList.add("active");
         document.getElementById("lang-en").classList.remove("active");
         applyTranslations();
-        syncButtonWidths();
+        // syncButtonWidths(); // disabled: was making Submit huge
       });
 
       applyTranslations();
@@ -913,49 +914,12 @@
           translateBtn.textContent = oldBtnText;
           translateBtn.classList.remove("busy");
           translateBtn.removeAttribute("aria-busy");
-          syncButtonWidths();
+          // syncButtonWidths(); // disabled: was making Submit huge
         }
       }
       translateBtn.addEventListener("click", handleTranslateClick);
 
-      function syncButtonWidths() {
-        const tBtn = document.getElementById("translateBtn");
-        const sBtn = document.getElementById("submitBtn");
-        if (!tBtn || !sBtn) return;
-        if (tBtn.classList.contains("busy")) return;
-
-        tBtn.style.width = "";
-        tBtn.style.minWidth = "";
-        tBtn.style.maxWidth = "";
-        sBtn.style.width = "";
-        sBtn.style.minWidth = "";
-        sBtn.style.maxWidth = "";
-
-        requestAnimationFrame(() => {
-          const tW = tBtn.offsetWidth;
-          const sW = sBtn.offsetWidth;
-          const maxW = Math.max(tW, sW);
-          const w = maxW + "px";
-
-          tBtn.style.width = w;
-          tBtn.style.minWidth = w;
-          tBtn.style.maxWidth = w;
-
-          sBtn.style.width = w;
-          sBtn.style.minWidth = w;
-          sBtn.style.maxWidth = w;
-        });
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        syncButtonWidths();
-      });
-
-      let _sbwTimer;
-      window.addEventListener("resize", () => {
-        clearTimeout(_sbwTimer);
-        _sbwTimer = setTimeout(syncButtonWidths, 120);
-      });
+      // syncButtonWidths() removed/disabled to prevent Submit stretching
 
       document.querySelectorAll(".social-row a.social-btn").forEach((a) => {
         a.setAttribute("target", "_blank");
@@ -1014,7 +978,6 @@
             document.getElementById("translate-status").textContent = "";
             statusOk.textContent = translations[currentLang].ok;
             statusOk.style.display = "block";
-            syncButtonWidths();
           } else {
             const j = await res.json().catch(() => ({}));
             statusErr.textContent = j.error || translations[currentLang].err;
