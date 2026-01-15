@@ -351,11 +351,21 @@
         background: #111;
       }
 
-      /* ✅ MOBILE FIX: keep the two buttons on ONE ROW and make them equal width */
+      /* ✅ ALWAYS swap button positions based on language */
+      html[dir="ltr"] .form-actions,
+      html[dir="ltr"] .form-actions.stacked-actions {
+        flex-direction: row;
+      }
+
+      html[dir="rtl"] .form-actions,
+      html[dir="rtl"] .form-actions.stacked-actions {
+        flex-direction: row-reverse; /* <-- this is the real switch */
+      }
+
+      /* ✅ keep the two buttons on ONE ROW and make them equal width (mobile) */
       @media (max-width: 520px) {
         .form-actions,
         .form-actions.stacked-actions {
-          flex-direction: row !important;
           align-items: stretch;
           gap: 10px;
         }
@@ -367,16 +377,6 @@
         }
       }
 
-      /* === Social buttons strip UNDER the card === */
-      .social-row {
-        width: 100%;
-        max-width: 600px; /* match .card */
-        margin: 0 auto;
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
 
       .social-btn {
         width: var(--social-size);
