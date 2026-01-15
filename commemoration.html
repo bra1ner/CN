@@ -653,6 +653,7 @@
         const t = translations[currentLang];
         document.documentElement.lang = currentLang;
         document.documentElement.dir = currentLang === "ar" ? "rtl" : "ltr";
+        console.log("DIR NOW =", document.documentElement.dir);
 
         $("pageTitle").textContent = t.pageTitle;
 
