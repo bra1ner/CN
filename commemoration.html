@@ -303,26 +303,41 @@
         justify-content: flex-start;
       }
 
-      /* ===== Submit + Prayer Note (ALWAYS swap in Arabic) ===== */
+      /* ============================
+         FIX: action buttons swap
+         ============================ */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between; /* far-left + far-right */
+        justify-content: space-between;
         gap: 12px;
         margin-top: 14px;
         width: 100%;
-        flex-direction: row; /* English */
+
+        /* CRITICAL: keep this row in LTR so "order" behaves predictably */
+        direction: ltr;
+        flex-direction: row;
       }
 
-      /* ✅ Arabic: swap positions reliably */
-      html[dir="rtl"] .form-actions {
-        flex-direction: row-reverse;
+      /* LTR: Submit LEFT, Prayer RIGHT */
+      html[dir="ltr"] #submitBtn {
+        order: 0;
+      }
+      html[dir="ltr"] #prayernoteLink {
+        order: 1;
+      }
+
+      /* RTL: Prayer LEFT, Submit RIGHT */
+      html[dir="rtl"] #submitBtn {
+        order: 1;
+      }
+      html[dir="rtl"] #prayernoteLink {
+        order: 0;
       }
 
       #submitBtn {
         margin-top: 0;
         flex: 0 0 auto;
-        /* width is set by JS to match Prayer Note (desktop/tablet) */
       }
 
       .prayernote-btn {
@@ -619,16 +634,29 @@
         return document.getElementById(id);
       }
 
-      /* Match Submit width to Prayer Note (desktop/tablet). On mobile CSS makes them equal. */
-      function syncSubmitToPrayerNoteWidth() {
-        const submit = document.getElementById("submitBtn");
-        const prayer = document.getElementById("prayernoteLink");
+      /* EXTRA SAFETY: enforce order inline (beats any weird browser RTL behavior) */
+      function forceActionButtonsOrder() {
+        const submit = $("submitBtn");
+        const prayer = $("prayernoteLink");
         if (!submit || !prayer) return;
 
-        // Reset so prayer is measured at natural width
+        if (document.documentElement.dir === "rtl") {
+          prayer.style.order = "0";
+          submit.style.order = "1";
+        } else {
+          submit.style.order = "0";
+          prayer.style.order = "1";
+        }
+      }
+
+      /* Match Submit width to Prayer Note (desktop/tablet). On mobile CSS makes them equal. */
+      function syncSubmitToPrayerNoteWidth() {
+        const submit = $("submitBtn");
+        const prayer = $("prayernoteLink");
+        if (!submit || !prayer) return;
+
         submit.style.width = "";
 
-        // Mobile: CSS controls equal widths
         const isMobileRow = window.matchMedia("(max-width: 520px)").matches;
         if (isMobileRow) return;
 
@@ -673,7 +701,7 @@
         $("submitBtn").textContent = t.submit;
         $("prayernoteLink").textContent = t.prayerNoteBtn;
 
-        // keep widths synced after language changes
+        forceActionButtonsOrder();
         syncSubmitToPrayerNoteWidth();
       }
 
@@ -691,17 +719,19 @@
         applyTranslations();
       });
 
-      applyTranslations();
-
-      // Ensure width sync after first paint + on resize
       document.addEventListener("DOMContentLoaded", () => {
+        applyTranslations();
+        forceActionButtonsOrder();
         syncSubmitToPrayerNoteWidth();
       });
 
       let _btnResizeTimer2;
       window.addEventListener("resize", () => {
         clearTimeout(_btnResizeTimer2);
-        _btnResizeTimer2 = setTimeout(syncSubmitToPrayerNoteWidth, 120);
+        _btnResizeTimer2 = setTimeout(() => {
+          forceActionButtonsOrder();
+          syncSubmitToPrayerNoteWidth();
+        }, 120);
       });
 
       /* Load churches from API */
@@ -758,31 +788,17 @@
 
       /* ============================================================
          INPUT FILTERING + 2 WORDS PER LINE + ONE SPACE BETWEEN WORDS
-         - Blocks ALL digits and ALL symbols EXCEPT comma ","
-         - Allows letters (English/Arabic), spaces, new lines
-         - Enforces max 2 words per line for BOTH English and Arabic
-         - Allows typing the 2nd word normally (doesn't trim the space away mid-typing)
          ============================================================ */
 
       function sanitizeNamesInput(value) {
         const v = (value || "").normalize("NFC");
-
-        // 1) remove all digits (any locale)
         let out = v.replace(/\p{N}+/gu, "");
-
-        // 2) remove all punctuation/symbols EXCEPT comma and whitespace/newlines
         out = out.replace(/[^\p{L}\p{M}\s,]+/gu, "");
-
-        // 3) collapse multiple commas
         out = out.replace(/,{2,}/g, ",");
-
-        // 4) collapse multiple spaces/tabs to ONE space (keeps newlines)
         out = out.replace(/[^\S\r\n]{2,}/g, " ");
-
         return out;
       }
 
-      // 2 words per line, BUT keep ONE trailing space if user is typing 2nd word
       function formatTwoWordsPerLine(value) {
         const v = (value || "").normalize("NFC");
         const lines = v.split("\n");
@@ -799,7 +815,6 @@
 
           const words = trimmed.split(/\s+/).filter(Boolean);
 
-          // keep "First " while user hasn't typed 2nd word yet
           if (words.length === 1 && hasTrailingSpace) {
             outLines.push(words[0] + " ");
             continue;
@@ -839,7 +854,6 @@
           if (before !== after) {
             const delta = after.length - before.length;
             const newPos = Math.max(0, Math.min(after.length, caret + delta));
-
             el.value = after;
             try {
               el.setSelectionRange(newPos, newPos);
@@ -848,23 +862,15 @@
         };
 
         el.addEventListener("beforeinput", (e) => {
-          // allow deletes/backspace
           if (e.inputType && e.inputType.startsWith("delete")) return;
 
           if (e.data) {
             const incoming = e.data;
-
-            // allow comma, whitespace, letters/marks only
             const ok = /^[\p{L}\p{M}\s,]+$/u.test(incoming);
             if (!ok) e.preventDefault();
-
-            // block digits
             if (/\p{N}/u.test(incoming)) e.preventDefault();
           }
 
-          // Space behavior:
-          // - block double spaces
-          // - if line already has 2 words, convert the space to newline
           if (e.data === " ") {
             const pos = el.selectionStart ?? 0;
             const prevChar = pos > 0 ? el.value[pos - 1] : "";
@@ -887,7 +893,6 @@
           }
         });
 
-        // sanitize + enforce on input/paste (mobile safe)
         el.addEventListener("input", applySanitizeAndFormat);
         el.addEventListener("paste", () => setTimeout(applySanitizeAndFormat, 0));
       }
@@ -916,18 +921,12 @@
       function isValidPersonName(name) {
         const n = (name || "").trim();
         if (!n) return false;
-
         if (/\p{N}/u.test(n)) return false;
-
-        // Only letters/marks and single spaces between words
         const ok = /^[\p{L}\p{M}]+(?:\s[\p{L}\p{M}]+)*$/u.test(n);
         if (!ok) return false;
-
         const letterCount = (n.match(/\p{L}/gu) || []).length;
         if (letterCount < 2) return false;
-
         if (hasLongRepeat(n)) return false;
-
         return true;
       }
 
@@ -1046,15 +1045,18 @@
             });
             showStatus(t.ok, null);
 
+            forceActionButtonsOrder();
             syncSubmitToPrayerNoteWidth();
           } else {
             const j = await res.json().catch(() => ({}));
             showStatus(null, j.error || t.err);
 
+            forceActionButtonsOrder();
             syncSubmitToPrayerNoteWidth();
           }
         } catch (err) {
           showStatus(null, t.err);
+          forceActionButtonsOrder();
           syncSubmitToPrayerNoteWidth();
         }
       });
