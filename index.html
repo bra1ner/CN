@@ -363,6 +363,21 @@
         }
       }
 
+      /* Force actions to be a row on desktop (LTR + RTL) */
+      .form-actions.stacked-actions {
+        flex-direction: row !important;
+        align-items: center;
+      }
+
+      /* Only stack on small screens */
+      @media (max-width: 520px) {
+        .form-actions.stacked-actions {
+          flex-direction: column !important;
+          align-items: stretch;
+        }
+      }
+
+
       /* === Social buttons strip UNDER the card === */
       .social-row {
         width: 100%;
