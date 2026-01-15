@@ -291,29 +291,36 @@
         align-items: stretch;
       }
 
-      /* ===== Submit + Commemoration (perfect spacing in LTR + RTL) ===== */
+      /* ===== Submit + Commemoration (swap correctly + same width) ===== */
       .form-actions {
         display: flex;
         align-items: center;
-        justify-content: space-between; /* forces far-left + far-right */
+        justify-content: space-between; /* far-left + far-right */
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
 
-      /* LTR default: Submit on left, Commemoration on right */
-      html[dir="ltr"] .form-actions {
-        flex-direction: row;
+      /* Default visual order (LTR): Submit left, Commemoration right */
+      html[dir="ltr"] #submitBtn {
+        order: 1;
+      }
+      html[dir="ltr"] #commemorationLinkInline {
+        order: 2;
       }
 
-      /* RTL: reverse positions but keep the same spacing */
-      html[dir="rtl"] .form-actions {
-        flex-direction: row-reverse;
+      /* Arabic (RTL): Commemoration left, Submit right */
+      html[dir="rtl"] #commemorationLinkInline {
+        order: 1;
+      }
+      html[dir="rtl"] #submitBtn {
+        order: 2;
       }
 
       #submitBtn {
         margin-top: 0;
         flex: 0 0 auto;
+        /* width is set by JS to match commemoration */
       }
 
       .commemoration-btn {
@@ -352,10 +359,9 @@
 
         #submitBtn,
         .commemoration-btn {
-          width: 100%;
+          width: 100% !important;
         }
       }
-
 
       /* === Social buttons strip UNDER the card === */
       .social-row {
@@ -629,6 +635,22 @@
 
       let currentLang = "en";
 
+      function syncSubmitToCommemorationWidth() {
+        const submit = document.getElementById("submitBtn");
+        const comm = document.getElementById("commemorationLinkInline");
+        if (!submit || !comm) return;
+
+        // Reset first so comm is measured at natural width
+        submit.style.width = "";
+
+        // If stacked (mobile), let CSS handle 100%
+        const isStacked = window.matchMedia("(max-width: 520px)").matches;
+        if (isStacked) return;
+
+        const w = Math.ceil(comm.getBoundingClientRect().width);
+        submit.style.width = w + "px";
+      }
+
       function applyTranslations() {
         const t = translations[currentLang];
         document.documentElement.lang = currentLang;
@@ -648,6 +670,9 @@
         if (topLink) topLink.textContent = t.commemorationBtn;
         const inlineLink = document.getElementById("commemorationLinkInline");
         if (inlineLink) inlineLink.textContent = t.commemorationBtn;
+
+        // Keep submit width synced after language text changes
+        syncSubmitToCommemorationWidth();
       }
 
       document.getElementById("lang-en").addEventListener("click", () => {
@@ -655,7 +680,6 @@
         document.getElementById("lang-en").classList.add("active");
         document.getElementById("lang-ar").classList.remove("active");
         applyTranslations();
-        // syncButtonWidths(); // disabled: was making Submit huge
       });
 
       document.getElementById("lang-ar").addEventListener("click", () => {
@@ -663,10 +687,21 @@
         document.getElementById("lang-ar").classList.add("active");
         document.getElementById("lang-en").classList.remove("active");
         applyTranslations();
-        // syncButtonWidths(); // disabled: was making Submit huge
       });
 
+      // Initial translations
       applyTranslations();
+
+      // Ensure width sync after first paint + on resize
+      document.addEventListener("DOMContentLoaded", () => {
+        syncSubmitToCommemorationWidth();
+      });
+
+      let _btnResizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(_btnResizeTimer);
+        _btnResizeTimer = setTimeout(syncSubmitToCommemorationWidth, 120);
+      });
 
       async function loadChurches() {
         try {
@@ -891,6 +926,9 @@
           updateNoteCounter();
           ta.setAttribute("dir", target === "ar" ? "rtl" : "ltr");
           translateStatus.textContent = target === "ar" ? t.translatedToAr : t.translatedToEn;
+
+          // Translation can change layout slightly; resync button width
+          syncSubmitToCommemorationWidth();
         } catch (e) {
           console.error(e);
           translateStatus.textContent = `${t.translateErrGeneric} (${e.message || "error"})`;
@@ -899,12 +937,9 @@
           translateBtn.textContent = oldBtnText;
           translateBtn.classList.remove("busy");
           translateBtn.removeAttribute("aria-busy");
-          // syncButtonWidths(); // disabled: was making Submit huge
         }
       }
       translateBtn.addEventListener("click", handleTranslateClick);
-
-      // syncButtonWidths() removed/disabled to prevent Submit stretching
 
       document.querySelectorAll(".social-row a.social-btn").forEach((a) => {
         a.setAttribute("target", "_blank");
@@ -963,6 +998,9 @@
             document.getElementById("translate-status").textContent = "";
             statusOk.textContent = translations[currentLang].ok;
             statusOk.style.display = "block";
+
+            // Reset can slightly change sizes; resync
+            syncSubmitToCommemorationWidth();
           } else {
             const j = await res.json().catch(() => ({}));
             statusErr.textContent = j.error || translations[currentLang].err;
