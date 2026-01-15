@@ -291,34 +291,24 @@
         align-items: stretch;
       }
 
-      /* ===== Submit + Commemoration (FINAL FIX) ===== */
+      /* ===== Submit + Commemoration (perfect spacing in LTR + RTL) ===== */
       .form-actions {
         display: flex;
         align-items: center;
+        justify-content: space-between; /* forces far-left + far-right */
         gap: 12px;
         margin-top: 14px;
         width: 100%;
       }
 
-      /* English / LTR */
-      html[dir="ltr"] #submitBtn {
-        order: 1;
+      /* LTR default: Submit on left, Commemoration on right */
+      html[dir="ltr"] .form-actions {
+        flex-direction: row;
       }
 
-      html[dir="ltr"] #commemorationLinkInline {
-        order: 2;
-        margin-left: auto;
-      }
-
-      /* Arabic / RTL */
-      html[dir="rtl"] #submitBtn {
-        order: 2;
-      }
-
-      html[dir="rtl"] #commemorationLinkInline {
-        order: 1;
-        margin-right: auto;
-        margin-left: 0;
+      /* RTL: reverse positions but keep the same spacing */
+      html[dir="rtl"] .form-actions {
+        flex-direction: row-reverse;
       }
 
       #submitBtn {
@@ -364,13 +354,8 @@
         .commemoration-btn {
           width: 100%;
         }
-
-        html[dir="ltr"] #commemorationLinkInline,
-        html[dir="rtl"] #commemorationLinkInline {
-          margin-left: 0;
-          margin-right: 0;
-        }
       }
+
 
       /* === Social buttons strip UNDER the card === */
       .social-row {
