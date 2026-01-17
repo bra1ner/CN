@@ -445,6 +445,17 @@
         }
       }
 
+      /* ✅ Honeypot field (hidden off-screen) */
+      #hp-field {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+      }
+
       /* === PRINT THEMES === */
       @media print {
         html,
@@ -504,6 +515,16 @@
       </div>
 
       <form id="prayerForm" novalidate>
+        <!-- ✅ Honeypot (bots will fill it, humans won’t see it) -->
+        <input
+          type="text"
+          id="hp-field"
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+        />
+
         <div class="form-group">
           <label for="church" id="lbl-church">Choose Church</label>
           <select id="church" name="church" required aria-required="true"></select>
@@ -973,6 +994,14 @@
         const statusErr = document.getElementById("status-error");
         statusOk.style.display = "none";
         statusErr.style.display = "none";
+
+        // ✅ Honeypot check: if bots filled it, pretend success and stop
+        const hp = document.getElementById("hp-field").value.trim();
+        if (hp) {
+          statusOk.textContent = translations[currentLang].ok;
+          statusOk.style.display = "block";
+          return;
+        }
 
         const churchId = document.getElementById("church").value;
         const name = document.getElementById("name").value.trim();
