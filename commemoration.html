@@ -146,21 +146,24 @@
         text-size-adjust: 100%;         /* modern browsers */
       }
 
-      textarea::placeholder {
-        font-size: clamp(0.62rem, 0.58rem + 0.26vw, 0.74rem);
+      /* ✅ Placeholder — works on Android, iOS, macOS, iPadOS */
+      textarea::placeholder,
+      textarea::-webkit-input-placeholder,
+      textarea::-moz-placeholder,
+      textarea:-ms-input-placeholder,
+      textarea::-ms-input-placeholder {
+        font-size: clamp(0.60rem, 0.56rem + 0.24vw, 0.72rem) !important;
         color: var(--muted);
-        opacity: 0.85;
+        opacity: 0.88;
       }
 
       /* RTL placeholders */
-      html[dir="rtl"] textarea::placeholder {
+      html[dir="rtl"] textarea::placeholder,
+      html[dir="rtl"] textarea::-webkit-input-placeholder,
+      html[dir="rtl"] textarea::-moz-placeholder,
+      html[dir="rtl"] textarea:-ms-input-placeholder,
+      html[dir="rtl"] textarea::-ms-input-placeholder {
         text-align: right;
-      }
-
-      @media (max-width: 380px) {
-        textarea::placeholder {
-          font-size: 0.60rem;
-        }
       }
 
 
