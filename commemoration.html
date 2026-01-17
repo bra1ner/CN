@@ -147,8 +147,13 @@
 
       /* RTL placeholders too */
       html[dir="rtl"] textarea::placeholder {
-        text-align: right;
+        text-align: center;
       }
+
+      textarea {
+        font-size: calc(var(--control-font) + 0.05rem);
+      }
+
 
 
       select:focus,
