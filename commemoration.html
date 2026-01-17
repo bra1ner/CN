@@ -8,19 +8,16 @@
       name="description"
       content="Submit memorial names for the departed. Choose your church and record names for recently departed, the 40th day and annual commemorations."
     />
-    
-    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
-    <link rel="manifest" href="icons/site.webmanifest">
 
-    <link rel="preload" href="assets/coptices-note.png" as="image" type="image/png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png" />
+    <link rel="manifest" href="icons/site.webmanifest" />
+
+    <link rel="preload" href="assets/coptices-note.png" as="image" type="image/png" />
 
     <!-- Google tag (gtag.js) -->
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"
-    ></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJ9ZRC3PW3"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
@@ -388,6 +385,44 @@
         }
       }
 
+      /* === Translate UI (per-section) === */
+      .translate-row {
+        margin-top: 8px;
+      }
+
+      .buttons-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .translate-status {
+        margin-top: 2px;
+      }
+
+      .translate-btn {
+        background: #d3d3d3;
+        border: 1px solid var(--border);
+        color: var(--text);
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: var(--control-font);
+        line-height: 1;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .translate-btn:hover {
+        background: #f8f8f8;
+      }
+
+      .translate-btn.busy {
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+      }
+
       /* === Social buttons strip UNDER the card === */
       .social-row {
         width: 100%;
@@ -432,7 +467,14 @@
   <body>
     <div class="card">
       <div class="header">
-        <img src="assets/coptices-note.png" alt="Coptic Note logo" width="64" height="64" fetchpriority="high" decoding="sync" />
+        <img
+          src="assets/coptices-note.png"
+          alt="Coptic Note logo"
+          width="64"
+          height="64"
+          fetchpriority="high"
+          decoding="sync"
+        />
         <h1 id="pageTitle">Commemoration</h1>
         <div style="width: 60px; height: 2px; background: var(--gold)"></div>
       </div>
@@ -478,7 +520,20 @@
             </div>
             <div class="half">
               <label for="female-recently" id="lbl-female-recently">Female</label>
-              <textarea id="female-recently" name="female_recently" placeholder="Enter names"></textarea>
+              <textarea
+                id="female-recently"
+                name="female_recently"
+                placeholder="Enter names"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="translate-row">
+            <div class="buttons-group">
+              <button type="button" class="translate-btn" data-translate-scope="recently">
+                Translate
+              </button>
+              <div class="note translate-status" id="translate-status-recently"></div>
             </div>
           </div>
         </div>
@@ -496,6 +551,15 @@
               <textarea id="female-40th" name="female_40th" placeholder="Enter names"></textarea>
             </div>
           </div>
+
+          <div class="translate-row">
+            <div class="buttons-group">
+              <button type="button" class="translate-btn" data-translate-scope="40th">
+                Translate
+              </button>
+              <div class="note translate-status" id="translate-status-40th"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Annually -->
@@ -508,7 +572,20 @@
             </div>
             <div class="half">
               <label for="female-yearly" id="lbl-female-yearly">Female</label>
-              <textarea id="female-yearly" name="female_yearly" placeholder="Enter names"></textarea>
+              <textarea
+                id="female-yearly"
+                name="female_yearly"
+                placeholder="Enter names"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="translate-row">
+            <div class="buttons-group">
+              <button type="button" class="translate-btn" data-translate-scope="yearly">
+                Translate
+              </button>
+              <div class="note translate-status" id="translate-status-yearly"></div>
             </div>
           </div>
         </div>
@@ -608,6 +685,13 @@
           invalidNamesFormat:
             "Please enter valid names (letters only, avoid random symbols or numbers).",
           prayerNoteBtn: "Prayer Note",
+
+          translateBtn: "Translate",
+          translating: "Translating…",
+          translateErrEmpty: "Write something to translate.",
+          translateErrGeneric: "Translation failed. Please try again.",
+          translatedToAr: "Translated to Arabic.",
+          translatedToEn: "Translated to English.",
         },
         ar: {
           pageTitle: "صلاة الترحيم",
@@ -631,6 +715,13 @@
           invalidNamesFormat:
             "يرجى إدخال أسماء صحيحة (حروف فقط وبدون رموز أو أرقام عشوائية).",
           prayerNoteBtn: "صلاة الطلبة",
+
+          translateBtn: "ترجمة",
+          translating: "جارٍ الترجمة…",
+          translateErrEmpty: "اكتب ما تريد ترجمته أولًا.",
+          translateErrGeneric: "فشلت الترجمة. حاول مرة أخرى.",
+          translatedToAr: "تمت الترجمة إلى العربية.",
+          translatedToEn: "تمت الترجمة إلى الإنجليزية.",
         },
       };
 
@@ -706,6 +797,10 @@
 
         $("submitBtn").textContent = t.submit;
         $("prayernoteLink").textContent = t.prayerNoteBtn;
+
+        document.querySelectorAll(".translate-btn").forEach((btn) => {
+          btn.textContent = t.translateBtn;
+        });
 
         forceActionButtonsOrder();
         syncSubmitToPrayerNoteWidth();
@@ -912,6 +1007,165 @@
         "female-yearly",
       ].forEach((id) => enforceTextboxRules($(id)));
 
+      /* ===== Translation providers (same logic as Prayer Note) ===== */
+
+      function withTimeout(promise, ms = 9000) {
+        const controller = new AbortController();
+        const t = setTimeout(() => controller.abort(), ms);
+        return Promise.race([
+          (async () => {
+            try {
+              return await promise(controller.signal);
+            } finally {
+              clearTimeout(t);
+            }
+          })(),
+        ]);
+      }
+
+      const translators = [
+        async (text, source, target, signal) => {
+          const res = await fetch("https://libretranslate.com/translate", {
+            method: "POST",
+            signal,
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ q: text, source, target, format: "text" }),
+          });
+          if (!res.ok) throw new Error(`LT_main_${res.status}`);
+          const j = await res.json();
+          if (!j.translatedText) throw new Error("LT_main_no_text");
+          return j.translatedText;
+        },
+        async (text, source, target, signal) => {
+          const res = await fetch("https://translate.astian.org/translate", {
+            method: "POST",
+            signal,
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ q: text, source, target, format: "text" }),
+          });
+          if (!res.ok) throw new Error(`LT_ast_${res.status}`);
+          const j = await res.json();
+          if (!j.translatedText) throw new Error("LT_ast_no_text");
+          return j.translatedText;
+        },
+        async (text, source, target, signal) => {
+          const res = await fetch("https://libretranslate.de/translate", {
+            method: "POST",
+            signal,
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify({ q: text, source, target, format: "text" }),
+          });
+          if (!res.ok) throw new Error(`LT_de_${res.status}`);
+          const j = await res.json();
+          if (!j.translatedText) throw new Error("LT_de_no_text");
+          return j.translatedText;
+        },
+        async (text, source, target, signal) => {
+          const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
+            text
+          )}&langpair=${source}|${target}`;
+          const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+          if (!res.ok) throw new Error(`MM_${res.status}`);
+          const j = await res.json();
+          const out = j?.responseData?.translatedText;
+          if (!out) throw new Error("MM_no_text");
+          return out;
+        },
+      ];
+
+      async function translateText(text, source, target) {
+        const errors = [];
+        for (const fn of translators) {
+          try {
+            const result = await withTimeout((signal) => fn(text, source, target, signal), 9000);
+            return result;
+          } catch (e) {
+            errors.push(e?.message || String(e));
+          }
+        }
+        throw new Error("all_providers_failed: " + errors.join(" | "));
+      }
+
+      function looksArabic(text) {
+        return /[\u0600-\u06FF]/.test(text);
+      }
+
+      function getScopeTextareas(scope) {
+        if (scope === "recently") return ["male-recently", "female-recently"];
+        if (scope === "40th") return ["male-40th", "female-40th"];
+        if (scope === "yearly") return ["male-yearly", "female-yearly"];
+        return [];
+      }
+
+      async function translateOneTextarea(ta) {
+        const val = (ta.value || "").trim();
+        if (!val) return null;
+
+        const fromIsArabic = looksArabic(val);
+        const source = fromIsArabic ? "ar" : "en";
+        const target = fromIsArabic ? "en" : "ar";
+
+        let out = await translateText(val, source, target);
+
+        // Keep your existing name rules after translation
+        out = formatTwoWordsPerLine(sanitizeNamesInput(out)).trim();
+
+        ta.value = out;
+        ta.setAttribute("dir", target === "ar" ? "rtl" : "ltr");
+        return target;
+      }
+
+      async function handleSectionTranslate(scope, btn) {
+        const t = translations[currentLang];
+        const statusEl = document.getElementById(`translate-status-${scope}`);
+        const ids = getScopeTextareas(scope);
+        const textareas = ids.map((id) => document.getElementById(id)).filter(Boolean);
+
+        statusEl.textContent = "";
+
+        const hasAnyText = textareas.some((ta) => (ta.value || "").trim().length > 0);
+        if (!hasAnyText) {
+          statusEl.textContent = t.translateErrEmpty;
+          return;
+        }
+
+        btn.classList.add("busy");
+        btn.setAttribute("aria-busy", "true");
+        btn.disabled = true;
+
+        const oldBtnText = btn.textContent;
+        btn.textContent = t.translating;
+
+        try {
+          let lastTarget = null;
+          for (const ta of textareas) {
+            if (!((ta.value || "").trim())) continue;
+            lastTarget = await translateOneTextarea(ta);
+          }
+
+          statusEl.textContent =
+            lastTarget === "ar" ? t.translatedToAr : t.translatedToEn;
+
+          syncSubmitToPrayerNoteWidth();
+        } catch (e) {
+          console.error(e);
+          statusEl.textContent = `${t.translateErrGeneric} (${e.message || "error"})`;
+        } finally {
+          btn.disabled = false;
+          btn.textContent = oldBtnText;
+          btn.classList.remove("busy");
+          btn.removeAttribute("aria-busy");
+        }
+      }
+
+      // Wire translate buttons
+      document.querySelectorAll(".translate-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const scope = btn.getAttribute("data-translate-scope");
+          handleSectionTranslate(scope, btn);
+        });
+      });
+
       /* ===== Validation ===== */
       function splitNames(str) {
         return (str || "")
@@ -1050,6 +1304,12 @@
               $(id).style.display = "none";
             });
             showStatus(t.ok, null);
+
+            // Clear translate statuses
+            ["recently", "40th", "yearly"].forEach((s) => {
+              const el = document.getElementById(`translate-status-${s}`);
+              if (el) el.textContent = "";
+            });
 
             forceActionButtonsOrder();
             syncSubmitToPrayerNoteWidth();
