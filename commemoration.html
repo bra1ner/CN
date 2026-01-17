@@ -138,36 +138,30 @@
         transition: border-color 0.15s ease, box-shadow 0.15s ease;
       }
 
-      /* ✅ Cross-device readable typed text + smaller placeholder */
+      /* ✅ Cross-device tuned textarea + smaller placeholder */
       textarea {
         font-size: clamp(0.98rem, 0.94rem + 0.30vw, 1.06rem);
         line-height: 1.35;
-        -webkit-text-size-adjust: 100%; /* iOS Safari */
-        text-size-adjust: 100%;         /* modern browsers */
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
       }
 
-      /* ✅ Placeholder — works on Android, iOS, macOS, iPadOS */
-      textarea::placeholder,
-      textarea::-webkit-input-placeholder,
-      textarea::-moz-placeholder,
-      textarea:-ms-input-placeholder,
-      textarea::-ms-input-placeholder {
-        font-size: clamp(0.60rem, 0.56rem + 0.24vw, 0.72rem) !important;
+      textarea::placeholder {
+        font-size: clamp(0.62rem, 0.58rem + 0.26vw, 0.74rem);
         color: var(--muted);
-        opacity: 0.88;
+        opacity: 0.85;
       }
 
       /* RTL placeholders */
-      html[dir="rtl"] textarea::placeholder,
-      html[dir="rtl"] textarea::-webkit-input-placeholder,
-      html[dir="rtl"] textarea::-moz-placeholder,
-      html[dir="rtl"] textarea:-ms-input-placeholder,
-      html[dir="rtl"] textarea::-ms-input-placeholder {
+      html[dir="rtl"] textarea::placeholder {
         text-align: right;
       }
 
-
-
+      @media (max-width: 380px) {
+        textarea::placeholder {
+          font-size: 0.60rem;
+        }
+      }
 
 
       select:focus,
