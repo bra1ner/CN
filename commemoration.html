@@ -140,16 +140,16 @@
 
       /* ✅ Cross-device readable typed text + smaller placeholder */
       textarea {
-        font-size: clamp(1rem, 0.95rem + 0.35vw, 1.1rem);
+        font-size: clamp(0.98rem, 0.94rem + 0.30vw, 1.06rem);
         line-height: 1.35;
         -webkit-text-size-adjust: 100%; /* iOS Safari */
         text-size-adjust: 100%;         /* modern browsers */
       }
 
       textarea::placeholder {
-        font-size: clamp(0.68rem, 0.62rem + 0.30vw, 0.80rem);
+        font-size: clamp(0.62rem, 0.58rem + 0.26vw, 0.74rem);
         color: var(--muted);
-        opacity: 0.78;
+        opacity: 0.85;
       }
 
       /* RTL placeholders */
@@ -157,9 +157,9 @@
         text-align: right;
       }
 
-      @media (max-width: 420px) {
+      @media (max-width: 380px) {
         textarea::placeholder {
-          font-size: 0.66rem;
+          font-size: 0.60rem;
         }
       }
 
